@@ -1,9 +1,9 @@
 [
-  { "id": "g_gather", "title": "原木を3回集めよう", "hint": "生産の「裏山 林業拠点」で［採取する］をタップ。10秒で原木が1本入る。",
+  { "id": "g_gather", "title": "原木を3回集めよう", "hint": "生産の「裏山の林業作業場」で［採取する］をタップ。10秒で原木が1本入る。",
     "condition": { "type": "taps", "count": 3 }, "unlocks": ["market"] },
   { "id": "g_sell", "title": "原木を市場で売ろう", "hint": "市場タブで原木を選び、［売る］。お金が入ると人を雇える。",
     "condition": { "type": "sold", "amount": 1 }, "unlocks": ["hire"] },
-  { "id": "g_hire", "title": "作業員を雇って配置しよう", "hint": "その他 → 人材 で応募者を雇い、林業拠点に配置する。あなたがタップしなくても原木が増えていく。",
+  { "id": "g_hire", "title": "作業員を雇って配置しよう", "hint": "その他 → 人材 で応募者を雇い、林業作業場に配置する。あなたがタップしなくても原木が増えていく。",
     "condition": { "type": "employees", "count": 1, "assigned": true }, "unlocks": ["speed"] },
   { "id": "g_team", "title": "社員を3人にしよう", "hint": "採石場や取水場にも人を置こう。右上の ×4 で時間を早められる。",
     "condition": { "type": "employees", "count": 3 }, "unlocks": ["build"] },

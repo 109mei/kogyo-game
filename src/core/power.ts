@@ -30,7 +30,8 @@ export function fuelAllowed(s: GameState, fuel: string): boolean {
 /** kW a plant can deliver with its staff (ignoring fuel) */
 export function plantCapacity(s: GameState, f: FacilityState): number {
   const g = defOf(f).generator;
-  if (!g || f.building || f.machines <= 0) return 0;
+  // an expansion keeps the plant running; only a plant still being built is dark
+  if (!g || (f.building && f.building.kind === 'build') || f.machines <= 0) return 0;
   if (f.stage === 'auto') return f.machines * g.capacity;
   const staff = employeesAt(s, f.id).length;
   const running = g.operators === 0 ? f.machines : Math.min(f.machines, staff / g.operators);
@@ -59,7 +60,7 @@ export function tickPower(s: GameState, dt: number, demandKw: number) {
     plantCap += cap;
     if (cap <= 0 || remaining <= 0) {
       f.util = 0;
-      f.blocked = f.building ? 'building' : cap <= 0 ? 'noStaff' : null;
+      f.blocked = f.building && f.building.kind === 'build' ? 'building' : cap <= 0 ? 'noStaff' : null;
       continue;
     }
     const perKwh = fuelPerKwh(s, f);

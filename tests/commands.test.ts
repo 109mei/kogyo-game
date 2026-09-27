@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { applyCommand, createInitialState, runDays, runTicks } from '../src/core';
+import { plantCapacity } from '../src/core/power';
 import { completeResearch } from '../src/core/research';
 import { employeesAt } from '../src/core/staff';
 import { DATA } from '../src/data';
@@ -143,5 +144,47 @@ describe('growth', () => {
     for (const p of s.problems) expect(p.solutions.length, p.title).toBeGreaterThanOrEqual(1);
     const power = s.problems.find((p) => p.key === 'power')!;
     expect(power.solutions.length).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('fixes found while balancing', () => {
+  it('switching research keeps the progress of the old theme', () => {
+    const s = openingState(3);
+    s.features.research = true;
+    applyCommand(s, { type: 'research', tech: 'p_tools' });
+    s.research.progress = 3;
+    expect(applyCommand(s, { type: 'research', tech: 'g_finance' }).ok).toBe(true);
+    expect(s.research.progress).toBe(0);
+    expect(s.research.saved.p_tools).toBe(3);
+    applyCommand(s, { type: 'research', tech: 'p_tools' });
+    expect(s.research.progress).toBe(3);
+    expect(s.research.saved.p_tools).toBeUndefined();
+  });
+
+  it('a new research lab brings a researcher applicant at once', () => {
+    const s = openingState(4);
+    s.features.build = true;
+    s.cash = 1e8;
+    s.candidates = s.candidates.filter((c) => c.role !== 'researcher');
+    expect(applyCommand(s, { type: 'build', facility: 'research_lab' }).ok).toBe(true);
+    runDays(s, DATA.facility.research_lab.buildDays + 0.5, false);
+    expect(s.candidates.some((c) => c.role === 'researcher')).toBe(true);
+  });
+
+  it('a power plant keeps generating while it is being expanded', () => {
+    const s = openingState(5);
+    s.cash = 1e10;
+    for (const id of ['p_tools', 'p_mech', 'm_steel', 'pw_grid', 'pw_plant']) completeResearch(s, id);
+    s.features.build = true;
+    expect(applyCommand(s, { type: 'build', facility: 'power_plant' }).ok).toBe(true);
+    const plant = s.facilities[s.facilities.length - 1];
+    runDays(s, DATA.facility.power_plant.buildDays + 0.5, false);
+    expect(applyCommand(s, { type: 'buyMachine', facilityId: plant.id }).ok).toBe(true);
+    for (const e of s.employees) applyCommand(s, { type: 'assign', employeeId: e.id, facilityId: plant.id });
+    const before = plantCapacity(s, plant);
+    expect(before).toBeGreaterThan(0);
+    expect(applyCommand(s, { type: 'upgradeLevel', facilityId: plant.id }).ok).toBe(true);
+    expect(plant.building?.kind).toBe('level');
+    expect(plantCapacity(s, plant)).toBe(before);
   });
 });

@@ -10,7 +10,7 @@ import { detectProblems } from './problems';
 import { tickOwner, tickProduction } from './production';
 import { checkGoals, checkMilestones } from './progress';
 import { tickResearch } from './research';
-import { dailyStaff, employeesAt, refreshCandidates } from './staff';
+import { dailyStaff, employeesAt, makeCandidate, refreshCandidates } from './staff';
 import type { GameState } from './types';
 import { addHistory, notify } from './util';
 import { visibleItems } from './visibility';
@@ -46,6 +46,12 @@ function completeConstruction(s: GameState) {
     } else {
       notify(s, 'good', 'ui_done', `${f.name}が完成`, isProduction(defOf(f)) ? '人を配置すると動き出します' : '', { screen: 'facility', id: f.id });
       addHistory(s, f.type, `${f.name} 完成`);
+      // word of a new lab gets around: a researcher applies at once instead of next week
+      if (f.type === 'research_lab' && !s.employees.some((e) => e.role === 'researcher') && !s.candidates.some((c) => c.role === 'researcher')) {
+        const c = makeCandidate(s, 'researcher');
+        s.candidates.push(c);
+        notify(s, 'info', 'ppl_researcher', '研究員の応募がありました', `${c.name}さん。人材画面で採用できます`, { screen: 'staff' });
+      }
     }
     s.staffRev++;
     invalidateCosts(s);

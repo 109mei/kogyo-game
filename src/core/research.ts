@@ -30,6 +30,7 @@ export function completeResearch(s: GameState, id: string) {
   if (techDone(s, id)) return;
   const t = DATA.tech[id];
   s.research.done.push(id);
+  delete s.research.saved[id];
   for (const e of t.effects) if (e.type === 'feature') s.features[e.feature] = true;
   if (s.research.current === id) {
     s.research.current = null;

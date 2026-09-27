@@ -43,13 +43,22 @@ describe('pacing with the scripted player', () => {
     expect(runs[i].firsts.firstHire).toBeLessThanOrEqual(3);
   });
 
-  it.each([0, 1])('seed %i: the first new facility within 60 days', (i) => {
-    expect(runs[i].firsts.firstBuild).toBeLessThanOrEqual(60);
+  it.each([0, 1])('seed %i: the first new facility within 10 days (following the goals)', (i) => {
+    expect(runs[i].firsts.firstBuild).toBeLessThanOrEqual(10);
   });
 
-  it.each([0, 1])('seed %i: the first machine between day 30 and 250', (i) => {
-    expect(runs[i].firsts.firstMachine).toBeGreaterThan(30);
-    expect(runs[i].firsts.firstMachine).toBeLessThan(250);
+  it.each([0, 1])('seed %i: the first machine between day 60 and 180', (i) => {
+    expect(runs[i].firsts.firstMachine).toBeGreaterThan(60);
+    expect(runs[i].firsts.firstMachine).toBeLessThan(180);
+  });
+
+  it.each([0, 1])('seed %i: steel and the first automatic machine by day 420', (i) => {
+    expect(runs[i].firsts.firstSteel).toBeLessThan(420);
+    expect(runs[i].firsts.firstAuto).toBeLessThan(420);
+  });
+
+  it.each([0, 1])('seed %i: research keeps moving (8+ themes by day 420)', (i) => {
+    expect(runs[i].s.research.done.length).toBeGreaterThanOrEqual(8);
   });
 
   it.each([0, 1])('seed %i: worth 28.4M yen (cash + plant) within 200 days', (i) => {

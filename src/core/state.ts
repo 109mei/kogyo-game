@@ -69,7 +69,7 @@ export function createInitialState(opts: NewGameOptions = {}): GameState {
       movedToday: 0,
       wantToday: 0,
     },
-    research: { done: [], current: null, progress: 0, rpPerDay: 0 },
+    research: { done: [], current: null, progress: 0, rpPerDay: 0, saved: {} },
     features: {},
     goals: { index: 0, done: [] },
     hq: { level: 1, building: null },

@@ -470,8 +470,12 @@ function run(s: GameState, cmd: Command): CommandResult {
       if (techDone(s, cmd.tech)) return fail('研究済みです');
       if (!techAvailable(s, cmd.tech)) return fail('前提の研究がまだです');
       if (s.research.current !== cmd.tech) {
-        s.research.current = cmd.tech;
-        s.research.progress = 0;
+        // switching keeps what was done so far on the old theme
+        const r = s.research;
+        if (r.current && r.progress > 0) r.saved[r.current] = r.progress;
+        r.current = cmd.tech;
+        r.progress = r.saved[cmd.tech] ?? 0;
+        delete r.saved[cmd.tech];
       }
       return OK;
     }

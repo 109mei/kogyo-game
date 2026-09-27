@@ -32,6 +32,7 @@ export function repair(s: GameState): GameState {
   };
   s.settings = { ...defaults, ...(s.settings ?? {}) };
   s.pausedFor ??= {};
+  s.research.saved ??= {};
   s.milestones ??= {};
   return s;
 }

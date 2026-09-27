@@ -65,8 +65,10 @@ export function refreshCandidates(s: GameState, silent = false) {
   for (let i = 0; i < n; i++) fresh.push(makeCandidate(s, i === 0 && needResearcher ? 'researcher' : undefined));
   s.candidates.push(...fresh);
   if (s.candidates.length > 24) s.candidates.splice(0, s.candidates.length - 24);
-  if (!silent && hasFeature(s, 'hire')) {
-    notify(s, 'info', 'ppl_worker', `応募者が${fresh.length}人来ました`, '人材画面で確認できます', { screen: 'staff' });
+  // only a standout applicant is worth a notice; the staff menu shows the count
+  const best = fresh.reduce<Candidate | null>((b, c) => (!b || c.skill > b.skill ? c : b), null);
+  if (!silent && best && best.skill >= 4 && hasFeature(s, 'hire')) {
+    notify(s, 'info', 'ppl_worker', `優秀な応募者が来ました（★${best.skill}）`, `${best.name}さん・${DATA.balance.staff.roles[best.role].name}`, { screen: 'staff' });
   }
 }
 

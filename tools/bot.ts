@@ -124,6 +124,7 @@ export class Bot {
     this.logistics();
     this.finance();
     if (hasFeature(s, 'build')) {
+      this.goalBuild();
       for (let i = 0; i < 3; i++) if (!this.invest()) break;
     }
     if (hasFeature(s, 'rules')) this.automation();
@@ -149,6 +150,28 @@ export class Bot {
       this.cmd({ type: 'sell', item: 'log', qty: s.inventory.log });
     }
     if (hasFeature(s, 'speed') && s.speed < 4) this.cmd({ type: 'setSpeed', speed: 4 });
+  }
+
+  /** like a player following the on-screen goal: build what it asks for once affordable */
+  private goalBuild() {
+    const s = this.s;
+    const g = DATA.goals.find((x) => !s.goals.done.includes(x.id));
+    if (!g) return;
+    const c = g.condition;
+    let facility: string | null = null;
+    let recipe: string | undefined;
+    if (c.type === 'produced') {
+      const r = DATA.recipe[c.item];
+      if (!r || !recipeUnlocked(s, r.id) || !facilityUnlocked(s, r.facility)) return;
+      if (s.facilities.some((f) => f.recipe === r.id)) return;
+      facility = r.facility;
+      recipe = r.id;
+    } else if (c.type === 'researchers') {
+      if (s.facilities.some((f) => f.type === 'research_lab')) return;
+      facility = 'research_lab';
+    }
+    if (!facility) return;
+    if (s.cash >= DATA.facility[facility].buildCost + 3e5) this.cmd({ type: 'build', facility, recipe }, `goal ${g.id}`);
   }
 
   private trade() {
@@ -221,9 +244,45 @@ export class Bot {
     return d.reduce((t, r) => t + r.sales - r.purchases - r.salaries - r.power - r.logistics - r.upkeep - r.interest - r.other, 0) / d.length;
   }
 
+  /** research that fixes a shortage the company is already feeling */
+  private urgentResearch(): string | null {
+    const s = this.s;
+    const pick = (ids: string[]) => ids.find((id) => !techDone(s, id) && techAvailable(s, id)) ?? null;
+    // once the company can build power plants, generators fix shortages; research is not the answer
+    if (s.power.demand > this.maxPowerSupply() * 0.8 && !techDone(s, 'pw_plant')) {
+      const t = pick(['pw_grid', 'pw_ehv', 'pw_plant']);
+      if (t) return t;
+    }
+    // trucks carry most of the load; only the cheap logistics centre is worth rushing
+    if (s.logistics.load > s.logistics.capacity * 0.9) {
+      const t = pick(['l_center']);
+      if (t) return t;
+    }
+    return null;
+  }
+
+  /** the most power the company can get today: best contract on offer plus its own plants */
+  private maxPowerSupply(): number {
+    const s = this.s;
+    const best = DATA.balance.power.contracts.filter((c) => contractAvailable(s, c.id)).reduce((m, c) => Math.max(m, c.capacity), 0);
+    return best + s.power.plantCapacity;
+  }
+
   private research() {
     const s = this.s;
-    if (s.research.current) return;
+    if (s.research.current) {
+      // drop everything for an urgent fix; progress on the old theme is kept
+      const urgent = this.urgentResearch();
+      if (urgent && urgent !== s.research.current && !['pw_grid', 'pw_ehv', 'pw_plant', 'l_center'].includes(s.research.current)) {
+        this.cmd({ type: 'research', tech: urgent }, 'urgent');
+      }
+      return;
+    }
+    const urgent = this.urgentResearch();
+    if (urgent) {
+      this.cmd({ type: 'research', tech: urgent }, 'urgent');
+      return;
+    }
     for (const id of RESEARCH_ORDER) {
       if (!techDone(s, id) && techAvailable(s, id)) {
         this.cmd({ type: 'research', tech: id });
@@ -263,9 +322,16 @@ export class Bot {
     const s = this.s;
     const l = s.logistics;
     if (l.load > l.capacity * 0.85) {
-      const n = Math.ceil((l.load * 1.3 - l.capacity) / DATA.balance.logistics.truckCapacity);
-      const price = unitPrice(s, 'small_truck') * n * 1.1;
-      if (n > 0 && price < s.cash * 0.3) this.cmd({ type: 'addTrucks', count: n }, 'logistics');
+      const center = DATA.facility.logistics_center;
+      const building = s.facilities.some((f) => f.type === 'logistics_center' && f.building);
+      if (facilityUnlocked(s, 'logistics_center') && !building && l.load > l.capacity * 1.1 && center.buildCost < s.cash * 0.6) {
+        this.cmd({ type: 'build', facility: 'logistics_center' }, 'logistics center');
+      } else {
+        const each = unitPrice(s, 'small_truck') * 1.1;
+        const want = Math.ceil((l.load * 1.3 - l.capacity) / DATA.balance.logistics.truckCapacity);
+        const n = Math.min(want, Math.floor((s.cash * 0.6) / each));
+        if (n > 0) this.cmd({ type: 'addTrucks', count: n }, 'logistics');
+      }
     }
     if (storedWeight(s) > storageCapacity(s) * 0.85) {
       const wh = s.facilities.find((f) => f.type === 'warehouse' && !f.building && f.level < DATA.facility.warehouse.maxLevel);
@@ -304,9 +370,10 @@ export class Bot {
     const reserve = Math.max(3e5, (s.employees.reduce((t, e) => t + e.salary, 0) / 30) * 7);
     const budget = s.cash - reserve;
     if (budget <= 0) return false;
-    type Option = { score: number; cost: number; cmd: Command; why: string };
+    type Option = { score: number; cost: number; cmd: Command; why: string; kw?: number };
     const opts: Option[] = [];
     const flows = plannedFlows(s);
+    const powerRoom = this.maxPowerSupply() * 0.9 - s.power.demand;
 
     // research lab
     if (!s.facilities.some((f) => f.type === 'research_lab')) {
@@ -331,8 +398,9 @@ export class Bot {
         const cost = levelUpCost(f);
         if (gain > 0) opts.push({ score: gain / cost, cost, cmd: { type: 'upgradeLevel', facilityId: f.id }, why: `level ${f.name}` });
       }
-      // machines
-      const canMachine = def.machine && (hasFeature(s, 'machine') || !def.manualWorkers) && f.level >= 1;
+      // machines (not while the ones already there stand idle, e.g. waiting for inputs)
+      const idleMachines = f.machines > 0 && f.stage !== 'manual' && f.blocked === 'inputs' && f.util < 0.75;
+      const canMachine = def.machine && (hasFeature(s, 'machine') || !def.manualWorkers) && f.level >= 1 && !idleMachines;
       if (canMachine) {
         if (f.machines < maxMachines(s, f)) {
           const rate = f.stage === 'auto' ? def.auto!.rate : def.machine!.rate;
@@ -340,7 +408,8 @@ export class Bot {
           const ops = f.stage === 'auto' ? 0 : def.machine!.operators * SALARY;
           const gain = (rate / r.time) * margin - power - ops - (f.stage === 'manual' ? (staffCapacity(s, f) * margin) / r.time / 4 : 0);
           const cost = machinePrice(f);
-          if (gain > 0) opts.push({ score: gain / cost, cost, cmd: { type: 'buyMachine', facilityId: f.id }, why: `machine ${f.name}` });
+          const kw = f.stage === 'auto' ? def.auto!.power : def.machine!.power;
+          if (gain > 0) opts.push({ score: gain / cost, cost, cmd: { type: 'buyMachine', facilityId: f.id }, why: `machine ${f.name}`, kw });
         } else if (f.level < def.maxLevel && f.stage !== 'manual') {
           const rate = f.stage === 'auto' ? def.auto!.rate : def.machine!.rate;
           const gain = ((rate / r.time) * margin - def.machine!.power * 24 * 25) * def.machinesPerLevel;
@@ -355,7 +424,7 @@ export class Bot {
         const extra = f.machines * ((def.auto!.rate - def.machine!.rate) / r.time) * margin;
         const cost = automateCost(f);
         const gain = saved + extra - f.machines * (def.auto!.power - def.machine!.power) * 24 * 25;
-        if (gain > 0) opts.push({ score: gain / cost, cost, cmd: { type: 'automate', facilityId: f.id }, why: `automate ${f.name}` });
+        if (gain > 0) opts.push({ score: gain / cost, cost, cmd: { type: 'automate', facilityId: f.id }, why: `automate ${f.name}`, kw: f.machines * (def.auto!.power - def.machine!.power) });
       }
       void cap;
     }
@@ -387,7 +456,7 @@ export class Bot {
       const cost = def.buildCost + (def.manualWorkers ? 0 : def.machine!.cost);
       if (gain <= 0) continue;
       const bonus = lacking ? 2 : existing.length ? 0.5 : 1;
-      opts.push({ score: (gain / cost) * bonus, cost: def.buildCost, cmd: { type: 'build', facility: def.id, recipe: r.id }, why: `build ${r.id}${lacking ? ' (lacking)' : ''}` });
+      opts.push({ score: (gain / cost) * bonus, cost: def.buildCost, cmd: { type: 'build', facility: def.id, recipe: r.id }, why: `build ${r.id}${lacking ? ' (lacking)' : ''}`, kw: def.manualWorkers ? 0 : def.machine!.power });
     }
 
     // power plant when the grid bill is large
@@ -399,11 +468,30 @@ export class Bot {
       }
     }
 
+    // machines need power: without room, the best blocked option turns into a power plant
+    let blocked = 0;
+    for (const o of opts) if ((o.kw ?? 0) > powerRoom) blocked = Math.max(blocked, o.score);
+    const usable = opts.filter((o) => (o.kw ?? 0) <= powerRoom);
+    if (blocked > 0 && facilityUnlocked(s, 'power_plant')) {
+      const plant = s.facilities.find((f) => f.type === 'power_plant');
+      if (!plant) usable.push({ score: blocked, cost: DATA.facility.power_plant.buildCost, cmd: { type: 'build', facility: 'power_plant' }, why: 'plant (power short)' });
+      else if (!plant.building && plant.machines < maxMachines(s, plant)) usable.push({ score: blocked, cost: machinePrice(plant), cmd: { type: 'buyMachine', facilityId: plant.id }, why: 'generator (power short)' });
+      else if (!plant.building && plant.level < defOf(plant).maxLevel) usable.push({ score: blocked * 0.8, cost: levelUpCost(plant), cmd: { type: 'upgradeLevel', facilityId: plant.id }, why: 'plant level (power short)' });
+    }
+    opts.length = 0;
+    opts.push(...usable);
     opts.sort((a, b) => b.score - a.score);
     const good = opts.filter((o) => o.score >= 1 / 400);
     if (!good.length) return false;
     const best = good[0];
     if (best.cost <= budget) return this.cmd(best.cmd, best.why);
+    // like a sensible owner, borrow for an investment that pays back within two months
+    const room = loanLimit(s) * 0.5 - s.loan;
+    const healthy = s.power.ratio >= 0.999 && s.logistics.load <= s.logistics.capacity && this.recentProfit() > 0;
+    if (healthy && best.score >= 1 / 60 && best.cost <= budget + room && hasFeature(s, 'machine')) {
+      this.cmd({ type: 'borrow', amount: best.cost - budget + reserve }, 'invest loan');
+      return this.cmd(best.cmd, `${best.why} (loan)`);
+    }
     // save up for the best option unless it is far away; meanwhile only take nearly-as-good ones
     const saving = best.cost <= budget * 6;
     for (const o of good.slice(1, 6)) {

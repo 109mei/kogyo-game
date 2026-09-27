@@ -309,6 +309,8 @@ export interface GameState {
     current: string | null;
     progress: number;
     rpPerDay: number;
+    /** progress kept for themes that were switched away from */
+    saved: Record<string, number>;
   };
   features: Record<string, boolean>;
   goals: { index: number; done: string[] };
