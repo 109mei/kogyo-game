@@ -5,7 +5,7 @@
 > 昨日まで自分でやっていた仕事が、今日は自分なしで回っている。
 
 - 遊ぶ：https://109mei.github.io/kogyo-game/ （`main` へのpushで自動公開）
-- 仕様：[docs/SPEC.md](docs/SPEC.md) ・ 採算表：[docs/ECONOMY.md](docs/ECONOMY.md)（`npm run econ` で再生成）
+- 仕様：[docs/SPEC.md](docs/SPEC.md) ・ 採算表：[docs/ECONOMY.md](docs/ECONOMY.md)（`npm run econ` で再生成） ・ プレイテスト記録：[docs/PLAYTEST.md](docs/PLAYTEST.md)
 
 ## 遊び方
 
@@ -27,6 +27,7 @@ npm run e2e         # 390x844 のスマホ画面でのブラウザテスト（Pl
 npm run build       # 型チェック＋ビルド（dist/）
 npm run balance -- 720 1        # 自動プレイヤーで720日遊ばせて進み具合を見る
 npm run make-save -- 200 1      # 200日目のセーブを tools/out/ に作る（画面確認用）
+npm run fuzz -- 45 500          # ランダムな命令を大量に送り、不変条件が破れないか調べる
 ```
 
 ブラウザのコンソールでは `__kogyo.advance(240)` でゲーム内1日を進められる（時計と同じエンジンを回すだけ）。
