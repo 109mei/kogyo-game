@@ -42,7 +42,7 @@ export function Orders() {
       </div>
       {!v.on && <div className="banner info">「製材所を建てて製材を作ろう」を達成すると、取引先から注文が来るようになります。</div>}
       <p className="small dim">
-        取引先が決まった量を決まった値段で買ってくれます。市場の相場より高く、売っても値崩れしません。受けた注文は、自社で使う分を残して毎日在庫から納品します。納期に遅れると、残りの{Math.round(DATA.balance.orders.penalty * 100)}%を違約金として払います。
+        取引先が決まった量を決まった値段で買ってくれます。市場の相場より高く、売っても値崩れしません。受けた注文には、自社で使う分を残して1時間ごとに在庫から納品します（工場長や自動売買が市場へ売るより先）。納期に遅れると、残りの{Math.round(DATA.balance.orders.penalty * 100)}%を違約金として払います。
       </p>
       <div className="tiles three">
         <div className="tile">

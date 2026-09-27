@@ -5,7 +5,7 @@
  * from what the company does not need itself (or at once, on request).
  */
 import { DATA } from '../data';
-import { actualRates } from './rates';
+import { actualRates, plannedFlows } from './rates';
 import { dayIndex } from './calendar';
 import { unitPrice } from './market';
 import { random, pick } from './rng';
@@ -137,20 +137,30 @@ function fail(s: GameState, o: Order, why: string) {
   notify(s, 'bad', 'misc_delivery', `${why}：${o.customer}の${it.name}`, `違約金 ${yenText(fine)}（納品 ${qtyText(o.delivered, '')}/${qtyText(o.qty, it.unit)}）`, { screen: 'orders' });
 }
 
-/** end of day: deliveries, deadlines, and now and then a new offer */
+/** every hour (before managers and auto-trade sell): what is made goes to the orders first, the soonest due first */
+export function hourlyOrders(s: GameState) {
+  const active = s.orders.list.filter((x) => x.status === 'active');
+  if (!active.length) return;
+  const flows = plannedFlows(s);
+  for (const x of active.sort((a, b) => a.until - b.until)) {
+    const spare = (s.inventory[x.item] ?? 0) - ownUse(s, x.item, flows) * O().reserveDays;
+    if (spare > 0) deliver(s, x, spare);
+    if (x.delivered >= x.qty - 1e-6) finish(s, x);
+  }
+}
+
+/** end of day: deadlines, and now and then a new offer */
 export function dailyOrders(s: GameState) {
   if (!hasFeature(s, 'orders')) return;
   const o = O();
   const today = dayIndex(s.tick);
+  hourlyOrders(s);
   for (const x of [...s.orders.list].sort((a, b) => a.until - b.until)) {
     if (x.status === 'offer') {
       if (today > x.until) s.orders.list = s.orders.list.filter((y) => y.id !== x.id);
       continue;
     }
-    const spare = (s.inventory[x.item] ?? 0) - ownUse(s, x.item) * o.reserveDays;
-    if (spare > 0) deliver(s, x, spare);
-    if (x.delivered >= x.qty - 1e-6) finish(s, x);
-    else if (today > x.until) fail(s, x, '納期に間に合いませんでした');
+    if (today > x.until) fail(s, x, '納期に間に合いませんでした');
   }
   const offers = s.orders.list.filter((x) => x.status === 'offer').length;
   if (offers < o.maxOffers && random(s) < o.offerChance) {

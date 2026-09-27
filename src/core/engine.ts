@@ -13,7 +13,7 @@ import { tickResearch } from './research';
 import { addCandidates, dailyStaff, employeesAt, makeCandidate, refreshCandidates } from './staff';
 import { dailyDivisions } from './divisions';
 import { dailyEvents } from './events';
-import { dailyOrders } from './orders';
+import { dailyOrders, hourlyOrders } from './orders';
 import type { GameState } from './types';
 import { addHistory, notify } from './util';
 import { visibleItems } from './visibility';
@@ -82,6 +82,7 @@ function oneTick(s: GameState) {
   tickResearch(s, dt);
   if (s.tick % DATA.balance.time.hourTicks === 0) {
     invalidateCosts(s);
+    hourlyOrders(s);
     hourlyAutomation(s);
     hourlyContracts(s);
     hourlyAutoTrade(s);

@@ -342,7 +342,7 @@
     "loadPerFacility": 0.15,
     "headBonusPerStar": 0.02,
     "hireFeeMul": 1.5,
-    "cashReserveDays": 30,
+    "cashReserveDays": 10,
     "busyUtil": 0.85,
     "subsidiaryBase": 50000000,
     "subsidiaryPerFacility": 5000000

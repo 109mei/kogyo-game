@@ -689,7 +689,7 @@ function run(s: GameState, cmd: Command): CommandResult {
       const gate = need(s, 'orders', '「製材所を建てて製材を作ろう」を達成すると注文が来ます');
       if (gate) return gate;
       const err = acceptOrder(s, cmd.orderId);
-      return err ? fail(err) : { ok: true, message: '注文を受けました。在庫から毎日納品します' };
+      return err ? fail(err) : { ok: true, message: '注文を受けました。できた分から納品します' };
     }
 
     case 'declineOrder': {

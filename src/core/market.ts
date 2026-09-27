@@ -2,7 +2,7 @@ import { DATA } from '../data';
 import { dayIndex } from './calendar';
 import { normal, random } from './rng';
 import type { GameState, MarketItem } from './types';
-import { clamp, earn, notify, pay } from './util';
+import { clamp, earn, notify, orderNeed, pay } from './util';
 
 const M = () => DATA.balance.market;
 
@@ -182,8 +182,9 @@ export function hourlyAutoTrade(s: GameState) {
   for (const [item, rule] of Object.entries(s.autoTrade)) {
     const stock = s.inventory[item] ?? 0;
     const m = s.market[item];
-    if (rule.sellAbove !== null && stock > rule.sellAbove && m.index >= rule.minIndex) {
-      executeSell(s, item, stock - rule.sellAbove);
+    const keep = rule.sellAbove !== null ? rule.sellAbove + orderNeed(s, item) : 0;
+    if (rule.sellAbove !== null && stock > keep && m.index >= rule.minIndex) {
+      executeSell(s, item, stock - keep);
     } else if (rule.buyBelow !== null && stock < rule.buyBelow && m.index <= rule.maxIndex) {
       const want = rule.buyBelow - stock;
       const q = Math.min(want, affordable(s, item));

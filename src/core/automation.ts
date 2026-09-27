@@ -7,7 +7,7 @@ import { capacityCached, managerBonus } from './production';
 import { divisionFor } from './org';
 import { employeesAt } from './staff';
 import type { Cond, FacilityState, GameState } from './types';
-import { hasFeature } from './util';
+import { hasFeature, orderNeed } from './util';
 
 /** average daily consumption over the last week (0 if unknown) */
 export function consumptionPerDay(s: GameState, item: string): number {
@@ -139,7 +139,7 @@ function manage(s: GameState, f: FacilityState) {
   }
   const out = r.id;
   const use = consumptionPerDay(s, out);
-  const keep = Math.max(use * 5, f.auto.enabled ? f.auto.targetStock : 0, r.output * perDay * 0.5);
+  const keep = Math.max(use * 5, f.auto.enabled ? f.auto.targetStock : 0, r.output * perDay * 0.5) + orderNeed(s, out);
   const stock = s.inventory[out] ?? 0;
   if (stock > keep && s.market[out].index >= 0.7) executeSell(s, out, stock - keep);
 }

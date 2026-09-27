@@ -217,7 +217,7 @@ export class Bot {
     for (const it of DATA.items) {
       const stock = s.inventory[it.id] ?? 0;
       const use = Math.max(consumptionPerDay(s, it.id), flows.cons[it.id] ?? 0);
-      const keep = use * 4;
+      const keep = use * 4 + s.orders.list.filter((o) => o.status === 'active' && o.item === it.id).reduce((t, o) => t + o.qty - o.delivered, 0);
       if (stock > keep + 1e-6) {
         // do not flood a market: at most a day's worth of its size at once
         const qty = Math.min(stock - keep, it.demand * 0.5);
@@ -295,6 +295,11 @@ export class Bot {
       const t = pick(['l_center']);
       if (t) return t;
     }
+    // over the head office's capacity: like a player answering the problem card, go for division heads
+    if (managementLoad(s) > managementCapacity(s)) {
+      const t = pick(['a_managers', 'g_division', 'g_org']);
+      if (t) return t;
+    }
     return null;
   }
 
@@ -310,7 +315,7 @@ export class Bot {
     if (s.research.current) {
       // drop everything for an urgent fix; progress on the old theme is kept
       const urgent = this.urgentResearch();
-      if (urgent && urgent !== s.research.current && !['pw_grid', 'pw_ehv', 'pw_plant', 'l_center'].includes(s.research.current)) {
+      if (urgent && urgent !== s.research.current && !['pw_grid', 'pw_ehv', 'pw_plant', 'l_center', 'a_managers', 'g_division', 'g_org'].includes(s.research.current)) {
         this.cmd({ type: 'research', tech: urgent }, 'urgent');
       }
       return;

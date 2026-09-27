@@ -74,6 +74,13 @@ export function milestone(s: GameState, key: string, icon: string, text: string)
   return true;
 }
 
+/** units still owed on accepted orders: automatic selling leaves these in stock */
+export function orderNeed(s: GameState, item: string): number {
+  let n = 0;
+  for (const o of s.orders.list) if (o.status === 'active' && o.item === item) n += Math.max(0, o.qty - o.delivered);
+  return n;
+}
+
 export function marketPrice(s: GameState, item: string): number {
   return DATA.basePrice[item] * (s.market[item]?.index ?? 1);
 }

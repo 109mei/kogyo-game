@@ -8,14 +8,14 @@ import { consumptionPerDay } from './automation';
 import { executeSell, sellQuote } from './market';
 import { plannedFlows } from './rates';
 import type { GameState } from './types';
-import { clamp } from './util';
+import { clamp, orderNeed } from './util';
 
 export interface SurplusLine {
   item: string;
   qty: number;
   /** yen expected */
   value: number;
-  /** stock kept back for the company's own use */
+  /** stock kept back for the company's own use and its orders */
   keep: number;
   /** more is left over than one tap sells (the price would drop too far) */
   capped: boolean;
@@ -41,7 +41,7 @@ export function surplusPlan(s: GameState): SurplusLine[] {
   for (const it of DATA.items) {
     const stock = s.inventory[it.id] ?? 0;
     if (stock <= 1e-6) continue;
-    const keep = ownUse(s, it.id, flows) * b.keepDays;
+    const keep = ownUse(s, it.id, flows) * b.keepDays + orderNeed(s, it.id);
     const extra = stock - keep;
     if (extra <= 1e-6) continue;
     const cap = maxSaleForDrop(it.id, b.maxPriceDrop);

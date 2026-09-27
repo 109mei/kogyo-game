@@ -245,6 +245,28 @@ describe('customer orders', () => {
     expect(s.finance.today.other - other).toBeCloseTo(o.qty * o.price * DATA.balance.orders.penalty, 0);
   });
 
+  it('what an order still needs is not sold by managers, auto-trade or the surplus button', () => {
+    const s = orderReady();
+    s.features.autotrade = true;
+    s.features.managers = true;
+    s.features.market = true;
+    // a manager runs the forestry, and auto-trade sells logs above 10
+    const m = worker(s, 5, 'manager');
+    applyCommand(s, { type: 'setManager', facilityId: s.facilities[0].id, employeeId: m.id });
+    applyCommand(s, { type: 'setAutoTrade', item: 'log', rule: { sellAbove: 10, buyBelow: null, minIndex: 0, maxIndex: 3 } });
+    s.orders.list.push({ id: s.nextId++, customer: 'テスト商事', item: 'log', qty: 200, delivered: 0, price: 9000, marketPrice: 6000, days: 10, until: dayIndex(s.tick) + 10, status: 'active', fresh: false });
+    s.inventory.log = 150;
+    expect(surplusPlan(s).find((l) => l.item === 'log')?.qty ?? 0).toBe(0);
+    // an hour on: the order is served first, the rest of the day's logs wait for it
+    runTicks(s, DATA.balance.time.hourTicks, false);
+    const o = s.orders.list.find((x) => x.item === 'log');
+    expect(o?.delivered ?? 200).toBeGreaterThan(140);
+    // the rest follows as the forest makes more (a dozen logs a day by hand)
+    runDays(s, 9, false);
+    expect(s.orders.done).toBe(1);
+    expect(s.orders.failed).toBe(0);
+  });
+
   it('can be declined, delivered at once, or cancelled', () => {
     const s = orderReady();
     let tries = 0;
