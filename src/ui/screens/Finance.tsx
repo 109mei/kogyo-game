@@ -44,6 +44,7 @@ export function Finance() {
         sales30: sum(last30, 'sales'),
         profit30: last30.reduce((t, d) => t + operatingProfit(d), 0),
         capex30: sum(last30, 'capex'),
+        grants30: sum(last30, 'grants'),
         n30: last30.length,
         today: { ...s.finance.today },
       };
@@ -117,6 +118,12 @@ export function Finance() {
             <span className={v.profit30 < 0 ? 'bad' : 'good'}>{yen(v.profit30, { sign: true })}</span>
             <span>設備投資</span>
             <span>{yen(v.capex30)}</span>
+            {v.grants30 > 0 && (
+              <>
+                <span>補助金</span>
+                <span className="good">{yen(v.grants30, { sign: true })}</span>
+              </>
+            )}
           </div>
         )}
       </div>

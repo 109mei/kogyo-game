@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import balanceJson from './balance.json';
+import eventsJson from './events.json';
 import facilitiesJson from './facilities.json';
 import goalsJson from './goals.json';
 import itemsJson from './items.json';
@@ -8,6 +9,7 @@ import recipesJson from './recipes.json';
 import researchJson from './research.json';
 import {
   BalanceSchema,
+  EventSchema,
   FacilitySchema,
   GoalSchema,
   ItemSchema,
@@ -15,6 +17,7 @@ import {
   TechSchema,
   type Balance,
   type Facility,
+  type GameEventDef,
   type Goal,
   type Item,
   type Recipe,
@@ -36,11 +39,13 @@ export interface GameData {
   facilities: Facility[];
   techs: Tech[];
   goals: Goal[];
+  events: GameEventDef[];
   names: z.infer<typeof NamesSchema>;
   item: Record<string, Item>;
   recipe: Record<string, Recipe>;
   facility: Record<string, Facility>;
   tech: Record<string, Tech>;
+  event: Record<string, GameEventDef>;
   /** base price in yen per unit, derived from recipes */
   basePrice: Record<string, number>;
   /** recipes that consume each item */
@@ -78,6 +83,7 @@ export function buildData(raw: {
   facilities: unknown;
   research: unknown;
   goals: unknown;
+  events?: unknown;
   names: unknown;
 }): GameData {
   const b = BalanceSchema.safeParse(raw.balance);
@@ -91,6 +97,7 @@ export function buildData(raw: {
   const facilities = parseList('facilities', FacilitySchema, raw.facilities);
   const techs = parseList('research', TechSchema, raw.research);
   const goals = parseList('goals', GoalSchema, raw.goals);
+  const events = parseList('events', EventSchema, raw.events ?? []);
   const n = NamesSchema.safeParse(raw.names);
   if (!n.success) throw new DataError(`names: ${z.prettifyError(n.error)}`);
 
@@ -99,6 +106,7 @@ export function buildData(raw: {
   const facility = indexById('facilities', facilities);
   const tech = indexById('research', techs);
   indexById('goals', goals);
+  const event = indexById('events', events);
 
   const unlockOk = (u: string) => u === 'start' || tech[u] !== undefined;
   const errors: string[] = [];
@@ -129,6 +137,14 @@ export function buildData(raw: {
   for (const w of balance.start.workyards) {
     if (!facility[w.facility]) errors.push(`workyard: unknown facility ${w.facility}`);
     if (!recipe[w.recipe]) errors.push(`workyard: unknown recipe ${w.recipe}`);
+  }
+  for (const e of events) {
+    // placeholders must have something to fill them
+    const text = [e.title, e.body, ...e.choices.flatMap((c) => [c.label, c.detail])].join(' ');
+    const need: Record<string, string[]> = { facility: ['facility', 'machineFacility'], item: ['product', 'input'], employee: ['bestEmployee'], stars: ['bestEmployee'], tech: ['research'] };
+    for (const [ph, targets] of Object.entries(need)) if (text.includes(`{${ph}}`) && !targets.includes(e.target)) errors.push(`event ${e.id}: {${ph}} needs target ${targets.join('/')}`);
+    for (const c of e.choices) if (c.detail.includes('{cost}') && !c.cost) errors.push(`event ${e.id}/${c.id}: {cost} without a cost`);
+    if (e.needs.feature && !e.needs.feature.match(/^[a-zA-Z]+$/)) errors.push(`event ${e.id}: bad feature ${e.needs.feature}`);
   }
   for (const g of goals) {
     const c = g.condition;
@@ -195,6 +211,8 @@ export function buildData(raw: {
     recipe,
     facility,
     tech,
+    event,
+    events,
     basePrice,
     consumers,
     unlockedBy,
@@ -209,5 +227,6 @@ export const DATA: GameData = buildData({
   facilities: facilitiesJson,
   research: researchJson,
   goals: goalsJson,
+  events: eventsJson,
   names: namesJson,
 });

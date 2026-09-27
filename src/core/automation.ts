@@ -4,9 +4,10 @@ import { affordable, executeBuy, executeSell, unitPrice } from './market';
 import { mods } from './mods';
 import { gridPrice, powerUse } from './power';
 import { capacityCached, managerBonus } from './production';
+import { divisionFor } from './org';
 import { employeesAt } from './staff';
 import type { Cond, FacilityState, GameState } from './types';
-import { hasFeature } from './util';
+import { hasFeature, orderNeed } from './util';
 
 /** average daily consumption over the last week (0 if unknown) */
 export function consumptionPerDay(s: GameState, item: string): number {
@@ -86,7 +87,7 @@ function hysteresis(prev: number, stock: number, low: number, high: number): num
 /** the output rate (0..1.5) automation asks for */
 export function automationRate(s: GameState, f: FacilityState): number {
   const a = f.auto;
-  const manager = f.managerId !== null && hasFeature(s, 'managers');
+  const manager = (f.managerId !== null && hasFeature(s, 'managers')) || divisionFor(s, f) !== null;
   if (!f.recipe) return 1;
   const out = f.recipe;
   const stock = s.inventory[out] ?? 0;
@@ -138,7 +139,7 @@ function manage(s: GameState, f: FacilityState) {
   }
   const out = r.id;
   const use = consumptionPerDay(s, out);
-  const keep = Math.max(use * 5, f.auto.enabled ? f.auto.targetStock : 0, r.output * perDay * 0.5);
+  const keep = Math.max(use * 5, f.auto.enabled ? f.auto.targetStock : 0, r.output * perDay * 0.5) + orderNeed(s, out);
   const stock = s.inventory[out] ?? 0;
   if (stock > keep && s.market[out].index >= 0.7) executeSell(s, out, stock - keep);
 }
@@ -148,6 +149,6 @@ export function hourlyAutomation(s: GameState) {
     const def = defOf(f);
     if (def.category === 'infrastructure') continue;
     f.rate = automationRate(s, f);
-    if (f.managerId !== null && hasFeature(s, 'managers')) manage(s, f);
+    if ((f.managerId !== null && hasFeature(s, 'managers')) || divisionFor(s, f) !== null) manage(s, f);
   }
 }

@@ -10,7 +10,10 @@ import { detectProblems } from './problems';
 import { tickOwner, tickProduction } from './production';
 import { checkGoals, checkMilestones } from './progress';
 import { tickResearch } from './research';
-import { dailyStaff, employeesAt, makeCandidate, refreshCandidates } from './staff';
+import { addCandidates, dailyStaff, employeesAt, makeCandidate, refreshCandidates } from './staff';
+import { dailyDivisions } from './divisions';
+import { dailyEvents } from './events';
+import { dailyOrders, hourlyOrders } from './orders';
 import type { GameState } from './types';
 import { addHistory, notify } from './util';
 import { visibleItems } from './visibility';
@@ -49,7 +52,7 @@ function completeConstruction(s: GameState) {
       // word of a new lab gets around: a researcher applies at once instead of next week
       if (f.type === 'research_lab' && !s.employees.some((e) => e.role === 'researcher') && !s.candidates.some((c) => c.role === 'researcher')) {
         const c = makeCandidate(s, 'researcher');
-        s.candidates.push(c);
+        addCandidates(s, [c]);
         notify(s, 'info', 'ppl_researcher', '研究員の応募がありました', `${c.name}さん。人材画面で採用できます`, { screen: 'staff' });
       }
     }
@@ -79,6 +82,7 @@ function oneTick(s: GameState) {
   tickResearch(s, dt);
   if (s.tick % DATA.balance.time.hourTicks === 0) {
     invalidateCosts(s);
+    hourlyOrders(s);
     hourlyAutomation(s);
     hourlyContracts(s);
     hourlyAutoTrade(s);
@@ -132,6 +136,10 @@ function endOfDay(s: GameState) {
   s.power.costToday = 0;
 
   dailyStaff(s);
+  // division heads use yesterday's figures; orders and events book into today's ledger
+  dailyDivisions(s);
+  dailyOrders(s);
+  dailyEvents(s);
   invalidateCosts(s);
   const date = dateOf(day);
   if (date.weekday === 1) refreshCandidates(s);

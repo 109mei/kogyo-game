@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { DATA } from '../../data';
 import { storageCapacity, storedWeight } from '../../core/production';
+import { surplusPlan } from '../../core/surplus';
 import { dispatch, useGame } from '../../store/game';
 import { useUI } from '../../store/ui';
 import { Sparkline } from '../charts';
@@ -9,6 +10,49 @@ import { days, perDay, qty, yen } from '../format';
 import { inventoryRows, type InvRow } from '../selectors';
 
 type Sort = 'value' | 'short' | 'no';
+
+/** sell everything the company does not need itself, in one tap */
+export function SurplusCard() {
+  const v = useGame(
+    (s) => {
+      const plan = surplusPlan(s);
+      return {
+        on: !!s.features.market,
+        n: plan.length,
+        value: plan.reduce((t, l) => t + l.value, 0),
+        capped: plan.some((l) => l.capped),
+        top: plan.slice(0, 3).map((l) => l.item),
+      };
+    },
+    [],
+    2,
+  );
+  if (!v.on) return null;
+  return (
+    <div className="card col" style={{ gap: 8 }} data-testid="surplus-card">
+      <div className="row">
+        <Icon id="fin_price" size={40} />
+        <div className="grow col" style={{ gap: 0 }}>
+          <span className="bold">余った在庫を売る</span>
+          <span className="tiny dim">
+            自社で使う分（{DATA.balance.surplus.keepDays}日分）は残し、値崩れしない量まで売ります
+          </span>
+        </div>
+      </div>
+      <button className="btn block" disabled={v.n === 0} onClick={() => dispatch({ type: 'sellSurplus' })} data-testid="sell-surplus">
+        {v.n === 0 ? '売れる余りはありません' : `${v.n}品目を売る（約${yen(v.value)}）`}
+      </button>
+      {v.n > 0 && (
+        <div className="row" style={{ gap: 4 }}>
+          {v.top.map((i) => (
+            <Icon key={i} id={i} size={22} />
+          ))}
+          {v.capped && <span className="tiny muted">多い物は一部だけ。もう一度押すと続きを売ります</span>}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function Assets() {
   const [sort, setSort] = useState<Sort>('value');
@@ -20,7 +64,8 @@ export function Assets() {
       compact: s.settings.compactInventory,
     }),
     [],
-    4,
+    // 65 rows with charts: twice a second is plenty and keeps a slow phone responsive
+    2,
   );
   const rows = [...v.rows].sort((a, b) =>
     sort === 'value' ? b.value - a.value : sort === 'short' ? (a.daysLeft ?? 1e9) - (b.daysLeft ?? 1e9) : DATA.item[a.item].no - DATA.item[b.item].no,
@@ -48,6 +93,7 @@ export function Assets() {
           水・原油・天然ガスはタンクに入るので倉庫を使いません。
         </p>
       </div>
+      <SurplusCard />
       <div className="spread">
         <Chips
           value={sort}
@@ -85,7 +131,14 @@ function tone(r: InvRow): 'good' | 'warn' | 'bad' | '' {
   return r.net > 0 ? 'good' : '';
 }
 
-function InvCard({ r }: { r: InvRow }) {
+const s3 = (x: number) => Number(x.toPrecision(3));
+/** what a row shows, rounded as shown: rows only redraw when this changes */
+const rowSig = (r: InvRow) => [r.item, s3(r.stock), s3(r.value), s3(r.produced), s3(r.consumed), s3(r.net), r.daysLeft === null ? '' : s3(r.daysLeft), r.stockHist.length, s3(r.stockHist[r.stockHist.length - 1] ?? 0)].join('|');
+
+const InvCard = memo(InvCardInner, (a, b) => rowSig(a.r) === rowSig(b.r));
+const CompactRow = memo(CompactRowInner, (a, b) => rowSig(a.r) === rowSig(b.r));
+
+function InvCardInner({ r }: { r: InvRow }) {
   const push = useUI((s) => s.push);
   const it = DATA.item[r.item];
   const t = tone(r);
@@ -123,7 +176,7 @@ function InvCard({ r }: { r: InvRow }) {
   );
 }
 
-function CompactRow({ r }: { r: InvRow }) {
+function CompactRowInner({ r }: { r: InvRow }) {
   const push = useUI((s) => s.push);
   const t = tone(r);
   return (

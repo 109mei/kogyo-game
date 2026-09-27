@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DATA } from '../data';
 import { dispatch, useGame, useGameStore } from '../store/game';
 import { useUI, type Tab } from '../store/ui';
 import { Icon, SheetFrame } from './components';
 import { date, yen } from './format';
+import { guideKeys, paintGuide } from './guide';
 import { profitPerDay } from './selectors';
 import { SheetHost } from './sheets';
 import { Assets } from './screens/Assets';
 import { Build } from './screens/Build';
 import { Company } from './screens/Company';
+import { Division } from './screens/Division';
 import { Encyclopedia } from './screens/Encyclopedia';
 import { FacilityDetail } from './screens/FacilityDetail';
 import { Finance } from './screens/Finance';
@@ -19,6 +21,7 @@ import { Market, MarketItem } from './screens/Market';
 import { More } from './screens/More';
 import { NewGame } from './screens/NewGame';
 import { Notices } from './screens/Notices';
+import { Orders } from './screens/Orders';
 import { Power } from './screens/Power';
 import { Production } from './screens/Production';
 import { Research } from './screens/Research';
@@ -30,10 +33,16 @@ export function App() {
   const booted = useGameStore((s) => s.booted);
   const runner = useGameStore((s) => s.runner);
   const bootError = useGameStore((s) => s.bootError);
+  const starting = useGameStore((s) => s.starting);
   useEffect(() => {
     useGameStore.getState().boot();
   }, []);
-  if (!booted) return null;
+  if (!booted)
+    return starting ? (
+      <div className="splash" aria-busy="true">
+        <p className="small dim">会社を読み込んでいます…</p>
+      </div>
+    ) : null;
   if (!runner) return <NewGame error={bootError} />;
   return <Game />;
 }
@@ -58,8 +67,35 @@ function useWide() {
   return wide;
 }
 
+/** light up the next control to press while the first goals are open */
+function useGuide() {
+  const keys = useGame((s) => guideKeys(s), [], 2);
+  const tab = useUI((s) => s.tab);
+  const stack = useUI((s) => s.stack);
+  const sheet = useUI((s) => s.sheet);
+  const ref = useRef(keys);
+  ref.current = keys;
+  const active = stack.length === 0 ? tab : null;
+  const sig = keys.join(',');
+  useEffect(() => {
+    if (!sig) {
+      paintGuide([], null);
+      return;
+    }
+    const paint = () => paintGuide(ref.current, active);
+    // after React has drawn the screen, and again now and then as rows appear
+    const raf = requestAnimationFrame(paint);
+    const id = setInterval(paint, 700);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearInterval(id);
+    };
+  }, [sig, active, stack.length, sheet]);
+}
+
 function Game() {
   useTheme();
+  useGuide();
   const wide = useWide();
   const tab = useUI((s) => s.tab);
   const stack = useUI((s) => s.stack);
@@ -82,6 +118,7 @@ function Game() {
       )}
       <SheetHost />
       <OfflineReport />
+      <Elsewhere />
       <Toasts />
     </div>
   );
@@ -135,6 +172,10 @@ function RouteView() {
       return <Notices />;
     case 'world':
       return <World />;
+    case 'orders':
+      return <Orders />;
+    case 'division':
+      return <Division type={r.id} />;
   }
 }
 
@@ -168,7 +209,7 @@ function Header({ canBack }: { canBack: boolean }) {
       </div>
       <div className="header-bottom">
         <div className="col" style={{ gap: 0 }}>
-          <span className="cash num" data-testid="cash">
+          <span className={`cash num${yen(h.cash).length > 12 ? ' longer' : yen(h.cash).length > 8 ? ' long' : ''}`} data-testid="cash">
             {yen(h.cash)}
           </span>
           <span className={`profit num ${h.profit >= 0 ? 'good' : 'bad'}`}>
@@ -305,3 +346,27 @@ function OfflineReport() {
   );
 }
 
+
+/** the same game was opened (or deleted) in another tab: this one has stopped so neither overwrites the other */
+function Elsewhere() {
+  const why = useGameStore((s) => s.elsewhere);
+  if (!why) return null;
+  return (
+    <div className="scrim" style={{ alignItems: 'center' }}>
+      <div className="sheet" role="alertdialog" aria-modal="true" aria-label="別のタブで開かれています" style={{ margin: 16, borderRadius: 'var(--radius)' }}>
+        <div className="col" style={{ gap: 12 }}>
+          <h2>{why === 'saved' ? '別のタブで遊んでいます' : '別のタブで会社が消されました'}</h2>
+          <p className="small dim">
+            {why === 'saved'
+              ? 'このゲームが別のタブ（またはウィンドウ）で進んでいます。セーブを上書きしないよう、ここでは時間を止めました。'
+              : '別のタブで会社を消したため、ここでは止めました。'}
+          </p>
+          <button className="btn block" onClick={() => useGameStore.getState().takeOver()} data-testid="take-over">
+            {why === 'saved' ? 'こちらで続ける' : '最初の画面へ'}
+          </button>
+          <p className="tiny muted">「こちらで続ける」を押すと、最新のセーブを読み込み、もう一方のタブが止まります。</p>
+        </div>
+      </div>
+    </div>
+  );
+}

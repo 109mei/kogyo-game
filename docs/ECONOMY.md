@@ -152,6 +152,8 @@ src/data から計算した基準価格と採算。給与 9,333円/日、電力 
 | ガス火力 | power | 500 | 火力発電、石油化学 | 機能:gasPower |
 | 採用強化 | management | 500 | 人事制度 | 機能:bulkHire、candidates +2 |
 | 組織管理 | management | 600 | 工場長制度 | management +0.25 |
+| 部門制 | management | 700 | 工場長制度 | 機能:divisions |
+| 子会社 | management | 2500 | 部門制、組織管理 | 機能:subsidiaries |
 | 電子回路 | electronics | 800 | 電気機械、石油化学 | 電子部品工場、電子基板 |
 | 高効率モーター | energy | 800 | 電気機械、省エネ設備 | power -0.1 |
 | 省材料設計 | production | 1000 | 品質管理 | inputs -0.05 |

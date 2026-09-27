@@ -7,7 +7,7 @@ import { makeCandidate } from './staff';
 import type { GameState, ItemDay } from './types';
 import { emptyLedger } from './util';
 
-export const STATE_VERSION = 1;
+export const STATE_VERSION = 2;
 
 export interface NewGameOptions {
   seed?: number;
@@ -73,7 +73,11 @@ export function createInitialState(opts: NewGameOptions = {}): GameState {
     features: {},
     goals: { index: 0, done: [] },
     hq: { level: 1, building: null },
-    owner: { job: null, taps: 0 },
+    owner: { job: null, taps: 0, queue: [] },
+    divisions: {},
+    orders: { list: [], done: 0, failed: 0 },
+    events: { pending: [], last: {}, next: b.events.startDay },
+    effects: [],
     totals: { produced: {}, sold: {}, salesValue: 0, maxValue: 0, everHired: 0 },
     finance: { today: emptyLedger(), days: [], months: [], monthAcc: emptyLedger() },
     notices: [],
@@ -88,6 +92,8 @@ export function createInitialState(opts: NewGameOptions = {}): GameState {
       world3d: true,
       compactInventory: false,
       automationLevel: 'easy',
+      guide: true,
+      events: true,
     },
   };
   initMarket(s);

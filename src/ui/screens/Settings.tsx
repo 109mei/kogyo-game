@@ -9,14 +9,14 @@ function set<K extends keyof GameSettings>(key: K, value: GameSettings[K]) {
 }
 
 export function Settings() {
-  const v = useGame((s) => ({ ...s.settings, name: s.companyName }), [], 2);
+  const v = useGame((s) => ({ ...s.settings, name: s.companyName, version: s.version }), [], 2);
   const openSheet = useUI((s) => s.openSheet);
   const [exported, setExported] = useState('');
   const [importText, setImportText] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const doImport = (text: string) => {
-    const err = useGameStore.getState().loadText(text.trim());
+  const doImport = async (text: string) => {
+    const err = await useGameStore.getState().loadText(text.trim());
     if (err) toast(`読み込めませんでした：${err}`, 'bad');
     else {
       toast('セーブを読み込みました', 'good');
@@ -40,6 +40,13 @@ export function Settings() {
             <span className="tiny dim">資金切れ・電力不足などで時間を止めます</span>
           </div>
           <Switch on={v.autoPause} onChange={(on) => set('autoPause', on)} label="自動停止" />
+        </div>
+        <div className="spread">
+          <div className="col" style={{ gap: 0 }}>
+            <span className="bold small">出来事（停電・ストライキなど）</span>
+            <span className="tiny dim">ときどき選択を求められます。決めなければ最初の選択肢になります</span>
+          </div>
+          <Switch on={v.events} onChange={(on) => set('events', on)} label="出来事" />
         </div>
         <div className="col" style={{ gap: 6 }}>
           <span className="bold small">閉じている間の進行</span>
@@ -73,6 +80,13 @@ export function Settings() {
         </div>
         <div className="spread">
           <div className="col" style={{ gap: 0 }}>
+            <span className="bold small">操作の案内</span>
+            <span className="tiny dim">最初の目標のあいだ、次に押すボタンを光らせます</span>
+          </div>
+          <Switch on={v.guide} onChange={(on) => set('guide', on)} label="操作の案内" />
+        </div>
+        <div className="spread">
+          <div className="col" style={{ gap: 0 }}>
             <span className="bold small">3Dの工業地帯</span>
             <span className="tiny dim">ホームに自社の施設を立体で表示（電池を少し使います）</span>
           </div>
@@ -99,13 +113,13 @@ export function Settings() {
           <button
             className="btn grow soft"
             onClick={() => {
-              useGameStore.getState().runner?.save();
+              useGameStore.getState().runner?.flushSave();
               toast('保存しました', 'good');
             }}
           >
             今すぐ保存
           </button>
-          <button className="btn grow soft" onClick={() => setExported(exportSave())} data-testid="export">
+          <button className="btn grow soft" onClick={() => void exportSave().then(setExported)} data-testid="export">
             書き出す
           </button>
         </div>
@@ -153,7 +167,7 @@ export function Settings() {
                 title: 'セーブを読み込みますか？',
                 body: 'いまのゲームは読み込んだセーブで置き換わります。',
                 ok: '読み込む',
-                onOk: () => doImport(importText),
+                onOk: () => void doImport(importText),
               })
             }
           >
@@ -198,7 +212,7 @@ export function Settings() {
         </button>
       </div>
       <p className="tiny muted center" style={{ padding: '8px 0 4px' }}>
-        工業ゲーム ・ セーブ形式 v{useGameStore.getState().runner?.state.version ?? '-'}
+        工業ゲーム ・ セーブ形式 v{v.version} ・ 計算 {useGameStore.getState().runner?.kind === 'worker' ? '別スレッド' : '画面と同じスレッド'}
       </p>
     </>
   );

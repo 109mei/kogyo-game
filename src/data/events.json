@@ -1,0 +1,101 @@
+[
+  {
+    "id": "blackout",
+    "icon": "ev_power_failure",
+    "title": "停電が起きました",
+    "body": "送電線の事故で、電力会社からの電気が止まりがちです。復旧には数日かかります。",
+    "weight": 3,
+    "needs": { "feature": "machine", "grid": true },
+    "choices": [
+      { "id": "wait", "label": "復旧を待つ", "detail": "3日間、電力会社からの供給が半分になります", "effects": [{ "type": "gridCut", "value": 0.5, "days": 3 }] },
+      { "id": "rent", "label": "非常用発電機を借りる", "detail": "{cost}で、いつもどおり動かせます", "cost": { "type": "powerDays", "value": 4, "min": 300000 } }
+    ]
+  },
+  {
+    "id": "strike",
+    "icon": "ev_strike",
+    "title": "作業員が賃上げを求めています",
+    "body": "現場の作業員と技術者が、給料の引き上げを求めてストライキを予告しています。",
+    "weight": 2,
+    "needs": { "staff": 15 },
+    "choices": [
+      { "id": "refuse", "label": "要求を断る", "detail": "4日間、手作業と機械の施設の生産が6割減ります（自動機は動き続けます）", "effects": [{ "type": "strike", "value": 0.4, "days": 4 }] },
+      { "id": "raise", "label": "給料を5%上げる", "detail": "作業員と技術者の給料がずっと5%上がります", "effects": [{ "type": "raise", "value": 0.05 }] },
+      { "id": "bonus", "label": "一時金を払う", "detail": "{cost}を一度だけ払って収めます", "cost": { "type": "workerPayrollDays", "value": 10 } }
+    ]
+  },
+  {
+    "id": "typhoon",
+    "icon": "ev_disaster",
+    "title": "台風で{facility}が壊れました",
+    "body": "強い台風が工業地帯を通り過ぎ、{facility}の設備が被害を受けました。",
+    "weight": 2,
+    "needs": { "facilities": 5 },
+    "target": "facility",
+    "choices": [
+      { "id": "normal", "label": "ふつうに修理する", "detail": "{cost}・5日間止まります", "cost": { "type": "buildShare", "value": 0.03, "min": 100000 }, "effects": [{ "type": "down", "days": 5 }] },
+      { "id": "rush", "label": "急いで修理する", "detail": "{cost}・1日で直します", "cost": { "type": "buildShare", "value": 0.12, "min": 400000 }, "effects": [{ "type": "down", "days": 1 }] }
+    ]
+  },
+  {
+    "id": "breakdown",
+    "icon": "st_breakdown",
+    "title": "{facility}の機械が故障しました",
+    "body": "大事な機械が止まってしまいました。直し方を選んでください。",
+    "weight": 3,
+    "target": "machineFacility",
+    "choices": [
+      { "id": "self", "label": "自分たちで直す", "detail": "4日間止まります", "effects": [{ "type": "down", "days": 4 }] },
+      { "id": "maker", "label": "メーカーを呼ぶ", "detail": "{cost}・1日で直ります", "cost": { "type": "machineShare", "value": 0.08, "min": 200000 }, "effects": [{ "type": "down", "days": 1 }] }
+    ]
+  },
+  {
+    "id": "poach",
+    "icon": "ev_alarm",
+    "title": "{employee}さんに他社から誘いが来ています",
+    "body": "ライバル会社が、腕のいい{employee}さん（★{stars}）を高い給料で引き抜こうとしています。",
+    "weight": 2,
+    "target": "bestEmployee",
+    "choices": [
+      { "id": "let", "label": "送り出す", "detail": "{employee}さんは退職します", "effects": [{ "type": "leave" }] },
+      { "id": "keep", "label": "給料を25%上げて引き止める", "detail": "{employee}さんの給料がずっと25%上がります", "effects": [{ "type": "raiseTarget", "value": 0.25 }] }
+    ]
+  },
+  {
+    "id": "media",
+    "icon": "ev_news",
+    "title": "テレビ局が{item}づくりを取材したいそうです",
+    "body": "地元のテレビ局から、{item}をつくる現場を番組で紹介したいと申し込みがありました。",
+    "weight": 2,
+    "target": "product",
+    "choices": [
+      { "id": "decline", "label": "断る", "detail": "何も起きません" },
+      { "id": "accept", "label": "取材を受ける", "detail": "{item}の需要が上がり、応募者が3人増えます", "effects": [{ "type": "demand", "value": 0.2 }, { "type": "applicants", "value": 3 }] }
+    ]
+  },
+  {
+    "id": "university",
+    "icon": "ev_tech",
+    "title": "大学から共同研究の提案が来ました",
+    "body": "近くの大学が、いま進めている研究「{tech}」を一緒にやりたいと言っています。",
+    "weight": 2,
+    "target": "research",
+    "choices": [
+      { "id": "decline", "label": "断る", "detail": "何も起きません" },
+      { "id": "accept", "label": "共同研究する", "detail": "{cost}で、研究が20日分進みます", "cost": { "type": "researchPayrollDays", "value": 20, "min": 300000 }, "effects": [{ "type": "rp", "days": 20 }] }
+    ]
+  },
+  {
+    "id": "supply",
+    "icon": "ev_supply_break",
+    "title": "{item}が品薄になっています",
+    "body": "産地のトラブルで{item}が手に入りにくくなり、市場価格が上がりはじめました。",
+    "weight": 3,
+    "target": "input",
+    "onArrive": [{ "type": "demand", "value": 0.3 }],
+    "choices": [
+      { "id": "wait", "label": "様子を見る", "detail": "値上がりが落ち着くのを待ちます" },
+      { "id": "stock", "label": "いまのうちに買いだめする", "detail": "10日分を約{cost}で買います", "cost": { "type": "buyDays", "value": 10 }, "effects": [{ "type": "stockUp", "days": 10 }] }
+    ]
+  }
+]

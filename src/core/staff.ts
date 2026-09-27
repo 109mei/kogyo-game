@@ -21,6 +21,8 @@ export function randomName(s: GameState): string {
 
 function roleUnlocked(s: GameState, role: RoleId): boolean {
   const u = DATA.balance.staff.roles[role].unlock;
+  // researchers only apply once there is a lab to work in (built or being built)
+  if (u === 'lab') return s.facilities.some((f) => f.type === 'research_lab');
   return u === 'start' || hasFeature(s, u);
 }
 
@@ -31,7 +33,8 @@ export function baseSalary(role: RoleId, skill: number): number {
 
 export function makeCandidate(s: GameState, forceRole?: RoleId): Candidate {
   const st = DATA.balance.staff;
-  const roles = (Object.keys(st.roles) as RoleId[]).filter((r) => roleUnlocked(s, r));
+  // division heads are promoted from within, never hired
+  const roles = (Object.keys(st.roles) as RoleId[]).filter((r) => st.roles[r].weight > 0 && roleUnlocked(s, r));
   const role = forceRole ?? pickWeighted(s, roles, roles.map((r) => st.roles[r].weight));
   const skill = pickWeighted(s, [1, 2, 3, 4, 5], st.candidateSkillWeights);
   const specialty: Specialty =
@@ -46,6 +49,14 @@ export function makeCandidate(s: GameState, forceRole?: RoleId): Candidate {
     salary,
     expires: dayIndex(s.tick) + st.candidateLifeDays,
   };
+}
+
+/** applicants waiting at most; the oldest drop out first */
+export const MAX_CANDIDATES = 24;
+
+export function addCandidates(s: GameState, list: Candidate[]) {
+  s.candidates.push(...list);
+  if (s.candidates.length > MAX_CANDIDATES) s.candidates.splice(0, s.candidates.length - MAX_CANDIDATES);
 }
 
 export function candidatesPerWeek(s: GameState): number {
@@ -63,8 +74,7 @@ export function refreshCandidates(s: GameState, silent = false) {
   const needResearcher =
     s.facilities.some((f) => f.type === 'research_lab') && !s.employees.some((e) => e.role === 'researcher');
   for (let i = 0; i < n; i++) fresh.push(makeCandidate(s, i === 0 && needResearcher ? 'researcher' : undefined));
-  s.candidates.push(...fresh);
-  if (s.candidates.length > 24) s.candidates.splice(0, s.candidates.length - 24);
+  addCandidates(s, fresh);
   // only a standout applicant is worth a notice; the staff menu shows the count
   const best = fresh.reduce<Candidate | null>((b, c) => (!b || c.skill > b.skill ? c : b), null);
   if (!silent && best && best.skill >= 4 && hasFeature(s, 'hire')) {
@@ -139,8 +149,9 @@ export function monthlyPayroll(s: GameState): number {
 export function dailyStaff(s: GameState) {
   const st = DATA.balance.staff;
   const growth = mods(s).skillGrowth;
+  const heads = new Set(Object.values(s.divisions).map((d) => d.headId));
   for (const e of s.employees) {
-    if (e.assignedTo === null) continue;
+    if (e.assignedTo === null && !heads.has(e.id)) continue;
     if (e.skill >= 5) continue;
     e.exp += growth;
     if (e.exp >= st.expDaysPerStar * e.skill) {

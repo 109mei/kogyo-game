@@ -22,8 +22,8 @@ import { recipeUnlocked, facilityUnlocked } from '../src/core/visibility';
 export const RESEARCH_ORDER = [
   'p_tools', 'p_mech', 'pw_grid', 'm_steel', 'g_hr', 'a_auto', 'g_finance', 'a_rules', 'p_line', 'l_center', 'pw_ehv',
   'g_contract', 'm_ceramics', 's_eco1', 'pw_plant', 'm_parts', 'm_nonferrous', 'a_trade', 'a_managers', 'm_paper',
-  'el_motor', 'p_quality', 'm_building', 'm_petro', 'l_mgmt', 'g_org', 'm_engine', 'm_rubber', 'a_advanced',
-  'g_recruit', 'e_circuit', 'v_bicycle', 'pw_gas', 's_eco2', 'e_semi', 'el_appliance', 'm_saving', 'e_display',
+  'el_motor', 'p_quality', 'm_building', 'm_petro', 'l_mgmt', 'g_org', 'g_division', 'm_engine', 'm_rubber', 'a_advanced',
+  'g_recruit', 'e_circuit', 'v_bicycle', 'pw_gas', 's_eco2', 'e_semi', 'g_holding', 'el_appliance', 'm_saving', 'e_display',
   'e_battery', 'p_lean', 'a_robot', 'pw_grid3', 'l_rail', 'e_mobile', 'v_ebike', 'v_truck', 'pw_eff', 'g_org2', 's_eco3', 'a_ai', 'g_market',
 ];
 
@@ -129,6 +129,43 @@ export class Bot {
     }
     if (hasFeature(s, 'rules')) this.automation();
     if (hasFeature(s, 'managers')) this.managers();
+    if (hasFeature(s, 'orders')) this.orders();
+    if (hasFeature(s, 'divisions')) this.divisions();
+  }
+
+  /** take orders the company can clearly fill in time */
+  private orders() {
+    const s = this.s;
+    const active = s.orders.list.filter((o) => o.status === 'active').length;
+    for (const o of s.orders.list) {
+      if (o.status !== 'offer' || o.fresh || active >= DATA.balance.orders.maxActive) continue;
+      const rate = s.itemHist[o.item]?.produced.slice(-7).reduce((t, x) => t + x, 0) / 7 || 0;
+      const spare = rate - (plannedFlows(s).cons[o.item] ?? 0);
+      if ((s.inventory[o.item] ?? 0) + Math.max(0, spare) * o.days * 0.8 >= o.qty) this.cmd({ type: 'acceptOrder', orderId: o.id }, 'order');
+    }
+  }
+
+  /** big kinds get a division head; the biggest become subsidiaries */
+  private divisions() {
+    const s = this.s;
+    const counts = new Map<string, number>();
+    for (const f of s.facilities) if (defOf(f).category !== 'infrastructure') counts.set(f.type, (counts.get(f.type) ?? 0) + 1);
+    for (const [type, n] of [...counts.entries()].sort((a, b) => b[1] - a[1])) {
+      const d = s.divisions[type];
+      if (n >= 3 && (!d || d.headId === null)) {
+        const leading = new Set(Object.values(s.divisions).map((x) => x.headId));
+        let head = s.employees.find((e) => e.role === 'director' && !leading.has(e.id));
+        if (!head) {
+          const m = s.employees.filter((e) => e.role === 'manager').sort((a, b) => b.skill - a.skill)[0];
+          if (!m || !this.cmd({ type: 'promote', employeeId: m.id, role: 'director' }, 'director')) continue;
+          head = m;
+        }
+        if (this.cmd({ type: 'setDivisionHead', facilityType: type, employeeId: head.id }, `head ${type}`)) this.cmd({ type: 'setDivision', facilityType: type, invest: 0.5 });
+      } else if (d && d.headId !== null && !d.sub && n >= 5 && hasFeature(s, 'subsidiaries')) {
+        const cost = DATA.balance.divisions.subsidiaryBase + DATA.balance.divisions.subsidiaryPerFacility * n;
+        if (s.cash > cost * 5) this.cmd({ type: 'makeSubsidiary', facilityType: type }, `subsidiary ${type}`);
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -180,7 +217,7 @@ export class Bot {
     for (const it of DATA.items) {
       const stock = s.inventory[it.id] ?? 0;
       const use = Math.max(consumptionPerDay(s, it.id), flows.cons[it.id] ?? 0);
-      const keep = use * 4;
+      const keep = use * 4 + s.orders.list.filter((o) => o.status === 'active' && o.item === it.id).reduce((t, o) => t + o.qty - o.delivered, 0);
       if (stock > keep + 1e-6) {
         // do not flood a market: at most a day's worth of its size at once
         const qty = Math.min(stock - keep, it.demand * 0.5);
@@ -207,7 +244,7 @@ export class Bot {
 
   private staff() {
     const s = this.s;
-    const idle = s.employees.filter((e) => e.assignedTo === null && e.role !== 'manager');
+    const idle = s.employees.filter((e) => e.assignedTo === null && e.role !== 'manager' && e.role !== 'director');
     if (idle.length) this.cmd({ type: 'autoAssign' });
     const labs = s.facilities.filter((f) => f.type === 'research_lab' && !(f.building && f.building.kind === 'build'));
     const labRoom = labs.reduce((t, f) => t + staffCapacity(s, f) - employeesAt(s, f.id).length, 0);
@@ -220,7 +257,7 @@ export class Bot {
         this.cmd({ type: 'hire', candidateId: c.id }, 'researcher');
         continue;
       }
-      const workersIdle = s.employees.filter((e) => e.assignedTo === null && e.role !== 'manager' && e.role !== 'researcher').length;
+      const workersIdle = s.employees.filter((e) => e.assignedTo === null && e.role !== 'manager' && e.role !== 'director' && e.role !== 'researcher').length;
       if ((c.role === 'worker' || c.role === 'engineer') && prodRoom + 1 > workersIdle && (profit > -payroll || s.cash > payroll * 60)) {
         this.cmd({ type: 'hire', candidateId: c.id }, 'worker');
         continue;
@@ -229,7 +266,7 @@ export class Bot {
         this.cmd({ type: 'hire', candidateId: c.id }, 'manager');
       }
     }
-    if (s.employees.some((e) => e.assignedTo === null && e.role !== 'manager')) this.cmd({ type: 'autoAssign' });
+    if (s.employees.some((e) => e.assignedTo === null && e.role !== 'manager' && e.role !== 'director')) this.cmd({ type: 'autoAssign' });
     if (hasFeature(s, 'bulkHire') && prodRoom > 15 && s.cash > 5e8) this.cmd({ type: 'bulkHire' });
   }
 
@@ -258,6 +295,11 @@ export class Bot {
       const t = pick(['l_center']);
       if (t) return t;
     }
+    // over the head office's capacity: like a player answering the problem card, go for division heads
+    if (managementLoad(s) > managementCapacity(s)) {
+      const t = pick(['a_managers', 'g_division', 'g_org']);
+      if (t) return t;
+    }
     return null;
   }
 
@@ -273,7 +315,7 @@ export class Bot {
     if (s.research.current) {
       // drop everything for an urgent fix; progress on the old theme is kept
       const urgent = this.urgentResearch();
-      if (urgent && urgent !== s.research.current && !['pw_grid', 'pw_ehv', 'pw_plant', 'l_center'].includes(s.research.current)) {
+      if (urgent && urgent !== s.research.current && !['pw_grid', 'pw_ehv', 'pw_plant', 'l_center', 'a_managers', 'g_division', 'g_org'].includes(s.research.current)) {
         this.cmd({ type: 'research', tech: urgent }, 'urgent');
       }
       return;

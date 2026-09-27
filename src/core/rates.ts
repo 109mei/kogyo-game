@@ -3,6 +3,7 @@ import { defOf } from './facilities';
 import { managementFactor } from './logistics';
 import { mods } from './mods';
 import { fuelPerKwh, isPlant } from './power';
+import { isDown, strikeFactor } from './events';
 import { capacityCached, managerBonus } from './production';
 import type { GameState } from './types';
 
@@ -19,6 +20,7 @@ export function plannedFlows(s: GameState): Flows {
   const cons: Record<string, number> = {};
   const mgmt = managementFactor(s);
   const inputsMul = mods(s).inputs;
+  const strike = s.effects.length ? strikeFactor(s) : 1;
   for (const f of s.facilities) {
     const def = defOf(f);
     if (isPlant(f)) {
@@ -28,10 +30,11 @@ export function plannedFlows(s: GameState): Flows {
     }
     if (def.category === 'infrastructure' || !f.recipe) continue;
     if (f.building && f.building.kind === 'build') continue;
+    if (s.effects.length && isDown(s, f)) continue;
     const r = DATA.recipe[f.recipe];
     const c = capacityCached(s, f);
     const truck = DATA.item[r.id].transport === 'truck';
-    const eff = mgmt * managerBonus(s, f) * (c.power > 0 ? s.power.ratio : 1) * (truck ? s.logistics.ratio : 1);
+    const eff = mgmt * managerBonus(s, f) * (c.power > 0 ? s.power.ratio : 1) * (truck ? s.logistics.ratio : 1) * (f.stage === 'auto' ? 1 : strike);
     const bpd = (c.slots / r.time) * Math.max(0, f.rate) * eff;
     if (bpd <= 0) continue;
     prod[r.id] = (prod[r.id] ?? 0) + bpd * r.output;

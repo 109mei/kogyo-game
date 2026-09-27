@@ -181,7 +181,7 @@ function TechCard({ t, state, current, canStart, focus, saved }: { t: Tech; stat
       <div className="col" style={{ alignItems: 'flex-end', gap: 4 }}>
         <span className="tiny num muted">{t.cost.toLocaleString()} RP</span>
         {state === 'avail' && (
-          <button className={`btn small${current ? ' soft' : ''}`} disabled={!canStart || current} onClick={() => dispatch({ type: 'research', tech: t.id })}>
+          <button className={`btn small${current ? ' soft' : ''}`} disabled={!canStart || current} onClick={() => dispatch({ type: 'research', tech: t.id })} data-testid={`research-${t.id}`}>
             {current ? '研究中' : '研究する'}
           </button>
         )}

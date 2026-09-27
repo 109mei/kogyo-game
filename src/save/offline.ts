@@ -16,12 +16,14 @@ export interface OfflineReport {
 /**
  * While the app was closed the company kept running at x1, up to the limit
  * set in the settings. A problem that pauses the game stops the catch-up.
+ * Even a few seconds away are run (so switching apps never loses time); the
+ * caller decides whether the report is worth showing.
  */
 export function catchUp(s: GameState, savedAt: number, now = Date.now()): OfflineReport | null {
   const away = Math.max(0, (now - savedAt) / 1000);
   const maxDays = s.settings.offlineDays;
   const days = Math.min(away / DATA.balance.time.realSecondsPerDay, maxDays);
-  if (days < 0.25 || s.paused) return null;
+  if (!(days > 0) || s.paused) return null;
   const before = s.cash;
   const made: Record<string, number> = { ...s.totals.produced };
   const ticks = runDays(s, days, true);

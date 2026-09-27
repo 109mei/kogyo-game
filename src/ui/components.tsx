@@ -51,7 +51,7 @@ export function Tabs<T extends string>({ value, options, onChange }: { value: T;
   return (
     <div className="tabs" role="tablist">
       {options.map(([v, label]) => (
-        <button key={v} role="tab" aria-selected={v === value} className={v === value ? 'on' : ''} onClick={() => onChange(v)}>
+        <button key={v} role="tab" aria-selected={v === value} className={v === value ? 'on' : ''} onClick={() => onChange(v)} data-testid={`tab-${v}`}>
           {label}
         </button>
       ))}
@@ -99,7 +99,7 @@ export function Stepper({
   step?: number;
   min?: number;
   max?: number;
-  quick?: { label: string; add?: number; set?: number }[];
+  quick?: { label: string; add?: number; set?: number; testid?: string }[];
   unit?: string;
 }) {
   const [text, setText] = useState(fmt(value));
@@ -130,7 +130,7 @@ export function Stepper({
       {quick && (
         <div className="quick">
           {quick.map((q) => (
-            <button key={q.label} onClick={() => onChange(clampV(q.set !== undefined ? q.set : value + (q.add ?? 0)))}>
+            <button key={q.label} onClick={() => onChange(clampV(q.set !== undefined ? q.set : value + (q.add ?? 0)))} data-testid={q.testid}>
               {q.label}
             </button>
           ))}

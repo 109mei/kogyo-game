@@ -14,17 +14,24 @@ describe('the first minutes', () => {
     expect(s.employees).toHaveLength(0);
   });
 
-  it('a tap takes 10 real seconds at x1 and yields one log', () => {
+  it('a tap takes 5 real seconds at x1 and yields one log; more taps wait their turn', () => {
     const s = createInitialState({ seed: 1 });
     const f = s.facilities[0];
     expect(applyCommand(s, { type: 'gather', facilityId: f.id }).ok).toBe(true);
     const ticks = s.owner.job!.until - s.owner.job!.start;
     const seconds = (ticks / DATA.balance.time.ticksPerDay) * DATA.balance.time.realSecondsPerDay;
-    expect(seconds).toBeCloseTo(10, 5);
-    // one job at a time
+    expect(seconds).toBeCloseTo(5, 5);
+    // up to four more taps wait behind the one in progress
+    for (let i = 0; i < DATA.balance.time.tapQueue; i++) expect(applyCommand(s, { type: 'gather', facilityId: f.id }).ok).toBe(true);
     expect(applyCommand(s, { type: 'gather', facilityId: f.id }).ok).toBe(false);
     runTicks(s, ticks);
     expect(s.inventory.log).toBeCloseTo(1, 6);
+    // the next one started by itself
+    expect(s.owner.job).not.toBeNull();
+    runTicks(s, ticks * DATA.balance.time.tapQueue + 1);
+    expect(s.inventory.log).toBeCloseTo(1 + DATA.balance.time.tapQueue, 6);
+    expect(s.owner.taps).toBe(1 + DATA.balance.time.tapQueue);
+    expect(s.owner.job).toBeNull();
   });
 
   it('unlocks selling after three taps and hiring after the first sale', () => {

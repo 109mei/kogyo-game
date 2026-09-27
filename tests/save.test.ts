@@ -81,7 +81,10 @@ describe('save', () => {
     const report = catchUp(s, 0, 60_000 * 60 * 24)!; // a day away = far more than 7 game days
     expect(report.days).toBeCloseTo(7, 5);
     expect(s.tick / 240 - day0).toBeCloseTo(7, 5);
-    // a few seconds away is not worth a report
-    expect(catchUp(s, 0, 5_000)).toBeNull();
+    // a few seconds away still pass (switching apps must not lose time), but are not worth a report
+    const t = s.tick;
+    const short = catchUp(s, 0, 6_000)!;
+    expect(s.tick - t).toBe(24);
+    expect(short.days).toBeLessThan(1);
   });
 });

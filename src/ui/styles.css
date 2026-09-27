@@ -1527,3 +1527,144 @@ textarea.input {
 .world.tall {
   height: min(58vh, 520px);
 }
+
+/* ---- grouped production list ------------------------------------------------------------ */
+.group-card {
+  width: 100%;
+  text-align: left;
+  border: none;
+  color: var(--text);
+  font: inherit;
+}
+.group-members {
+  padding-left: 12px;
+  border-left: 2px solid var(--hairline);
+  margin-left: 8px;
+}
+
+/* ---- guidance: the next control to press ------------------------------------------------ */
+[data-guide] {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  animation: guide-pulse 1.3s ease-in-out infinite;
+}
+@keyframes guide-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-guide] {
+    animation: none;
+  }
+}
+
+/* ---- events, orders, divisions -------------------------------------------------------------- */
+.banner.warn {
+  background: var(--warn-soft);
+  color: var(--warn-text);
+}
+.event-card {
+  box-shadow: inset 0 0 0 2px var(--warn), var(--shadow);
+}
+.btn.choice {
+  justify-content: flex-start;
+  min-height: 52px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.pill.reward {
+  background: var(--good-soft);
+  color: var(--good-text);
+}
+.pill.muted {
+  opacity: 0.6;
+}
+.cash-after {
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+}
+.cash-after.warn {
+  background: var(--warn-soft);
+}
+.cash-after.bad {
+  background: var(--bad-soft);
+}
+.cash-after .warn {
+  color: var(--warn-text);
+}
+.org-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--hairline);
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+.org-row:last-child {
+  border-bottom: none;
+}
+.group-org {
+  margin-top: -6px;
+  align-self: stretch;
+  border: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 650;
+  text-align: left;
+  padding: 8px 14px;
+}
+.org-banner {
+  width: 100%;
+  margin-top: 8px;
+  border: none;
+  text-align: left;
+  font: inherit;
+  font-size: 13px;
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.org-banner.info {
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.cash.long {
+  font-size: 18px;
+  white-space: nowrap;
+}
+.cash.longer {
+  font-size: 15.5px;
+  white-space: nowrap;
+}
+.nav button[data-guide] {
+  outline-offset: -6px;
+  border-radius: 14px;
+}
+
+/* long lists: cards and rows off screen are not laid out or painted until they scroll near */
+.list > .card,
+.list > .card.tap,
+.card.flush > .mkt,
+.card.flush > .inv-compact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 140px;
+}
+.card.flush > .mkt,
+.card.flush > .inv-compact {
+  contain-intrinsic-size: auto 60px;
+}

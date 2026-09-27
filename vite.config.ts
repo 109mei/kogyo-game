@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   base: '/kogyo-game/',
   plugins: [react()],
+  // the simulation worker is an ES module like the page
+  worker: { format: 'es' },
   build: {
     target: 'es2022',
     chunkSizeWarningLimit: 900,

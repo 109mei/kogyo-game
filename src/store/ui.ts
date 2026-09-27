@@ -21,7 +21,9 @@ export type Route =
   | { screen: 'encyclopedia' }
   | { screen: 'settings' }
   | { screen: 'notices' }
-  | { screen: 'world' };
+  | { screen: 'world' }
+  | { screen: 'orders' }
+  | { screen: 'division'; id: string };
 
 export interface Toast {
   id: number;
@@ -118,6 +120,12 @@ export function openLink(link: Link | null | undefined) {
       return;
     case 'assets':
       ui.setTab('assets');
+      return;
+    case 'home':
+      ui.setTab('home');
+      return;
+    case 'division':
+      ui.push({ screen: 'division', id: link.id });
       return;
     default:
       ui.push({ screen: link.screen });

@@ -30,6 +30,7 @@ export function Power() {
     3,
   );
   const push = useUI((s) => s.push);
+  const openSheet = useUI((s) => s.openSheet);
   const use = v.p.supply > 0 ? v.p.demand / v.p.supply : v.p.demand > 0 ? 1 : 0;
   const served = v.p.plantOutput + v.p.gridOutput;
   return (
@@ -80,7 +81,24 @@ export function Power() {
                 {!c.ok && c.unlock !== 'start' && <span className="tiny muted">🔒 研究「{DATA.tech[c.unlock]?.name}」</span>}
               </div>
               {!cur && (
-                <button className="btn small soft" disabled={!c.ok} onClick={() => dispatch({ type: 'setPowerContract', contract: c.id })}>
+                <button
+                  className="btn small soft"
+                  disabled={!c.ok}
+                  data-testid={`contract-${c.id}`}
+                  onClick={() => {
+                    const change = () => dispatch({ type: 'setPowerContract', contract: c.id });
+                    // a smaller contract than the machines need stops the factory: ask first
+                    if (c.capacity + v.p.plantCapacity < v.p.demand) {
+                      openSheet({
+                        kind: 'confirm',
+                        title: `${c.name}に変えますか？`,
+                        body: `いまの需要 ${kw(v.p.demand)} に対して、変更後の上限は ${kw(c.capacity + v.p.plantCapacity)} です。機械の効率が大きく落ちます。`,
+                        ok: '変更する',
+                        onOk: change,
+                      });
+                    } else change();
+                  }}
+                >
                   変更
                 </button>
               )}

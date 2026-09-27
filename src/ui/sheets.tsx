@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DATA } from '../data';
 import type { Solution } from '../core';
 import { defOf, facilityById } from '../core/facilities';
+import { avgProfit, borrowFor, fixedCostPerDay, loanLimit } from '../core/finance';
 import { SPECIALTY_NAME, employeesAt, rolesFor, staffCapacity } from '../core/staff';
 import { hasFeature, unlocked } from '../core/util';
 import { recipeUnlocked } from '../core/visibility';
@@ -77,8 +78,7 @@ function SheetBody({ sheet, close }: { sheet: Sheet; close: () => void }) {
 function Solutions({ sheet, close }: { sheet: Extract<Sheet, { kind: 'solutions' }>; close: () => void }) {
   const act = (sol: Solution) => {
     if (sol.command) {
-      const r = dispatch(sol.command);
-      if (r.ok) close();
+      void dispatch(sol.command).then((r) => r.ok && close());
     } else if (sol.link) {
       close();
       openLink(sol.link);
@@ -120,7 +120,14 @@ function EmployeeSheet({ id, close }: { id: number; close: () => void }) {
       const e = s.employees.find((x) => x.id === id);
       if (!e) return null;
       const f = e.assignedTo !== null ? facilityById(s, e.assignedTo) : null;
-      return { e: { ...e }, facility: f ? f.name : null, managers: hasFeature(s, 'managers') };
+      const d = Object.values(s.divisions).find((x) => x.headId === e.id);
+      return {
+        e: { ...e },
+        facility: f ? f.name : null,
+        managers: hasFeature(s, 'managers'),
+        divisions: hasFeature(s, 'divisions'),
+        leads: d ? { type: d.type, name: `${DATA.facility[d.type].short}部門`, sub: d.sub?.name ?? null } : null,
+      };
     },
     [id],
     4,
@@ -129,7 +136,7 @@ function EmployeeSheet({ id, close }: { id: number; close: () => void }) {
   if (!v) return <p className="empty">この社員はもういません</p>;
   const e = v.e;
   const role = DATA.balance.staff.roles[e.role];
-  const icon = e.role === 'researcher' ? 'ppl_researcher' : e.role === 'manager' ? 'ppl_foreman' : e.role === 'engineer' ? 'ppl_engineer' : 'ppl_worker';
+  const icon = e.role === 'researcher' ? 'ppl_researcher' : e.role === 'director' ? 'ppl_manager' : e.role === 'manager' ? 'ppl_foreman' : e.role === 'engineer' ? 'ppl_engineer' : 'ppl_worker';
   return (
     <div className="col" style={{ gap: 12 }}>
       <div className="row">
@@ -147,28 +154,39 @@ function EmployeeSheet({ id, close }: { id: number; close: () => void }) {
         <span>給与</span>
         <span>{yen(e.salary)}/月</span>
         <span>現在</span>
-        <span>{v.facility ?? '待機中'}</span>
+        <span>{v.leads ? (v.leads.sub ? `${v.leads.sub}の社長` : `${v.leads.name}の部門長`) : v.facility ?? '待機中'}</span>
         <span>次の★まで</span>
         <span>{e.skill >= 5 ? '最高' : days(DATA.balance.staff.expDaysPerStar * e.skill - e.exp)}</span>
       </div>
       <div className="col" style={{ gap: 8 }}>
-        {e.role !== 'manager' && (
+        {e.role !== 'manager' && e.role !== 'director' && (
           <button className="btn block" onClick={() => openSheet({ kind: 'assign', facilityId: -e.id })}>
             配置を変える
           </button>
         )}
         {e.role === 'worker' && e.skill >= 3 && (
-          <button className="btn soft block" onClick={() => dispatch({ type: 'promote', employeeId: e.id, role: 'engineer' }).ok && close()}>
+          <button className="btn soft block" onClick={() => void dispatch({ type: 'promote', employeeId: e.id, role: 'engineer' }).then((r) => r.ok && close())}>
             技術者に昇進（操作の効率 +10%）
           </button>
         )}
+        {e.role === 'manager' && v.divisions && (
+          <button className="btn soft block" onClick={() => void dispatch({ type: 'promote', employeeId: e.id, role: 'director' }).then((r) => r.ok && close())} data-testid="promote-director">
+            部門長に昇進（同じ種類の施設をまとめて任せる）
+          </button>
+        )}
+        {e.role === 'director' && v.leads && (
+          <button className="btn soft block" onClick={() => { close(); openLink({ screen: 'division', id: v.leads!.type }); }}>
+            {v.leads.sub ? `${v.leads.sub}を見る` : `${v.leads.name}を見る`}
+          </button>
+        )}
+        {e.role === 'director' && !v.leads && <p className="small dim">まだ部門を任せていません。部門の画面（生産 → 施設の種類）から任命します。</p>}
         {(e.role === 'worker' || e.role === 'engineer') && e.skill >= 4 && v.managers && (
-          <button className="btn soft block" onClick={() => dispatch({ type: 'promote', employeeId: e.id, role: 'manager' }).ok && close()}>
+          <button className="btn soft block" onClick={() => void dispatch({ type: 'promote', employeeId: e.id, role: 'manager' }).then((r) => r.ok && close())}>
             工場長に昇進
           </button>
         )}
         {e.assignedTo !== null && (
-          <button className="btn ghost block" onClick={() => dispatch({ type: 'assign', employeeId: e.id, facilityId: null }).ok && close()}>
+          <button className="btn ghost block" onClick={() => void dispatch({ type: 'assign', employeeId: e.id, facilityId: null }).then((r) => r.ok && close())}>
             配置から外す
           </button>
         )}
@@ -232,7 +250,7 @@ function AssignSheet({ facilityId, close }: { facilityId: number; close: () => v
             className="card tight tap row"
             style={{ border: 'none', textAlign: 'left' }}
             disabled={p.here || p.have >= p.cap}
-            onClick={() => dispatch({ type: 'assign', employeeId: -facilityId, facilityId: p.id }).ok && close()}
+            onClick={() => void dispatch({ type: 'assign', employeeId: -facilityId, facilityId: p.id }).then((r) => r.ok && close())}
           >
             <Icon id={p.type} size={40} />
             <span className="grow bold">{p.name}</span>
@@ -268,7 +286,7 @@ function AssignSheet({ facilityId, close }: { facilityId: number; close: () => v
           className="card tight tap row"
           style={{ border: 'none', textAlign: 'left' }}
           disabled={v.have >= v.cap}
-          onClick={() => dispatch({ type: 'assign', employeeId: p.id, facilityId }).ok && v.have + 1 >= v.cap && close()}
+          onClick={() => void dispatch({ type: 'assign', employeeId: p.id, facilityId }).then((r) => r.ok && v.have + 1 >= v.cap && close())}
         >
           <Icon id={p.role === 'researcher' ? 'ppl_researcher' : p.role === 'engineer' ? 'ppl_engineer' : 'ppl_worker'} size={36} />
           <div className="grow col" style={{ gap: 0 }}>
@@ -282,6 +300,53 @@ function AssignSheet({ facilityId, close }: { facilityId: number; close: () => v
           <span className="btn small soft">配置</span>
         </button>
       ))}
+    </div>
+  );
+}
+
+/** days of fixed costs cash covers after a purchase, and a loan offer when that is short */
+export function CashAfter({ cost, extraPerDay = 0 }: { cost: number; extraPerDay?: number }) {
+  const v = useGame(
+    (s) => ({
+      cash: s.cash,
+      fixed: fixedCostPerDay(s) + extraPerDay,
+      profit: s.finance.days.length ? avgProfit(s, 7) : null,
+      room: Math.max(0, loanLimit(s) - s.loan),
+      borrow: borrowFor(s, cost, 30, extraPerDay),
+      hasFinance: !!s.features.hire,
+    }),
+    [cost, extraPerDay],
+    2,
+  );
+  const after = v.cash - cost;
+  const days = v.fixed > 0 ? after / v.fixed : Infinity;
+  const tone = after < 0 ? 'bad' : days < 7 ? 'bad' : days < 30 ? 'warn' : 'good';
+  return (
+    <div className={`cash-after ${tone}`} data-testid="cash-after">
+      <div className="kv small">
+        <span>建設後の資金</span>
+        <span className={`num bold ${after < 0 ? 'bad' : ''}`}>{yen(after)}</span>
+        <span>毎日の固定費（給料・維持費など）</span>
+        <span className="num">{yen(v.fixed)}/日</span>
+        {Number.isFinite(days) && after >= 0 && (
+          <>
+            <span>資金がもつ日数</span>
+            <span className={`num bold ${tone}`}>{days >= 999 ? '999日以上' : `約${Math.floor(days)}日`}</span>
+          </>
+        )}
+      </div>
+      {after >= 0 && days < 30 && (
+        <p className="small" style={{ marginTop: 6 }}>
+          {v.profit === null ? '' : v.profit > 0 ? `いまは1日 ${yen(v.profit, { sign: true })}の黒字ですが、` : `いまは売上が費用に届いていません（1日 ${yen(v.profit, { sign: true })}）。`}
+          建てると、売上がなくても給料などを払える余裕は{Math.floor(days)}日分ほどです。
+        </p>
+      )}
+      {(after < 0 || days < 30) && v.borrow > 0 && (
+        <button className="btn small soft block" style={{ marginTop: 8 }} onClick={() => dispatch({ type: 'borrow', amount: v.borrow })} data-testid="borrow-for-build">
+          🏦 {yen(v.borrow)}を借りて備える（年利{Math.round(DATA.balance.finance.loanRateYear * 100)}%）
+        </button>
+      )}
+      {(after < 0 || days < 30) && v.borrow <= 0 && v.room <= 0 && <p className="tiny muted">借入枠を使い切っています。</p>}
     </div>
   );
 }
@@ -341,16 +406,18 @@ function BuildSheet({ facility, close }: { facility: string; close: () => void }
           </div>
         </div>
       )}
+      {v.canBuild && v.unlocked && <CashAfter cost={def.buildCost} extraPerDay={def.upkeep} />}
       <button
         className="btn block"
         disabled={!v.unlocked || !v.canBuild || v.cash < def.buildCost}
-        onClick={() => {
-          const r = dispatch({ type: 'build', facility: def.id, recipe });
-          if (r.ok) {
+        data-testid="build-confirm"
+        onClick={() =>
+          void dispatch({ type: 'build', facility: def.id, recipe }).then((r) => {
+            if (!r.ok) return;
             close();
             useUI.getState().setTab('production');
-          }
-        }}
+          })
+        }
       >
         {v.cash < def.buildCost ? '資金が足りません' : `${yen(def.buildCost)}で建設する`}
       </button>
@@ -376,6 +443,7 @@ function GoalSheet({ close }: { close: () => void }) {
               <span className="bold small">{g.title}</span>
               {!ok && <span className="tiny dim">{g.hint}</span>}
             </div>
+            {g.reward > 0 && <span className={`pill${ok ? ' muted' : ''}`}>補助金 {yen(g.reward)}</span>}
           </div>
         );
       })}

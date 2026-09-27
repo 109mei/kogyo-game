@@ -4,6 +4,7 @@ import { dateOf, dayIndex } from '../../core/calendar';
 import { automationRate, companyValue } from '../../core/finance';
 import { managementCapacity, managementLoad, managementFactor } from '../../core/logistics';
 import { dispatch, useGame } from '../../store/game';
+import { useUI } from '../../store/ui';
 import { LineChart } from '../charts';
 import { Bar, Icon } from '../components';
 import { date, days, pct, yen, yenShort } from '../format';
@@ -15,7 +16,9 @@ const LADDER: { key: string; icon: string; label: string; hint: string }[] = [
   { key: 'machine', icon: 'auto_machine', label: '機械', hint: '機械で人の何倍も作る' },
   { key: 'auto', icon: 'auto_robot', label: '自動機', hint: '人がいなくても動く' },
   { key: 'rules', icon: 'auto_cycle', label: '運営ルール', hint: '条件で動かす・止める' },
-  { key: 'manager', icon: 'ppl_manager', label: '工場長', hint: '工場の判断を任せる' },
+  { key: 'manager', icon: 'ppl_foreman', label: '工場長', hint: '工場の判断を任せる' },
+  { key: 'division', icon: 'ppl_manager', label: '部門長', hint: '同じ種類の工場をまとめて任せる' },
+  { key: 'sub', icon: 'fin_merger', label: '子会社', hint: '会社ごと任せて自ら育てる' },
 ];
 
 export function Company() {
@@ -32,7 +35,18 @@ export function Company() {
         auto: s.facilities.some((f) => f.stage === 'auto'),
         rules: s.facilities.some((f) => f.auto.enabled),
         manager: s.facilities.some((f) => f.managerId !== null),
+        division: Object.values(s.divisions).some((d) => d.headId !== null),
+        sub: Object.values(s.divisions).some((d) => !!d.sub),
       };
+      const kinds = new Map<string, number>();
+      for (const f of s.facilities) if (DATA.facility[f.type].category !== 'infrastructure') kinds.set(f.type, (kinds.get(f.type) ?? 0) + 1);
+      const org = [...kinds.entries()]
+        .map(([type, n]) => {
+          const d = s.divisions[type];
+          const head = d?.headId != null ? s.employees.find((e) => e.id === d.headId) : undefined;
+          return { type, n, head: head?.name ?? null, sub: d?.sub?.name ?? null };
+        })
+        .sort((a, b) => Number(!!b.sub) - Number(!!a.sub) || Number(!!b.head) - Number(!!a.head) || b.n - a.n);
       const d = dayIndex(s.tick);
       return {
         name: s.companyName,
@@ -52,6 +66,8 @@ export function Company() {
         sales: s.totals.salesValue,
         cash: s.cash,
         reached,
+        org,
+        divisions: !!s.features.divisions,
         months: s.finance.months.map((m) => ({ year: m.year, month: m.month, value: m.value })),
         history: [...s.history].reverse().slice(0, 80),
       };
@@ -59,6 +75,7 @@ export function Company() {
     [],
     2,
   );
+  const push = useUI((s) => s.push);
   const use = v.cap > 0 ? v.load / v.cap : 0;
   const reachedCount = LADDER.filter((l) => v.reached[l.key]).length;
   const ms = v.months.slice(-24);
@@ -75,7 +92,7 @@ export function Company() {
             <button
               className="btn small"
               onClick={() => {
-                if (dispatch({ type: 'renameCompany', name }).ok) setEditing(false);
+                void dispatch({ type: 'renameCompany', name }).then((r) => r.ok && setEditing(false));
               }}
             >
               保存
@@ -142,6 +159,24 @@ export function Company() {
         </p>
       </div>
 
+      <div className="section-title">
+        <span>組織</span>
+        {!v.divisions && <span className="small muted">研究「部門制」で部門長</span>}
+      </div>
+      <div className="card flush">
+        {v.org.length === 0 && <p className="empty small">まだ生産施設がありません</p>}
+        {v.org.map((o) => (
+          <button key={o.type} className="org-row" onClick={() => push({ screen: 'division', id: o.type })} data-testid={`org-${o.type}`}>
+            <Icon id={o.type} size={34} />
+            <div className="grow col" style={{ gap: 0, minWidth: 0 }}>
+              <span className="small bold ellipsis">{o.sub ?? `${DATA.facility[o.type].short}部門`}</span>
+              <span className="tiny dim ellipsis">{o.sub ? `子会社・社長 ${o.head ?? '—'}` : o.head ? `部門長 ${o.head}` : '部門長なし（あなたが直接運営）'}</span>
+            </div>
+            <span className="tiny num dim">{o.n}施設 ›</span>
+          </button>
+        ))}
+      </div>
+
       <div className="section-title">本社</div>
       <div className="card col" style={{ gap: 10 }}>
         <div className="row">
@@ -171,7 +206,7 @@ export function Company() {
             </p>
           ) : (
             <p className="tiny muted" style={{ marginTop: 4 }}>
-              施設1つで1、工場長がいれば0.3、社員{DATA.balance.management.employeesPerPoint}人で1
+              施設1つで1、工場長がいれば0.3、部門長の部門なら{DATA.balance.divisions.loadPerFacility}、子会社は0。社員{DATA.balance.management.employeesPerPoint}人で1
             </p>
           )}
         </div>

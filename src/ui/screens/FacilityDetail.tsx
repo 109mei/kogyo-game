@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DATA } from '../../data';
 import type { AutomationSettings, Cond, CondVar, GameState, Policy, Rule } from '../../core';
 import { dayIndex } from '../../core/calendar';
@@ -62,8 +62,16 @@ export function FacilityDetail({ id }: { id: number }) {
 function Hero({ id }: { id: number }) {
   const v = useGame((s) => {
     const f = facilityById(s, id)!;
-    return { f: facilityView(s, f), place: f.place, built: f.builtDay };
+    const d = s.divisions[f.type];
+    const head = d?.headId != null ? s.employees.find((e) => e.id === d.headId) : undefined;
+    return {
+      f: facilityView(s, f),
+      place: f.place,
+      built: f.builtDay,
+      org: d && d.headId !== null ? { type: f.type, sub: d.sub?.name ?? null, head: head?.name ?? '' } : null,
+    };
   }, [id]);
+  const push = useUI((s) => s.push);
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(v.f.name);
   const def = DATA.facility[v.f.type];
@@ -76,7 +84,7 @@ function Hero({ id }: { id: number }) {
           <button
             className="btn small"
             onClick={() => {
-              if (dispatch({ type: 'rename', facilityId: id, name }).ok) setRenaming(false);
+              void dispatch({ type: 'rename', facilityId: id, name }).then((r) => r.ok && setRenaming(false));
             }}
           >
             保存
@@ -99,12 +107,20 @@ function Hero({ id }: { id: number }) {
       <p className="small" style={{ marginTop: 6 }}>
         {v.f.status.text}
       </p>
+      {v.org && (
+        <button className={`banner ${v.org.sub ? 'info' : ''} org-banner`} onClick={() => push({ screen: 'division', id: v.org!.type })}>
+          <span className="grow">
+            {v.org.sub ? `🏢 ${v.org.sub}（子会社）の施設です。指示は子会社の社長が出します` : `🗂 ${DATA.facility[v.org.type].short}部門：部門長 ${v.org.head}が運営しています`}
+          </span>
+          <span>›</span>
+        </button>
+      )}
       {v.f.building && (
         <div style={{ marginTop: 6 }}>
           <Bar value={v.f.building.progress} label="工事の進み具合" />
         </div>
       )}
-      {v.f.stage === 'manual' && v.f.recipe && def.category !== 'infrastructure' && !(v.f.building && v.f.building.kind === 'build') && <TapButton f={v.f} />}
+      {v.f.stage === 'manual' && v.f.recipe && def.category !== 'infrastructure' && !(v.f.building && v.f.building.kind === 'build') && v.f.org !== 'sub' && <TapButton f={v.f} />}
     </div>
   );
 }
@@ -391,7 +407,7 @@ function ProductionTab({ id }: { id: number }) {
               </button>
             )}
             {v.lvCost !== null && (
-              <button className="btn soft block" disabled={!!f.building || v.cash < v.lvCost} onClick={() => dispatch({ type: 'upgradeLevel', facilityId: id })}>
+              <button className="btn soft block" disabled={!!f.building || v.cash < v.lvCost} onClick={() => dispatch({ type: 'upgradeLevel', facilityId: id })} data-testid="upgrade-level">
                 🏗 {f.level === 0 ? '施設として整備（Lv1）' : `拡張 Lv${f.level}→${f.level + 1}`}
                 <span className="sub">
                   {yen(v.lvCost)}・{Math.ceil(v.lvDays)}日
@@ -697,13 +713,41 @@ function AutoTab({ id }: { id: number }) {
       <button
         className="btn block"
         onClick={() => {
-          if (dispatch({ type: 'setAutomation', facilityId: id, settings: a }, { quiet: true }).ok) toast('自動運転の設定を保存しました', 'good');
+          void dispatch({ type: 'setAutomation', facilityId: id, settings: a }, { quiet: true }).then((r) => (r.ok ? toast('自動運転の設定を保存しました', 'good') : r.message && toast(r.message, 'bad')));
         }}
         data-testid="save-automation"
       >
         保存
       </button>
     </>
+  );
+}
+
+/** a number box that lets you type "18." on the way to "18.5" (the text is only turned into a number when it is one) */
+function NumField({ value, onChange, label }: { value: number; onChange: (v: number) => void; label: string }) {
+  const [text, setText] = useState(String(value));
+  const [editing, setEditing] = useState(false);
+  useEffect(() => {
+    if (!editing) setText(String(value));
+  }, [value, editing]);
+  return (
+    <input
+      className="input"
+      inputMode="decimal"
+      aria-label={label}
+      value={text}
+      onFocus={() => setEditing(true)}
+      onChange={(e) => {
+        const t = e.target.value;
+        setText(t);
+        const v = Number(t);
+        if (t.trim() !== '' && Number.isFinite(v)) onChange(v);
+      }}
+      onBlur={() => {
+        setEditing(false);
+        setText(String(value));
+      }}
+    />
   );
 }
 
@@ -728,7 +772,7 @@ function RulesEditor({ rules, onChange }: { rules: Rule[]; onChange: (r: Rule[])
                 <option value="<">&lt;</option>
                 <option value=">">&gt;</option>
               </select>
-              <input className="input" inputMode="decimal" aria-label="値" value={c.value} onChange={(e) => upd(i, { ...r, conds: r.conds.map((x, j) => (j === k ? { ...x, value: Number(e.target.value) || 0 } : x)) })} />
+              <NumField label="値" value={c.value} onChange={(value) => upd(i, { ...r, conds: r.conds.map((x, j) => (j === k ? { ...x, value } : x)) })} />
               <button className="link" aria-label="条件を消す" onClick={() => upd(i, { ...r, conds: r.conds.filter((_, j) => j !== k) })}>
                 ✕
               </button>

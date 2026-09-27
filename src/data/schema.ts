@@ -142,6 +142,72 @@ export const GoalSchema = z.object({
   hint: z.string(),
   condition: ConditionSchema,
   unlocks: z.array(z.string()).default([]),
+  /** subsidy (yen) paid when the goal is reached */
+  reward: nonneg.default(0),
+});
+
+/** how the yen cost of an event choice is worked out when the event comes up */
+const EventCostSchema = z.object({
+  type: z.enum(['fixed', 'powerDays', 'workerPayrollDays', 'researchPayrollDays', 'buildShare', 'machineShare', 'buyDays']),
+  value: nonneg,
+  min: nonneg.default(0),
+});
+
+const EventEffectSchema = z.discriminatedUnion('type', [
+  /** the grid delivers only this share of the contract for a while */
+  z.object({ type: z.literal('gridCut'), value: z.number().min(0).max(1), days: pos }),
+  /** hand work and machines with operators run at this share for a while (automatic machines keep going) */
+  z.object({ type: z.literal('strike'), value: z.number().min(0).max(1), days: pos }),
+  /** the facility the event is about stops for a while */
+  z.object({ type: z.literal('down'), days: pos }),
+  /** workers' and engineers' pay goes up for good */
+  z.object({ type: z.literal('raise'), value: nonneg }),
+  /** the employee the event is about gets a raise */
+  z.object({ type: z.literal('raiseTarget'), value: nonneg }),
+  /** the employee the event is about leaves */
+  z.object({ type: z.literal('leave') }),
+  /** demand for the item the event is about moves (log shock) */
+  z.object({ type: z.literal('demand'), value: z.number() }),
+  /** extra applicants arrive now */
+  z.object({ type: z.literal('applicants'), value: z.number().int().positive() }),
+  /** the current research moves on by this many days of the lab's output */
+  z.object({ type: z.literal('rp'), days: pos }),
+  /** buy this many days of the item's use at today's price */
+  z.object({ type: z.literal('stockUp'), days: pos }),
+]);
+
+const EventChoiceSchema = z.object({
+  id,
+  label: z.string(),
+  detail: z.string(),
+  cost: EventCostSchema.optional(),
+  effects: z.array(EventEffectSchema).default([]),
+});
+
+export const EventSchema = z.object({
+  id,
+  icon: z.string(),
+  title: z.string(),
+  body: z.string(),
+  weight: pos,
+  /** what the company must have for the event to come up */
+  needs: z
+    .object({
+      feature: z.string().optional(),
+      /** a power contract in use */
+      grid: z.boolean().optional(),
+      /** at least this many workers and engineers at work */
+      staff: z.number().int().positive().optional(),
+      /** at least this many facilities up and running */
+      facilities: z.number().int().positive().optional(),
+    })
+    .default({}),
+  /** what the event is about; the event only comes up when there is one */
+  target: z.enum(['none', 'facility', 'machineFacility', 'bestEmployee', 'product', 'input', 'research']).default('none'),
+  /** happens as soon as the event comes up, whatever is chosen */
+  onArrive: z.array(EventEffectSchema).default([]),
+  /** the first choice is taken if nobody decides in time */
+  choices: z.array(EventChoiceSchema).min(2).max(3),
 });
 
 const PowerContractSchema = z.object({
@@ -182,6 +248,10 @@ export const BalanceSchema = z.object({
     startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     offlineMaxDays: nonneg,
     tapDays: pos,
+    /** the owner works this many times as fast as a hired worker */
+    tapSpeed: pos,
+    /** taps that can wait behind the one in progress */
+    tapQueue: z.number().int().nonnegative(),
     hourTicks: z.number().int().positive(),
   }),
   start: z.object({
@@ -195,7 +265,7 @@ export const BalanceSchema = z.object({
     valueScale: pos,
   }),
   staff: z.object({
-    roles: z.object({ worker: RoleSchema, engineer: RoleSchema, researcher: RoleSchema, manager: RoleSchema }),
+    roles: z.object({ worker: RoleSchema, engineer: RoleSchema, researcher: RoleSchema, manager: RoleSchema, director: RoleSchema }),
     hireFee: nonneg,
     severanceMonths: nonneg,
     skillMult: z.array(pos).length(5),
@@ -278,6 +348,64 @@ export const BalanceSchema = z.object({
   research: z.object({
     rpPerResearcher: pos,
   }),
+  /** the one-tap "sell what is not needed" */
+  surplus: z.object({
+    /** days of the company's own use to keep */
+    keepDays: nonneg,
+    /** sell until the price has dropped this much */
+    maxPriceDrop: z.number().min(0.01).max(0.5),
+  }),
+  orders: z.object({
+    /** chance per day of a new offer while there is room */
+    offerChance: z.number().min(0).max(1),
+    maxOffers: z.number().int().positive(),
+    maxActive: z.number().int().positive(),
+    /** days an offer stays open */
+    offerDays: pos,
+    /** price as a multiple of the market price: [min, max] */
+    premium: z.tuple([pos, pos]),
+    /** share of offers for something the company does not make yet */
+    freshChance: z.number().min(0).max(1),
+    freshPremium: z.tuple([pos, pos]),
+    /** size in days of the company's own output: [min, max] */
+    sizeDays: z.tuple([pos, pos]),
+    /** size of a new product order in days of one new facility's output */
+    freshSizeDays: z.tuple([pos, pos]),
+    /** time allowed = size in days of output times this */
+    leadMul: pos,
+    minDays: pos,
+    maxDays: pos,
+    /** share of the undelivered value paid when an order is missed or cancelled */
+    penalty: z.number().min(0).max(1),
+    /** days of the company's own use kept back from automatic deliveries */
+    reserveDays: nonneg,
+    /** customer name endings */
+    customers: z.array(z.string()).min(1),
+  }),
+  events: z.object({
+    startDay: nonneg,
+    /** days between events: [min, max] */
+    gapDays: z.tuple([pos, pos]),
+    /** the same event does not come back within this many days */
+    repeatDays: nonneg,
+    /** days to decide before the first choice is taken */
+    decideDays: pos,
+  }),
+  divisions: z.object({
+    minFacilities: z.number().int().positive(),
+    /** management points per facility in a division with a head */
+    loadPerFacility: nonneg,
+    /** output bonus per star of the head, for every facility of the division */
+    headBonusPerStar: nonneg,
+    /** hiring through an agency when no applicant fits costs this many times the hiring fee */
+    hireFeeMul: pos,
+    /** heads do not spend or hire when cash would cover fewer days of fixed costs than this */
+    cashReserveDays: nonneg,
+    /** average use of a facility above which it counts as busy (worth more machines) */
+    busyUtil: z.number().min(0).max(1),
+    subsidiaryBase: nonneg,
+    subsidiaryPerFacility: nonneg,
+  }),
 });
 
 export type Item = z.infer<typeof ItemSchema>;
@@ -286,6 +414,9 @@ export type Facility = z.infer<typeof FacilitySchema>;
 export type Tech = z.infer<typeof TechSchema>;
 export type Effect = Tech['effects'][number];
 export type Goal = z.infer<typeof GoalSchema>;
+export type GameEventDef = z.infer<typeof EventSchema>;
+export type EventChoice = GameEventDef['choices'][number];
+export type EventEffect = z.infer<typeof EventEffectSchema>;
 export type GoalCondition = Goal['condition'];
 export type Balance = z.infer<typeof BalanceSchema>;
 export type PowerContract = Balance['power']['contracts'][number];
