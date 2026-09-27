@@ -20,7 +20,8 @@ export type Route =
   | { screen: 'company' }
   | { screen: 'encyclopedia' }
   | { screen: 'settings' }
-  | { screen: 'notices' };
+  | { screen: 'notices' }
+  | { screen: 'world' };
 
 export interface Toast {
   id: number;

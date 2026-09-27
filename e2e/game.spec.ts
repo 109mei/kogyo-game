@@ -111,7 +111,7 @@ test('every screen opens without errors or sideways scrolling', async ({ page })
     await page.getByTestId(`nav-${tab}`).click();
     await noSideScroll(page);
   }
-  for (const screen of ['staff', 'research', 'logistics', 'power', 'finance', 'company', 'encyclopedia', 'notices', 'settings']) {
+  for (const screen of ['staff', 'research', 'logistics', 'power', 'finance', 'company', 'world', 'encyclopedia', 'notices', 'settings']) {
     await page.getByTestId('nav-more').click();
     await page.getByTestId(`menu-${screen}`).click();
     await expect(page.locator('.page-title h1')).toBeVisible();

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DATA } from '../data';
 import { dispatch, useGame, useGameStore } from '../store/game';
 import { useUI, type Tab } from '../store/ui';
@@ -24,6 +24,7 @@ import { Production } from './screens/Production';
 import { Research } from './screens/Research';
 import { Settings } from './screens/Settings';
 import { Staff } from './screens/Staff';
+import { World } from './screens/World';
 
 export function App() {
   const booted = useGameStore((s) => s.booted);
@@ -101,8 +102,6 @@ function TabView({ tab }: { tab: Tab }) {
   }
 }
 
-const World = lazy(() => import('./world/WorldView'));
-export { World };
 
 function RouteView() {
   const stack = useUI((s) => s.stack);
@@ -134,6 +133,8 @@ function RouteView() {
       return <Settings />;
     case 'notices':
       return <Notices />;
+    case 'world':
+      return <World />;
   }
 }
 
@@ -304,12 +305,3 @@ function OfflineReport() {
   );
 }
 
-export function WorldSlot() {
-  const on = useGame((s) => s.settings.world3d, [], 1);
-  if (!on) return null;
-  return (
-    <Suspense fallback={<div className="world" />}>
-      <World />
-    </Suspense>
-  );
-}

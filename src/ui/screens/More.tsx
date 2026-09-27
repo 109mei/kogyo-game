@@ -8,6 +8,7 @@ const ITEMS: { route: Route; label: string; icon: string; sub?: (v: Summary) => 
   { route: { screen: 'power' }, label: '電力', icon: 'nav_power', sub: (v) => v.power },
   { route: { screen: 'finance' }, label: '財務', icon: 'nav_finance' },
   { route: { screen: 'company' }, label: '会社', icon: 'nav_company' },
+  { route: { screen: 'world' }, label: '世界', icon: 'ui_world' },
   { route: { screen: 'encyclopedia' }, label: '図鑑', icon: 'ui_book' },
   { route: { screen: 'notices' }, label: '通知', icon: 'ui_bell', sub: (v) => (v.unread ? `未読${v.unread}` : '') },
   { route: { screen: 'settings' }, label: '設定', icon: 'ui_settings' },

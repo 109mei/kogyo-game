@@ -3,7 +3,7 @@ import type { GameState, Link } from '../../core';
 import { companyValue } from '../../core/finance';
 import { dispatch, useGame } from '../../store/game';
 import { openLink, useUI } from '../../store/ui';
-import { WorldSlot } from '../App';
+import { WorldSlot } from '../world/WorldSlot';
 import { Bar, Dot, Icon, Section } from '../components';
 import { date, yen } from '../format';
 import { kpis, statusTiles } from '../selectors';

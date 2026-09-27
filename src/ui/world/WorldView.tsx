@@ -77,7 +77,7 @@ function describe(s: GameState): WorldDesc & { name: string; built: number } {
   };
 }
 
-export default function WorldView() {
+export default function WorldView({ tall = false }: { tall?: boolean }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const sceneRef = useRef<WorldScene | null>(null);
@@ -169,7 +169,7 @@ export default function WorldView() {
   };
 
   return (
-    <div className="world" ref={wrap} style={{ touchAction: 'pan-y' }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => (drag.current = null)} data-testid="world">
+    <div className={`world${tall ? ' tall' : ''}`} ref={wrap} style={{ touchAction: 'pan-y' }} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => (drag.current = null)} data-testid="world">
       <canvas ref={canvas} role="img" aria-label={`${desc.name}の工業地帯（施設${desc.built}）。建物をタップすると開きます`} />
       <div className="world-caption">
         {desc.name}・施設{desc.built}

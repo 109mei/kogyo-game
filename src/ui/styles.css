@@ -1523,3 +1523,7 @@ textarea.input {
 .notice.warn .notice-title {
   color: var(--warn-text);
 }
+
+.world.tall {
+  height: min(58vh, 520px);
+}
