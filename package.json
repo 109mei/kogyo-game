@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "balance": "tsx tools/balance-sim.ts",
-    "econ": "tsx tools/econ-report.ts"
+    "econ": "tsx tools/econ-report.ts",
+    "make-save": "tsx tools/make-save.ts"
   },
   "dependencies": {
     "react": "^19.3.0",

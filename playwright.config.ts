@@ -19,6 +19,8 @@ export default defineConfig({
     isMobile: true,
     hasTouch: true,
     screenshot: 'only-on-failure',
+    // WebGL through SwiftShader so the 3D estate renders in headless CI
+    launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] },
   },
   webServer: {
     command: `npm run build && npx vite preview --port ${PORT} --strictPort`,
