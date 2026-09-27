@@ -48,14 +48,37 @@ export function deserialize(text: string): Loaded {
   return { state, savedAt: typeof env.savedAt === 'number' ? env.savedAt : Date.now() };
 }
 
+/** the text a player copies out of the game */
+export function exportTextOf(saveText: string): string {
+  return EXPORT_PREFIX + toBase64(saveText);
+}
+
+/** a copied save back to a game (throws with a message the player can read) */
+export function importText(text: string): Loaded {
+  const t = text.trim();
+  if (!t.startsWith(EXPORT_PREFIX)) throw new Error('書き出したデータを貼り付けてください');
+  let json: string;
+  try {
+    json = fromBase64(t.slice(EXPORT_PREFIX.length));
+  } catch {
+    throw new Error('データが途中で切れているか、壊れています');
+  }
+  return deserialize(json);
+}
+
 export class SaveStore {
   constructor(private storage: Storage | null = typeof localStorage !== 'undefined' ? localStorage : null) {}
 
   save(state: GameState, owner = ''): boolean {
+    const at = Date.now();
+    return this.writeText(serialize(state, at), at, owner);
+  }
+
+  /** a save already turned into text (by the simulation worker) */
+  writeText(text: string, at: number, owner = ''): boolean {
     if (!this.storage) return false;
     try {
-      const at = Date.now();
-      this.storage.setItem(SAVE_KEY, serialize(state, at));
+      this.storage.setItem(SAVE_KEY, text);
       this.storage.setItem(STAMP_KEY, JSON.stringify({ at, owner }));
       return true;
     } catch {
@@ -63,14 +86,16 @@ export class SaveStore {
     }
   }
 
-  load(): Loaded | null {
-    if (!this.storage) return null;
-    let text: string | null = null;
+  readText(): string | null {
     try {
-      text = this.storage.getItem(SAVE_KEY);
+      return this.storage?.getItem(SAVE_KEY) ?? null;
     } catch {
       return null;
     }
+  }
+
+  load(): Loaded | null {
+    const text = this.readText();
     if (!text) return null;
     return deserialize(text);
   }
@@ -93,12 +118,10 @@ export class SaveStore {
   }
 
   exportText(state: GameState): string {
-    return EXPORT_PREFIX + toBase64(serialize(state));
+    return exportTextOf(serialize(state));
   }
 
   importText(text: string): Loaded {
-    const t = text.trim();
-    if (!t.startsWith(EXPORT_PREFIX)) throw new Error('書き出したデータを貼り付けてください');
-    return deserialize(fromBase64(t.slice(EXPORT_PREFIX.length)));
+    return importText(text);
   }
 }

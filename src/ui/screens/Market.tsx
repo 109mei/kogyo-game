@@ -10,13 +10,24 @@ import { LineChart, Sparkline } from '../charts';
 import { Chips, Icon, Stepper, Switch, Tabs } from '../components';
 import { date, num, qty, signedPct, stars, yen } from '../format';
 import { marketRows } from '../selectors';
+import { SurplusCard } from './Assets';
 
 type Cat = 'all' | 'raw' | 'material' | 'part' | 'product';
 
 export function Market() {
   const [cat, setCat] = useState<Cat>('all');
   const [sort, setSort] = useState<'no' | 'up' | 'down'>('no');
-  const v = useGame((s) => ({ rows: marketRows(s), open: !!s.features.market }), [], 2);
+  const v = useGame(
+    (s) => ({
+      rows: marketRows(s),
+      open: !!s.features.market,
+      orders: !!s.features.orders,
+      offers: s.orders.list.filter((o) => o.status === 'offer').length,
+      active: s.orders.list.filter((o) => o.status === 'active').length,
+    }),
+    [],
+    2,
+  );
   const push = useUI((s) => s.push);
   let rows = v.rows.filter((r) => cat === 'all' || DATA.item[r.item].category === cat);
   if (sort === 'up') rows = [...rows].sort((a, b) => b.change - a.change);
@@ -28,6 +39,16 @@ export function Market() {
         <span className="small muted">{v.rows.length}品目</span>
       </div>
       {!v.open && <div className="banner info">原木を3回集めると市場で売れるようになります。</div>}
+      {v.orders && (
+        <button className="card tight tap row" style={{ border: 'none', textAlign: 'left' }} onClick={() => push({ screen: 'orders' })} data-testid="open-orders">
+          <Icon id="misc_delivery" size={36} />
+          <span className="grow bold small">受注（相場より高く売る）</span>
+          <span className="small dim">
+            {v.offers ? `引き合い${v.offers}・` : ''}受注中{v.active} ›
+          </span>
+        </button>
+      )}
+      <SurplusCard />
       <Chips
         value={cat}
         onChange={setCat}
@@ -179,7 +200,7 @@ export function MarketItem({ id }: { id: string }) {
           <span className="bold">売る</span>
           <span className="small dim">在庫 {qty(id, v.stock)}</span>
         </div>
-        <Stepper value={sellQty} onChange={setSellQty} step={sellStep} max={v.stock} quick={[{ label: plus(sellStep), add: sellStep }, { label: plus(sellStep * 10), add: sellStep * 10 }, { label: '半分', set: Math.floor(v.stock / 2) }, { label: 'MAX', set: v.stock }]} />
+        <Stepper value={sellQty} onChange={setSellQty} step={sellStep} max={v.stock} quick={[{ label: plus(sellStep), add: sellStep }, { label: plus(sellStep * 10), add: sellStep * 10 }, { label: '半分', set: Math.floor(v.stock / 2) }, { label: 'MAX', set: v.stock, testid: 'sell-max' }]} />
         {v.sellQuote && (
           <p className="small dim">
             受け取り <b className="num">{yen(v.sellQuote.total)}</b>（平均 {yen(v.sellQuote.unit)}/{it.unit}、手数料込み）
@@ -189,7 +210,7 @@ export function MarketItem({ id }: { id: string }) {
           className="btn block"
           disabled={!v.open || sellQty <= 0 || v.stock <= 0}
           onClick={() => {
-            if (dispatch({ type: 'sell', item: id, qty: Math.min(sellQty, v.stock) }).ok) setSellQty(0);
+            void dispatch({ type: 'sell', item: id, qty: Math.min(sellQty, v.stock) }).then((r) => r.ok && setSellQty(0));
           }}
           data-testid="sell"
         >
@@ -212,7 +233,7 @@ export function MarketItem({ id }: { id: string }) {
           className="btn soft block"
           disabled={!v.open || buyQty <= 0 || (v.buyQuote?.total ?? 0) > v.cash}
           onClick={() => {
-            if (dispatch({ type: 'buy', item: id, qty: buyQty }).ok) setBuyQty(0);
+            void dispatch({ type: 'buy', item: id, qty: buyQty }).then((r) => r.ok && setBuyQty(0));
           }}
         >
           買う

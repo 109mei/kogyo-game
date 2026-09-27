@@ -10,8 +10,9 @@ import { avgProfit, automationRate, companyValue } from '../core/finance';
 import { managementCapacity, managementLoad } from '../core/logistics';
 import { demandStars, supplyStars, trend, unitPrice } from '../core/market';
 import { isPlant, plantCapacity } from '../core/power';
-import { canTap, managerBonus, storageCapacity, storedWeight } from '../core/production';
+import { canTap, managerBonus, storageCapacity, storedWeight, tapSeconds } from '../core/production';
 import { actualRates, plannedFlows } from '../core/rates';
+import { divisionFor, inSubsidiary } from '../core/org';
 import { employeesAt, staffCapacity } from '../core/staff';
 import { hasFeature } from '../core/util';
 import { visibleItems } from '../core/visibility';
@@ -39,9 +40,12 @@ export interface FacilityView {
   status: { tone: Tone; text: string };
   staff: number;
   staffCap: number;
-  tap: { can: boolean; why: string | null; progress: number | null; seconds: number };
+  /** progress: this facility's job in hand; queued: taps waiting here; busy: the owner is working somewhere */
+  tap: { can: boolean; why: string | null; progress: number | null; seconds: number; queued: number; busy: boolean };
   building: { progress: number; kind: 'build' | 'level'; daysLeft: number } | null;
   managed: boolean;
+  /** run by a division head or a subsidiary */
+  org: 'division' | 'sub' | null;
   auto: boolean;
 }
 
@@ -94,6 +98,8 @@ function runningStatus(s: GameState, f: FacilityState): { tone: Tone; text: stri
       return { tone: 'gray', text: '💤 自動運転で停止中' };
     case 'fuel':
       return { tone: 'red', text: '🔴 燃料不足' };
+    case 'down':
+      return { tone: 'red', text: '🔧 修理中' };
   }
   if (f.util >= 0.85) return { tone: 'green', text: '🟢 正常' };
   if (f.util > 0.02) return { tone: 'yellow', text: `🟡 稼働率 ${Math.round(f.util * 100)}%` };
@@ -109,7 +115,6 @@ export function facilityView(s: GameState, f: FacilityState): FacilityView {
   const util = hist.length ? hist[hist.length - 1] : f.util;
   const outPerDay = r ? (cap.slots / r.time) * r.output * Math.max(0, f.rate) * managerBonus(s, f) * (cap.power > 0 ? s.power.ratio : 1) : 0;
   const profit = f.stats.profitHist.length ? f.stats.profitHist[f.stats.profitHist.length - 1] : null;
-  const tapAmt = r ? (r.tap ?? DATA.balance.time.tapDays) : 0;
   return {
     id: f.id,
     type: f.type,
@@ -128,7 +133,9 @@ export function facilityView(s: GameState, f: FacilityState): FacilityView {
       can: !tapWhy,
       why: tapWhy,
       progress: job && job.facilityId === f.id ? (s.tick - job.start) / (job.until - job.start) : null,
-      seconds: r ? tapAmt * r.time * DATA.balance.time.realSecondsPerDay : 0,
+      seconds: r ? tapSeconds(r.id) : 0,
+      queued: s.owner.queue.filter((x) => x === f.id).length,
+      busy: !!job,
     },
     building: f.building
       ? {
@@ -138,6 +145,7 @@ export function facilityView(s: GameState, f: FacilityState): FacilityView {
         }
       : null,
     managed: f.managerId !== null,
+    org: inSubsidiary(s, f) ? 'sub' : divisionFor(s, f) ? 'division' : null,
     auto: f.auto.enabled,
   };
 }

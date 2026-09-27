@@ -12,7 +12,9 @@
     "startDate": "2027-04-01",
     "offlineMaxDays": 30,
     "tapDays": 0.16666666666666666,
-    "hourTicks": 10
+    "hourTicks": 10,
+    "tapSpeed": 2,
+    "tapQueue": 4
   },
   "start": {
     "cash": 3000000,
@@ -64,6 +66,12 @@
         "salary": 650000,
         "weight": 6,
         "unlock": "managers"
+      },
+      "director": {
+        "name": "部門長",
+        "salary": 900000,
+        "weight": 0,
+        "unlock": "divisions"
       }
     },
     "hireFee": 100000,
@@ -275,5 +283,68 @@
   },
   "research": {
     "rpPerResearcher": 1
+  },
+  "surplus": {
+    "keepDays": 3,
+    "maxPriceDrop": 0.12
+  },
+  "orders": {
+    "offerChance": 0.3,
+    "maxOffers": 2,
+    "maxActive": 3,
+    "offerDays": 5,
+    "premium": [
+      1.15,
+      1.4
+    ],
+    "freshChance": 0.25,
+    "freshPremium": [
+      1.35,
+      1.7
+    ],
+    "sizeDays": [
+      5,
+      14
+    ],
+    "freshSizeDays": [
+      2,
+      5
+    ],
+    "leadMul": 1.6,
+    "minDays": 7,
+    "maxDays": 45,
+    "penalty": 0.15,
+    "reserveDays": 1,
+    "customers": [
+      "工務店",
+      "商事",
+      "建設",
+      "製作所",
+      "産業",
+      "電機",
+      "百貨店",
+      "運輸",
+      "物産",
+      "工業"
+    ]
+  },
+  "events": {
+    "startDay": 45,
+    "gapDays": [
+      12,
+      30
+    ],
+    "repeatDays": 90,
+    "decideDays": 5
+  },
+  "divisions": {
+    "minFacilities": 2,
+    "loadPerFacility": 0.15,
+    "headBonusPerStar": 0.02,
+    "hireFeeMul": 1.5,
+    "cashReserveDays": 30,
+    "busyUtil": 0.85,
+    "subsidiaryBase": 50000000,
+    "subsidiaryPerFacility": 5000000
   }
 }

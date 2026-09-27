@@ -87,7 +87,7 @@ export interface FacilityState {
   stats: FacilityStats;
 }
 
-export type BlockReason = 'building' | 'switching' | 'noRecipe' | 'noStaff' | 'inputs' | 'storage' | 'power' | 'stopped' | 'fuel';
+export type BlockReason = 'building' | 'switching' | 'noRecipe' | 'noStaff' | 'inputs' | 'storage' | 'power' | 'stopped' | 'fuel' | 'down';
 
 export interface Employee {
   id: number;
@@ -146,6 +146,8 @@ export interface AutoTrade {
 
 export interface Ledger {
   sales: number;
+  /** goal subsidies and other one-off income (not part of operating profit) */
+  grants: number;
   purchases: number;
   salaries: number;
   power: number;
@@ -203,7 +205,10 @@ export type Link =
   | { screen: 'build'; id?: string }
   | { screen: 'company' }
   | { screen: 'production' }
-  | { screen: 'assets' };
+  | { screen: 'assets' }
+  | { screen: 'orders' }
+  | { screen: 'division'; id: string }
+  | { screen: 'home' };
 
 export interface HistoryEntry {
   day: number;
@@ -242,6 +247,72 @@ export interface OwnerJob {
   until: number;
 }
 
+/** a division: every facility of one kind, run together by a division head */
+export interface Division {
+  /** facility type */
+  type: string;
+  /** employee (role director) in charge, or null */
+  headId: number | null;
+  /** the head hires and places people for open places */
+  hire: boolean;
+  /** share of the division's profit the head may reinvest in machines and expansions (0..1) */
+  invest: number;
+  /** investment allowance saved up from profit and not spent yet (yen) */
+  budget: number;
+  /** yen the head has invested so far */
+  spent: number;
+  /** what the head did last, for the screen */
+  last: string | null;
+  /** set once the division was made a subsidiary */
+  sub: { name: string; since: number } | null;
+}
+
+/** a customer order: a fixed quantity at an agreed price by a deadline */
+export interface Order {
+  id: number;
+  customer: string;
+  item: string;
+  qty: number;
+  delivered: number;
+  /** yen per unit */
+  price: number;
+  /** market price per unit when offered, to show the premium */
+  marketPrice: number;
+  /** days allowed once accepted */
+  days: number;
+  /** offer: until this day it can be accepted; active: the deadline */
+  until: number;
+  status: 'offer' | 'active';
+  /** a product the company does not make yet */
+  fresh: boolean;
+}
+
+/** something happened that needs a decision */
+export interface PendingEvent {
+  id: number;
+  /** event id in events.json */
+  kind: string;
+  day: number;
+  /** after this day the first (default) choice is taken */
+  until: number;
+  /** facility or employee the event is about */
+  target: number | null;
+  item: string | null;
+  /** yen costs of the choices, fixed when the event came up */
+  costs: Record<string, number>;
+}
+
+/** a temporary condition from an event */
+export interface Effect {
+  kind: 'gridCut' | 'strike' | 'down' | 'boost';
+  /** tick it ends */
+  until: number;
+  value: number;
+  /** facility id for 'down' and 'boost' */
+  target: number | null;
+  label: string;
+}
+
 export interface Settings {
   autoPause: boolean;
   offlineDays: number;
@@ -249,6 +320,10 @@ export interface Settings {
   world3d: boolean;
   compactInventory: boolean;
   automationLevel: AutoMode;
+  /** light up the next button to press while the first goals are open */
+  guide: boolean;
+  /** events that ask for a decision (blackouts, strikes, ...) */
+  events: boolean;
 }
 
 export interface GameState {
@@ -315,7 +390,13 @@ export interface GameState {
   features: Record<string, boolean>;
   goals: { index: number; done: string[] };
   hq: { level: number; building: { until: number; start: number } | null };
-  owner: { job: OwnerJob | null; taps: number };
+  /** the owner's own hands: one job at a time, a few more waiting */
+  owner: { job: OwnerJob | null; taps: number; queue: number[] };
+  /** keyed by facility type */
+  divisions: Record<string, Division>;
+  orders: { list: Order[]; done: number; failed: number };
+  events: { pending: PendingEvent[]; /** day each event kind last came up */ last: Record<string, number>; /** no new event before this day */ next: number };
+  effects: Effect[];
   totals: {
     produced: Record<string, number>;
     sold: Record<string, number>;
@@ -373,7 +454,17 @@ export type Command =
   | { type: 'setSpeed'; speed: number }
   | { type: 'readNotices' }
   | { type: 'setSetting'; key: keyof Settings; value: Settings[keyof Settings] }
-  | { type: 'resumeFromAutoPause' };
+  | { type: 'resumeFromAutoPause' }
+  | { type: 'sellSurplus' }
+  | { type: 'setDivisionHead'; facilityType: string; employeeId: number | null }
+  | { type: 'setDivision'; facilityType: string; hire?: boolean; invest?: number }
+  | { type: 'makeSubsidiary'; facilityType: string }
+  | { type: 'dissolveSubsidiary'; facilityType: string }
+  | { type: 'acceptOrder'; orderId: number }
+  | { type: 'declineOrder'; orderId: number }
+  | { type: 'deliverOrder'; orderId: number }
+  | { type: 'cancelOrder'; orderId: number }
+  | { type: 'chooseEvent'; eventId: number; choice: string };
 
 export interface CommandResult {
   ok: boolean;

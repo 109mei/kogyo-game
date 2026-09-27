@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { applyCommand, createInitialState, runDays } from '../src/core';
+import { createFacility } from '../src/core/facilities';
 import { fuzzRun } from '../tools/fuzz-lib';
 import { openingState } from './helpers';
 
@@ -45,7 +46,7 @@ describe('applicants', () => {
 });
 
 describe('random play keeps every invariant', () => {
-  it.each([0, 1, 2])('company kind %i (fresh / mid-way / everything researched)', (mode) => {
+  it.each([0, 1, 2, 3])('company kind %i (fresh / mid-way / everything researched / with a subsidiary)', (mode) => {
     for (let run = 0; run < 2; run++) {
       const res = fuzzRun(100 + run * 3 + mode, 90, mode);
       expect(res.failure).toBeNull();
@@ -58,3 +59,21 @@ it('a fresh game stays a fresh game when nothing is done', () => {
   runDays(s, 30, false);
   expect(s.cash).toBe(3_000_000);
 });
+
+describe('applicants', () => {
+  it('never more than 24 wait, even when a new lab brings a researcher', () => {
+    const s = openingState();
+    s.cash = 1e9;
+    s.features.build = true;
+    while (s.candidates.length < 24) s.candidates.push({ ...s.candidates[0], id: s.nextId++ });
+    // no researcher yet: finishing the lab adds one at once
+    s.employees = s.employees.filter((e) => e.role !== 'researcher');
+    s.candidates = s.candidates.filter((c) => c.role !== 'researcher');
+    while (s.candidates.length < 24) s.candidates.push({ ...s.candidates[0], id: s.nextId++ });
+    createFacility(s, 'research_lab', { buildingUntil: s.tick + 5 });
+    runDays(s, 1, false);
+    expect(s.candidates.length).toBeLessThanOrEqual(24);
+    expect(s.candidates.some((c) => c.role === 'researcher')).toBe(true);
+  });
+});
+

@@ -2,6 +2,7 @@ import { DATA, type PowerContract } from '../data';
 import { defOf } from './facilities';
 import { mods } from './mods';
 import { employeesAt } from './staff';
+import { gridFactor } from './events';
 import type { FacilityState, GameState } from './types';
 import { hasFeature, pay, unlocked } from './util';
 
@@ -80,7 +81,9 @@ export function tickPower(s: GameState, dt: number, demandKw: number) {
     plantOut += out;
     remaining -= out;
   }
-  const gridOut = Math.min(Math.max(0, remaining), contract.capacity);
+  // a blackout cuts what the grid can deliver (the basic fee is still due)
+  const gridCap = contract.capacity * (s.effects.length ? gridFactor(s) : 1);
+  const gridOut = Math.min(Math.max(0, remaining), gridCap);
   const supplied = plantOut + gridOut;
   // grid bill: energy plus the monthly basic fee spread per tick
   const energyCost = gridOut * hours * contract.energyPrice;
@@ -89,8 +92,8 @@ export function tickPower(s: GameState, dt: number, demandKw: number) {
   p.kwhToday += supplied * hours;
   p.costToday += energyCost + basic;
   p.demand = demandKw;
-  p.supply = plantCap + contract.capacity;
-  p.gridCapacity = contract.capacity;
+  p.supply = plantCap + gridCap;
+  p.gridCapacity = gridCap;
   p.plantCapacity = plantCap;
   p.plantOutput = plantOut;
   p.gridOutput = gridOut;

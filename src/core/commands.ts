@@ -13,6 +13,11 @@ import {
   maxMachines,
 } from './facilities';
 import { invalidateCosts, updateProblems } from './engine';
+import { divisionOfHead, ensureDivision, headProblem, members, subsidiaryCost, subsidiaryName } from './divisions';
+import { chooseEvent } from './events';
+import { acceptOrder, cancelOrder, declineOrder, deliverNow } from './orders';
+import { divisionName, inSubsidiary } from './org';
+import { sellSurplus } from './surplus';
 import { loanLimit } from './finance';
 import { refreshLogistics } from './logistics';
 import { buyQuote, executeBuy, executeSell, unitPrice } from './market';
@@ -74,7 +79,7 @@ function autoAssign(s: GameState): number {
     return r.valueAdded / r.time + (f.stage !== 'manual' ? 2e5 : 0);
   };
   const targets = s.facilities
-    .filter((f) => !(f.building && f.building.kind === 'build'))
+    .filter((f) => !(f.building && f.building.kind === 'build') && !inSubsidiary(s, f))
     .sort((a, b) => value(b) - value(a));
   let n = 0;
   for (const e of idle) {
@@ -90,8 +95,51 @@ function autoAssign(s: GameState): number {
   return n;
 }
 
+/** a subsidiary runs its own facilities and people: the player's commands on them are refused */
+function subsidiaryLock(s: GameState, cmd: Command): string | null {
+  const locked = (fid: number | null | undefined) => {
+    if (fid === null || fid === undefined) return null;
+    const f = facilityById(s, fid);
+    if (!f || !inSubsidiary(s, f)) return null;
+    return `「${s.divisions[f.type].sub!.name}」（子会社）の施設です。子会社の画面から本社に戻せます`;
+  };
+  const person = (eid: number) => {
+    const e = s.employees.find((x) => x.id === eid);
+    if (!e) return null;
+    const d = divisionOfHead(s, e.id);
+    if (d?.sub && cmd.type !== 'setDivisionHead') return `${d.sub.name}の社長です`;
+    return locked(e.assignedTo);
+  };
+  switch (cmd.type) {
+    case 'gather':
+    case 'upgradeLevel':
+    case 'buyMachine':
+    case 'automate':
+    case 'setRecipe':
+    case 'setManager':
+    case 'setAutomation':
+      return locked(cmd.facilityId);
+    case 'assign':
+      return person(cmd.employeeId) ?? locked(cmd.facilityId);
+    case 'fire':
+    case 'promote':
+      return person(cmd.employeeId);
+    default:
+      return null;
+  }
+}
+
+/** the rule engine's own actions (division heads, subsidiaries): same checks, no lock, problems are updated once a day */
+export function execCommand(s: GameState, cmd: Command): CommandResult {
+  const res = run(s, cmd);
+  if (res.ok) invalidateCosts(s);
+  return res;
+}
+
 export function applyCommand(s: GameState, cmd: Command): CommandResult {
   checkGoals(s);
+  const lock = subsidiaryLock(s, cmd);
+  if (lock) return fail(lock);
   const res = run(s, cmd);
   if (res.ok) {
     invalidateCosts(s);
@@ -270,6 +318,8 @@ function run(s: GameState, cmd: Command): CommandResult {
       if (!e) return fail('社員がいません');
       pay(s, 'salaries', e.salary * DATA.balance.staff.severanceMonths);
       unassign(s, e);
+      const led = divisionOfHead(s, e.id);
+      if (led) led.headId = null;
       s.employees = s.employees.filter((x) => x.id !== e.id);
       s.staffRev++;
       return OK;
@@ -306,16 +356,20 @@ function run(s: GameState, cmd: Command): CommandResult {
         if (e.skill < 3) return fail('熟練度★3から技術者になれます');
       } else if (cmd.role === 'manager') {
         if (!hasFeature(s, 'managers')) return fail('研究「工場長制度」で解放されます');
-        if (e.role === 'researcher') return fail('研究員は工場長になれません');
+        if (e.role === 'researcher' || e.role === 'director') return fail('研究員と部門長は工場長になれません');
         if (e.skill < 4) return fail('熟練度★4から工場長になれます');
+      } else if (cmd.role === 'director') {
+        if (!hasFeature(s, 'divisions')) return fail('研究「部門制」で解放されます');
+        if (e.role !== 'manager') return fail('部門長になれるのは工場長です');
       } else return fail('その役職にはできません');
       unassign(s, e);
       e.role = cmd.role;
-      if (cmd.role === 'manager') e.specialty = 'management';
+      if (cmd.role === 'manager' || cmd.role === 'director') e.specialty = 'management';
       e.salary = Math.max(e.salary, baseSalary(cmd.role, e.skill));
       s.staffRev++;
-      notify(s, 'good', cmd.role === 'manager' ? 'ppl_foreman' : 'ppl_engineer', `${e.name}さんが${DATA.balance.staff.roles[cmd.role].name}に昇進`, '', { screen: 'staff' });
-      addHistory(s, cmd.role === 'manager' ? 'ppl_foreman' : 'ppl_engineer', `${e.name}さんが${DATA.balance.staff.roles[cmd.role].name}に`);
+      const icon = cmd.role === 'director' ? 'ppl_manager' : cmd.role === 'manager' ? 'ppl_foreman' : 'ppl_engineer';
+      notify(s, 'good', icon, `${e.name}さんが${DATA.balance.staff.roles[cmd.role].name}に昇進`, cmd.role === 'director' ? '部門を任せると、同じ種類の施設をまとめて運営します' : '', { screen: 'staff' });
+      addHistory(s, icon, `${e.name}さんが${DATA.balance.staff.roles[cmd.role].name}に`);
       return OK;
     }
 
@@ -552,6 +606,110 @@ function run(s: GameState, cmd: Command): CommandResult {
     case 'setSetting': {
       (s.settings as unknown as Record<string, unknown>)[cmd.key] = cmd.value;
       return OK;
+    }
+
+    case 'sellSurplus': {
+      const gate = need(s, 'market', 'まだ市場を使えません');
+      if (gate) return gate;
+      const r = sellSurplus(s);
+      if (!r.lines) return fail('売れる余りがありません（使う分は残しています）');
+      milestone(s, 'firstSale', 'fin_cash', '初めての販売');
+      return { ok: true, message: `${r.lines}品目を${yen(r.value)}で売りました${r.capped ? '（値崩れしないよう一部だけ）' : ''}` };
+    }
+
+    case 'setDivisionHead': {
+      const err = headProblem(s, cmd.facilityType, cmd.employeeId);
+      if (err) return fail(err);
+      const d = ensureDivision(s, cmd.facilityType);
+      if (cmd.employeeId === null) {
+        if (d.sub) return fail('子会社には社長が必要です（交代はできます）');
+        d.headId = null;
+        s.staffRev++;
+        return OK;
+      }
+      const e = s.employees.find((x) => x.id === cmd.employeeId)!;
+      const other = divisionOfHead(s, e.id);
+      if (other && other !== d) {
+        if (other.sub) return fail(`${e.name}さんは${other.sub.name}の社長です`);
+        other.headId = null;
+      }
+      unassign(s, e);
+      d.headId = e.id;
+      s.staffRev++;
+      milestone(s, 'firstDivision', 'ppl_manager', `初めての部門長（${e.name}さんに${divisionName(cmd.facilityType)}を任せる）`);
+      return OK;
+    }
+
+    case 'setDivision': {
+      const gate = need(s, 'divisions', '研究「部門制」で解放されます');
+      if (gate) return gate;
+      if (!DATA.facility[cmd.facilityType]) return fail('施設の種類がありません');
+      const d = ensureDivision(s, cmd.facilityType);
+      if (cmd.hire !== undefined) d.hire = d.sub ? true : cmd.hire;
+      if (cmd.invest !== undefined) {
+        if (!(cmd.invest >= 0 && cmd.invest <= 1)) return fail('0〜100%で選んでください');
+        d.invest = cmd.invest;
+      }
+      return OK;
+    }
+
+    case 'makeSubsidiary': {
+      const gate = need(s, 'subsidiaries', '研究「子会社」で解放されます');
+      if (gate) return gate;
+      const d = s.divisions[cmd.facilityType];
+      if (!d || d.headId === null) return fail('先に部門長を任命してください');
+      if (d.sub) return fail('すでに子会社です');
+      const minN = DATA.balance.divisions.minFacilities;
+      if (members(s, cmd.facilityType).length < minN) return fail(`${minN}施設以上ある部門を子会社にできます`);
+      const cost = subsidiaryCost(s, cmd.facilityType);
+      if (s.cash < cost) return fail(`資金が足りません（設立費 ${yen(cost)}）`);
+      pay(s, 'other', cost);
+      d.sub = { name: subsidiaryName(s, cmd.facilityType), since: dayIndex(s.tick) };
+      d.hire = true;
+      if (d.invest < 0.5) d.invest = 0.5;
+      s.staffRev++;
+      const head = s.employees.find((x) => x.id === d.headId);
+      notify(s, 'good', 'fin_merger', `子会社「${d.sub.name}」を設立`, `${head ? `${head.name}さんが社長です。` : ''}${divisionName(d.type)}は本社の管理を離れ、利益で自ら育ちます`, { screen: 'division', id: d.type });
+      addHistory(s, 'fin_merger', `子会社「${d.sub.name}」を設立`);
+      return OK;
+    }
+
+    case 'dissolveSubsidiary': {
+      const d = s.divisions[cmd.facilityType];
+      if (!d?.sub) return fail('子会社ではありません');
+      const name = d.sub.name;
+      d.sub = null;
+      s.staffRev++;
+      notify(s, 'info', 'fin_merger', `「${name}」を本社に戻しました`, `${divisionName(d.type)}として部門長が運営します`, { screen: 'division', id: d.type });
+      addHistory(s, 'fin_merger', `「${name}」を本社の部門に戻す`);
+      return OK;
+    }
+
+    case 'acceptOrder': {
+      const gate = need(s, 'orders', '「製材所を建てて製材を作ろう」を達成すると注文が来ます');
+      if (gate) return gate;
+      const err = acceptOrder(s, cmd.orderId);
+      return err ? fail(err) : { ok: true, message: '注文を受けました。在庫から毎日納品します' };
+    }
+
+    case 'declineOrder': {
+      const err = declineOrder(s, cmd.orderId);
+      return err ? fail(err) : OK;
+    }
+
+    case 'deliverOrder': {
+      const r = deliverNow(s, cmd.orderId);
+      return r.error ? fail(r.error) : { ok: true, message: `${Math.round(r.qty).toLocaleString()}を納品しました` };
+    }
+
+    case 'cancelOrder': {
+      const err = cancelOrder(s, cmd.orderId);
+      return err ? fail(err) : OK;
+    }
+
+    case 'chooseEvent': {
+      const err = chooseEvent(s, cmd.eventId, cmd.choice);
+      return err ? fail(err) : OK;
     }
   }
 }

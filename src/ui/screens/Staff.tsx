@@ -10,13 +10,14 @@ import { useUI } from '../../store/ui';
 import { Icon, Tabs } from '../components';
 import { stars, yen, yenShort } from '../format';
 
-const ROLE_ICON: Record<RoleId, string> = { worker: 'ppl_worker', engineer: 'ppl_engineer', researcher: 'ppl_researcher', manager: 'ppl_foreman' };
+export const ROLE_ICON: Record<RoleId, string> = { worker: 'ppl_worker', engineer: 'ppl_engineer', researcher: 'ppl_researcher', manager: 'ppl_foreman', director: 'ppl_manager' };
 
 /** places a new hire of each role could go to right now (idle people of that role take them first) */
 function openings(s: GameState): Record<RoleId, number> {
-  const out: Record<RoleId, number> = { worker: 0, engineer: 0, researcher: 0, manager: 0 };
+  const out: Record<RoleId, number> = { worker: 0, engineer: 0, researcher: 0, manager: 0, director: 0 };
   for (const f of s.facilities) {
     if (f.building && f.building.kind === 'build') continue;
+    if (s.divisions[f.type]?.sub) continue;
     const room = Math.max(0, staffCapacity(s, f) - employeesAt(s, f.id).length);
     if (!room) continue;
     const roles = rolesFor(f);
@@ -25,7 +26,7 @@ function openings(s: GameState): Record<RoleId, number> {
   }
   if (s.features.managers) for (const f of s.facilities) if (f.managerId === null && f.recipe && !(f.building && f.building.kind === 'build')) out.manager++;
   for (const e of s.employees) {
-    if (e.assignedTo !== null) continue;
+    if (e.assignedTo !== null || e.role === 'director') continue;
     if (e.role === 'researcher') out.researcher--;
     else if (e.role === 'manager') out.manager--;
     else out.worker--;
@@ -41,9 +42,12 @@ export function Staff() {
       const d = dayIndex(s.tick);
       const groups = new Map<string, { name: string; people: { id: number; name: string; role: RoleId; skill: number; specialty: string; salary: number }[] }>();
       const idle: { id: number; name: string; role: RoleId; skill: number; specialty: string; salary: number }[] = [];
+      const heads: { id: number; name: string; role: RoleId; skill: number; specialty: string; salary: number; leads: string }[] = [];
+      const leads = new Map(Object.values(s.divisions).filter((d) => d.headId !== null).map((d) => [d.headId!, d.sub ? `${d.sub.name}の社長` : `${DATA.facility[d.type].short}部門`]));
       for (const e of s.employees) {
         const row = { id: e.id, name: e.name, role: e.role, skill: e.skill, specialty: e.specialty, salary: e.salary };
-        if (e.assignedTo === null) idle.push(row);
+        if (e.role === 'director') heads.push({ ...row, leads: leads.get(e.id) ?? 'まだ部門を任せていません' });
+        else if (e.assignedTo === null) idle.push(row);
         else {
           const f = facilityById(s, e.assignedTo);
           const key = String(e.assignedTo);
@@ -58,6 +62,7 @@ export function Staff() {
         payroll: s.employees.reduce((t, e) => t + e.salary, 0),
         byRole,
         idle,
+        heads,
         groups: [...groups.values()],
         candidates: s.candidates.map((c) => ({ ...c, left: c.expires - d })),
         canHire: !!s.features.hire,
@@ -120,6 +125,14 @@ export function Staff() {
             </button>
           </div>
           {v.total === 0 && <div className="card empty">まだ社員がいません。応募者タブから採用しましょう。</div>}
+          {v.heads.length > 0 && (
+            <div className="card">
+              <span className="small bold">部門長</span>
+              {v.heads.map((p) => (
+                <PersonRow key={p.id} p={p} note={p.leads} onClick={() => openSheet({ kind: 'employee', id: p.id })} />
+              ))}
+            </div>
+          )}
           {v.idle.length > 0 && (
             <div className="card">
               <span className="small bold warn">待機中</span>
@@ -180,7 +193,7 @@ export function Staff() {
                     </span>
                   )}
                 </div>
-                <button className={`btn small${v.open[c.role] <= 0 ? ' soft' : ''}`} disabled={!v.canHire || v.cash < DATA.balance.staff.hireFee} onClick={() => dispatch({ type: 'hire', candidateId: c.id })} data-testid="hire">
+                <button className={`btn small${v.open[c.role] <= 0 ? ' soft' : ''}`} disabled={!v.canHire || v.cash < DATA.balance.staff.hireFee} onClick={() => dispatch({ type: 'hire', candidateId: c.id })} data-testid={c.role === 'researcher' ? 'hire-researcher' : 'hire'}>
                   採用
                 </button>
               </div>
@@ -192,14 +205,14 @@ export function Staff() {
   );
 }
 
-function PersonRow({ p, onClick }: { p: { id: number; name: string; role: RoleId; skill: number; specialty: string; salary: number }; onClick: () => void }) {
+function PersonRow({ p, onClick, note }: { p: { id: number; name: string; role: RoleId; skill: number; specialty: string; salary: number }; onClick: () => void; note?: string }) {
   return (
     <button className="row" style={{ width: '100%', border: 'none', background: 'none', padding: '7px 0', textAlign: 'left' }} onClick={onClick}>
       <Icon id={ROLE_ICON[p.role]} size={34} />
       <div className="grow col" style={{ gap: 0 }}>
         <span className="small bold">{p.name}</span>
         <span className="tiny dim">
-          {DATA.balance.staff.roles[p.role].name}・<span className="warn">{stars(p.skill)}</span>・得意 {SPECIALTY_NAME[p.specialty as keyof typeof SPECIALTY_NAME]}
+          {DATA.balance.staff.roles[p.role].name}・<span className="warn">{stars(p.skill)}</span>・{note ?? `得意 ${SPECIALTY_NAME[p.specialty as keyof typeof SPECIALTY_NAME]}`}
         </span>
       </div>
       <span className="tiny muted num">{yen(p.salary)}</span>

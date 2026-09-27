@@ -1,5 +1,6 @@
 import { DATA } from '../data';
 import { mods } from './mods';
+import { divisionFor, subsidiaryFacilityIds } from './org';
 import type { GameState } from './types';
 import { hasFeature, pay } from './util';
 
@@ -66,12 +67,27 @@ export function dailyLogistics(s: GameState, wantedToday: number) {
 /** management points: facilities and head count against the head office's capacity */
 export function managementLoad(s: GameState): number {
   const m = DATA.balance.management;
+  const perDiv = DATA.balance.divisions.loadPerFacility;
   let pts = 0;
+  let subs = 0;
   for (const f of s.facilities) {
-    if (f.level === 0) pts += 0.5 * m.perFacility;
-    else pts += f.managerId !== null ? m.perFacilityWithManager : m.perFacility;
+    const d = divisionFor(s, f);
+    // a subsidiary has its own head office
+    if (d?.sub) {
+      subs++;
+      continue;
+    }
+    const own = f.managerId !== null ? m.perFacilityWithManager : m.perFacility;
+    if (f.level === 0) pts += 0.5 * Math.min(own, d ? perDiv * 2 : own);
+    else pts += d ? Math.min(own, perDiv) : own;
   }
-  pts += s.employees.length / m.employeesPerPoint;
+  let staff = s.employees.length;
+  if (subs) {
+    const ids = subsidiaryFacilityIds(s);
+    const heads = new Set(Object.values(s.divisions).filter((d) => d.sub && d.headId !== null).map((d) => d.headId));
+    for (const e of s.employees) if ((e.assignedTo !== null && ids.has(e.assignedTo)) || heads.has(e.id)) staff--;
+  }
+  pts += staff / m.employeesPerPoint;
   return pts;
 }
 

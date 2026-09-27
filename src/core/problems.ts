@@ -4,7 +4,9 @@ import { avgProfit, loanLimit } from './finance';
 import { managementCapacity, managementFactor, managementLoad } from './logistics';
 import { buyQuote, unitPrice } from './market';
 import { contractAvailable, isPlant } from './power';
+import { divisionFor, inSubsidiary } from './org';
 import { storageCapacity, storedWeight } from './production';
+import { surplusPlan } from './surplus';
 import { plannedFlows } from './rates';
 import { techAvailable } from './research';
 import { staffCapacity, employeesAt } from './staff';
@@ -35,6 +37,21 @@ function researchSolution(s: GameState, techId: string, label: string): Solution
     detail: `研究「${t.name}」（${t.cost.toLocaleString()} RP）`,
     link: { screen: 'research', id: techId },
     disabled: techAvailable(s, techId) || s.research.current === techId ? undefined : '前提の研究がまだです',
+  };
+}
+
+/** "sell what is not needed" with what it would bring in now */
+function surplusSolution(s: GameState): Solution | null {
+  if (!hasFeature(s, 'market')) return null;
+  const plan = surplusPlan(s);
+  const total = plan.reduce((t, l) => t + l.value, 0);
+  return {
+    kind: 'surplus',
+    icon: 'fin_price',
+    label: '余った在庫を売る',
+    detail: plan.length ? `${plan.length}品目・約${yen(total)}（使う分は残す）` : '売れる余りがありません',
+    command: { type: 'sellSurplus' },
+    disabled: plan.length ? undefined : '売れる余りがありません（使う分は残しています）',
   };
 }
 
@@ -167,7 +184,7 @@ function powerProblems(s: GameState, out: Problem[]) {
 
 function staffProblems(s: GameState, out: Problem[]) {
   if (!hasFeature(s, 'hire')) return;
-  const idle = s.employees.filter((e) => e.assignedTo === null && e.role !== 'manager');
+  const idle = s.employees.filter((e) => e.assignedTo === null && e.role !== 'manager' && e.role !== 'director');
   if (idle.length) {
     out.push({
       key: 'idle',
@@ -187,6 +204,9 @@ function staffProblems(s: GameState, out: Problem[]) {
     const def = defOf(f);
     if (!isProduction(def) && !isPlant(f) && f.type !== 'research_lab') continue;
     if (f.building && f.building.kind === 'build') continue;
+    // a division head who hires fills these by the next morning
+    const d = divisionFor(s, f);
+    if (d && (d.hire || d.sub)) continue;
     const capN = staffCapacity(s, f);
     if (capN <= 0) continue;
     const have = employeesAt(s, f.id).length;
@@ -225,13 +245,15 @@ function storageProblem(s: GameState, out: Problem[]) {
   if (ratio < DATA.balance.problems.storageYellow) return;
   const wh = s.facilities.find((f) => f.type === 'warehouse');
   const solutions: Solution[] = [
-    { kind: 'sell', icon: 'fin_price', label: '在庫を売る', detail: '資産画面から重い在庫を売る', link: { screen: 'assets' } },
+    { kind: 'sell', icon: 'nav_assets', label: '在庫を選んで売る', detail: '資産画面から重い在庫を売る', link: { screen: 'assets' } },
   ];
+  const surplus = surplusSolution(s);
+  if (surplus) solutions.unshift(surplus);
   if (hasFeature(s, 'build')) {
-    solutions.unshift({ kind: 'build', icon: 'warehouse', label: '倉庫を建設', detail: `${yen(DATA.facility.warehouse.buildCost)}で+${(DATA.facility.warehouse.storage ?? 0).toLocaleString()}t`, link: { screen: 'build', id: 'warehouse' } });
+    solutions.splice(surplus ? 1 : 0, 0, { kind: 'build', icon: 'warehouse', label: '倉庫を建設', detail: `${yen(DATA.facility.warehouse.buildCost)}で+${(DATA.facility.warehouse.storage ?? 0).toLocaleString()}t`, link: { screen: 'build', id: 'warehouse' } });
   }
   if (wh && wh.level < DATA.facility.warehouse.maxLevel && !wh.building) {
-    solutions.splice(1, 0, { kind: 'expand', icon: 'ui_construction', label: '倉庫を拡張', detail: `${yen(levelUpCost(wh))}`, command: { type: 'upgradeLevel', facilityId: wh.id } });
+    solutions.splice(solutions.length - 1, 0, { kind: 'expand', icon: 'ui_construction', label: '倉庫を拡張', detail: `${yen(levelUpCost(wh))}`, command: { type: 'upgradeLevel', facilityId: wh.id } });
   }
   solutions.push({ kind: 'reduce', icon: 'st_trend_down', label: '生産を調整', detail: '売れない物の生産を止める', link: { screen: 'production' } });
   out.push({
@@ -296,7 +318,8 @@ function cashProblem(s: GameState, out: Problem[]) {
       impact: ['💰 高い利息がかかっています'],
       solutions: [
         { kind: 'borrow', icon: 'fin_bank', label: '銀行から借りる', detail: `${yen(want)}（年利${(DATA.balance.finance.loanRateYear * 100).toFixed(0)}%）`, command: { type: 'borrow', amount: want }, disabled: want <= 0 ? '借入枠がありません' : undefined },
-        { kind: 'sell', icon: 'fin_price', label: '在庫を売る', detail: '資産画面から売る', link: { screen: 'assets' } },
+        ...[surplusSolution(s)].filter((x): x is Solution => x !== null),
+        { kind: 'sell', icon: 'nav_assets', label: '在庫を選んで売る', detail: '資産画面から売る', link: { screen: 'assets' } },
         { kind: 'cut', icon: 'st_trend_down', label: '赤字の施設を止める', detail: '財務画面で内訳を見る', link: { screen: 'finance' } },
       ],
     });
@@ -313,6 +336,7 @@ function cashProblem(s: GameState, out: Problem[]) {
         detail: `1日あたり ${yen(profit)}`,
         impact: ['💰 売上より費用が多い状態です'],
         solutions: [
+          ...[surplusSolution(s)].filter((x): x is Solution => x !== null && !x.disabled),
           { kind: 'finance', icon: 'nav_finance', label: '収支を見る', detail: '何にお金がかかっているか', link: { screen: 'finance' } },
           { kind: 'borrow', icon: 'fin_bank', label: '借入', detail: `借入枠 ${yen(Math.max(0, limit))}`, link: { screen: 'finance' } },
         ],
@@ -325,7 +349,7 @@ function lossProblems(s: GameState, out: Problem[]) {
   const n = DATA.balance.problems.lossDays;
   const losers = s.facilities.filter((f) => {
     const h = f.stats.profitHist;
-    if (h.length < n || !f.recipe) return false;
+    if (h.length < n || !f.recipe || inSubsidiary(s, f)) return false;
     let t = 0;
     for (let i = h.length - n; i < h.length; i++) t += h[i];
     return t < 0 && f.rate > 0;
@@ -367,6 +391,25 @@ function managementProblem(s: GameState, out: Problem[]) {
   else {
     const rs = researchSolution(s, 'a_managers', '工場長制度を研究');
     if (rs && hasFeature(s, 'research')) solutions.push(rs);
+  }
+  // the kind with the most facilities and no head yet
+  const counts = new Map<string, number>();
+  for (const f of s.facilities) if (isProduction(defOf(f)) && !divisionFor(s, f)) counts.set(f.type, (counts.get(f.type) ?? 0) + 1);
+  const biggest = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (hasFeature(s, 'divisions')) {
+    if (biggest && biggest[1] >= 2) {
+      solutions.push({ kind: 'division', icon: 'ppl_manager', label: '部門長に任せる', detail: `${DATA.facility[biggest[0]].short}の${biggest[1]}施設をまとめて運営（負担 ${DATA.balance.divisions.loadPerFacility}/施設）`, link: { screen: 'division', id: biggest[0] } });
+    }
+  } else if (hasFeature(s, 'managers')) {
+    const rs = researchSolution(s, 'g_division', '部門制を研究');
+    if (rs) solutions.push(rs);
+  }
+  if (hasFeature(s, 'subsidiaries')) {
+    const big = Object.values(s.divisions).filter((d) => d.headId !== null && !d.sub).sort((a, b) => s.facilities.filter((f) => f.type === b.type).length - s.facilities.filter((f) => f.type === a.type).length)[0];
+    if (big) solutions.push({ kind: 'subsidiary', icon: 'fin_merger', label: '子会社にする', detail: `${DATA.facility[big.type].short}部門を子会社に（本社の管理を使わない）`, link: { screen: 'division', id: big.type } });
+  } else if (hasFeature(s, 'divisions')) {
+    const rs = researchSolution(s, 'g_holding', '子会社を研究');
+    if (rs) solutions.push(rs);
   }
   const org = researchSolution(s, 'g_org', '組織管理');
   if (org && hasFeature(s, 'managers')) solutions.push(org);

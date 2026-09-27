@@ -76,6 +76,45 @@ export function check(s: GameState, where: string) {
     const f = s.facilities.find((x) => x.id === e.assignedTo);
     if (f && f.managerId !== e.id) bad(`manager ${e.id} sits at f${f.id} without being its manager`);
   }
+  // divisions: a head is a director who leads one division; a subsidiary always has its head
+  const led = new Set<number>();
+  for (const [type, d] of Object.entries(s.divisions)) {
+    if (d.type !== type) bad(`division ${type} says ${d.type}`);
+    fin(d.budget, `division ${type} budget`);
+    fin(d.spent, `division ${type} spent`);
+    if (d.budget < -1e-6) bad(`division ${type} budget ${d.budget}`);
+    if (d.invest < 0 || d.invest > 1) bad(`division ${type} invest ${d.invest}`);
+    if (d.headId !== null) {
+      const h = s.employees.find((e) => e.id === d.headId);
+      if (!h) bad(`division ${type} head ${d.headId} is gone`);
+      else if (h.role !== 'director') bad(`division ${type} head has role ${h.role}`);
+      else if (h.assignedTo !== null) bad(`division head ${h.id} also works at f${h.assignedTo}`);
+      if (led.has(d.headId)) bad(`head ${d.headId} leads two divisions`);
+      led.add(d.headId);
+    }
+    if (d.sub && d.headId === null) bad(`subsidiary ${type} without a head`);
+  }
+  for (const e of s.employees) if (e.role === 'director' && e.assignedTo !== null) bad(`director ${e.id} assigned to f${e.assignedTo}`);
+  // orders
+  for (const o of s.orders.list) {
+    fin(o.qty, `order ${o.id} qty`);
+    fin(o.delivered, `order ${o.id} delivered`);
+    fin(o.price, `order ${o.id} price`);
+    if (!(o.qty > 0) || o.delivered < -1e-9 || o.delivered > o.qty + 1e-6) bad(`order ${o.id} ${o.delivered}/${o.qty}`);
+    if (!DATA.item[o.item]) bad(`order ${o.id} item ${o.item}`);
+  }
+  if (s.orders.list.filter((o) => o.status === 'active').length > DATA.balance.orders.maxActive) bad('too many active orders');
+  // events and their effects
+  if (s.events.pending.length > 1) bad(`${s.events.pending.length} events waiting`);
+  for (const e of s.events.pending) {
+    if (!DATA.event[e.kind]) bad(`event ${e.kind}`);
+    for (const [k, v] of Object.entries(e.costs)) fin(v, `event ${e.kind} cost ${k}`);
+  }
+  for (const x of s.effects) {
+    fin(x.value, `effect ${x.kind}`);
+    if (x.kind === 'down' && !fids.has(x.target ?? -1)) bad(`repair of missing f${x.target}`);
+  }
+  if (s.owner.queue.length > DATA.balance.time.tapQueue) bad(`tap queue ${s.owner.queue.length}`);
   if (s.candidates.length > 24) bad(`${s.candidates.length} candidates`);
   if (s.notices.length > 120) bad(`${s.notices.length} notices`);
   for (const c of s.contracts) fin(c.price, `contract ${c.id} price`);
@@ -88,7 +127,7 @@ export function randomCommand(s: GameState, r: () => number): Command {
   const emp = () => (s.employees.length ? pick(s.employees) : null);
   const item = () => pick(DATA.items).id;
   const qty = () => pick([0, 0.5, 1, 3, 10, 100, 1000, 1e5, 1e9]);
-  const roll = Math.floor(r() * 34);
+  const roll = Math.floor(r() * 44);
   switch (roll) {
     case 0:
       return { type: 'gather', facilityId: fac()?.id ?? -1 };
@@ -120,7 +159,7 @@ export function randomCommand(s: GameState, r: () => number): Command {
     case 12:
       return { type: 'autoAssign' };
     case 13:
-      return { type: 'promote', employeeId: emp()?.id ?? -1, role: pick(['worker', 'engineer', 'researcher', 'manager'] as const) };
+      return { type: 'promote', employeeId: emp()?.id ?? -1, role: pick(['worker', 'engineer', 'researcher', 'manager', 'director'] as const) };
     case 14: {
       const managers = s.employees.filter((e) => e.role === 'manager');
       return { type: 'setManager', facilityId: fac()?.id ?? -1, employeeId: r() < 0.2 ? null : managers.length ? pick(managers).id : emp()?.id ?? -1 };
@@ -183,6 +222,39 @@ export function randomCommand(s: GameState, r: () => number): Command {
       return { type: 'rename', facilityId: fac()?.id ?? -1, name: pick(['', '  ', '新工場', 'x'.repeat(100)]) };
     case 32:
       return { type: 'setSpeed', speed: pick([0, 1, 4, 12, 48, 3]) };
+    case 34:
+      return { type: 'sellSurplus' };
+    case 35: {
+      const directors = s.employees.filter((e) => e.role === 'director');
+      const heads = directors.length && r() < 0.7 ? directors : s.employees.filter((e) => e.role === 'director' || e.role === 'manager');
+      const type = r() < 0.8 && s.facilities.length ? pick(s.facilities).type : pick(DATA.facilities).id;
+      return { type: 'setDivisionHead', facilityType: type, employeeId: r() < 0.15 ? null : heads.length ? pick(heads).id : emp()?.id ?? -1 };
+    }
+    case 36:
+      return { type: 'setDivision', facilityType: s.facilities.length ? pick(s.facilities).type : 'forestry', hire: r() < 0.5, invest: pick([0, 0.25, 0.5, 1, 2, -1]) };
+    case 37: {
+      // mostly a division that has a head, so subsidiaries really get made
+      const led = Object.values(s.divisions).filter((d) => d.headId !== null);
+      return { type: 'makeSubsidiary', facilityType: led.length && r() < 0.8 ? pick(led).type : s.facilities.length ? pick(s.facilities).type : 'forestry' };
+    }
+    case 38: {
+      const subs = Object.values(s.divisions).filter((d) => d.sub);
+      return { type: 'dissolveSubsidiary', facilityType: subs.length && r() < 0.5 ? pick(subs).type : s.facilities.length ? pick(s.facilities).type : 'forestry' };
+    }
+    case 39: {
+      const o = s.orders.list.length ? pick(s.orders.list).id : -1;
+      return pick<Command>([
+        { type: 'acceptOrder', orderId: o },
+        { type: 'declineOrder', orderId: o },
+        { type: 'deliverOrder', orderId: o },
+        { type: 'cancelOrder', orderId: o },
+      ]);
+    }
+    case 40: {
+      const e = s.events.pending.length ? pick(s.events.pending) : null;
+      const choices = e ? DATA.event[e.kind].choices.map((c) => c.id) : ['x'];
+      return { type: 'chooseEvent', eventId: e?.id ?? -1, choice: r() < 0.9 ? pick(choices) : 'nope' };
+    }
     default:
       return pick<Command>([{ type: 'resumeFromAutoPause' }, { type: 'readNotices' }, { type: 'renameCompany', name: pick(['', '新社名']) }]);
   }
@@ -196,9 +268,10 @@ export interface FuzzResult {
 
 /**
  * One company: mode 0 fresh, 1 mid-way (every goal feature, research open),
- * 2 with everything researched. Throws nothing; returns the first broken invariant.
+ * 2 with everything researched, 3 like 2 with a subsidiary running from the
+ * start. Throws nothing; returns the first broken invariant.
  */
-export function fuzzRun(run: number, steps: number, mode = run % 3): FuzzResult {
+export function fuzzRun(run: number, steps: number, mode = run % 4): FuzzResult {
   const counts: Record<string, { ok: number; no: number }> = {};
   const r = rng(1000 + run);
   const s = createInitialState({ seed: run + 1 });
@@ -206,7 +279,21 @@ export function fuzzRun(run: number, steps: number, mode = run % 3): FuzzResult 
     for (const g of DATA.goals) for (const f of g.unlocks) s.features[f] = true;
     s.cash = mode === 1 ? 1e9 : 5e10;
   }
-  if (mode === 2) for (const t of DATA.techs) completeResearch(s, t.id);
+  if (mode >= 2) for (const t of DATA.techs) completeResearch(s, t.id);
+  if (mode === 3) {
+    // three forestry sites run by a subsidiary, with a spare director
+    for (let i = 0; i < 2; i++) applyCommand(s, { type: 'build', facility: 'forestry' });
+    runTicks(s, 240 * 3, false);
+    for (let i = 0; i < 2; i++) {
+      const id = s.nextId++;
+      s.employees.push({ id, name: `社長 ${id}`, role: 'manager', skill: 5, exp: 0, specialty: 'management', salary: 700000, assignedTo: null, hiredDay: 0 });
+      applyCommand(s, { type: 'promote', employeeId: id, role: 'director' });
+    }
+    const heads = s.employees.filter((e) => e.role === 'director');
+    applyCommand(s, { type: 'setDivisionHead', facilityType: 'forestry', employeeId: heads[0].id });
+    applyCommand(s, { type: 'makeSubsidiary', facilityType: 'forestry' });
+    if (!s.divisions.forestry?.sub) return { failure: `run ${run}: could not set up the subsidiary`, counts };
+  }
   let last = '';
   try {
     for (let i = 0; i < steps; i++) {

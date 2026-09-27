@@ -51,7 +51,7 @@ export function NewGame({ error }: { error: string | null }) {
           <>
             <textarea className="input" rows={3} value={text} onChange={(e) => setText(e.target.value)} placeholder="KOGYO1: で始まる文字列" aria-label="セーブ" />
             {importError && <p className="small bad">{importError}</p>}
-            <button className="btn soft block" disabled={!text.trim()} onClick={() => setImportError(useGameStore.getState().loadText(text.trim()))}>
+            <button className="btn soft block" disabled={!text.trim()} onClick={() => void useGameStore.getState().loadText(text.trim()).then(setImportError)}>
               読み込む
             </button>
           </>

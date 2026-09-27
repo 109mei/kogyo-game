@@ -1,5 +1,7 @@
 import { DATA, type Goal } from '../../data';
 import type { GameState, Link } from '../../core';
+import { dayIndex } from '../../core/calendar';
+import { eventText } from '../../core/events';
 import { companyValue } from '../../core/finance';
 import { dispatch, useGame } from '../../store/game';
 import { openLink, useUI } from '../../store/ui';
@@ -51,6 +53,126 @@ function goalProgress(s: GameState, g: Goal): number | null {
   }
 }
 
+/** events waiting for a decision, and the temporary conditions they left */
+function Events() {
+  const v = useGame(
+    (s) => {
+      const today = dayIndex(s.tick);
+      return {
+        cash: s.cash,
+        events: s.events.pending.map((e) => {
+          const def = DATA.event[e.kind];
+          return {
+            id: e.id,
+            icon: def.icon,
+            title: eventText(s, e, def.title),
+            body: eventText(s, e, def.body),
+            left: e.until - today,
+            choices: def.choices.map((c, i) => ({
+              id: c.id,
+              label: c.label,
+              detail: eventText(s, e, c.detail, c.id),
+              cost: e.costs[c.id] ?? 0,
+              first: i === 0,
+            })),
+          };
+        }),
+        effects: s.effects.filter((x) => x.until > s.tick).map((x) => ({ label: x.label, left: (x.until - s.tick) / DATA.balance.time.ticksPerDay })),
+      };
+    },
+    [],
+    4,
+  );
+  if (!v.events.length && !v.effects.length) return null;
+  return (
+    <>
+      {v.effects.map((x) => (
+        <div key={x.label} className="banner warn small" data-testid="effect">
+          <span className="grow">{x.label}</span>
+          <span className="num tiny">あと{x.left < 1 ? `${Math.max(1, Math.round(x.left * 24))}時間` : `${Math.ceil(x.left)}日`}</span>
+        </div>
+      ))}
+      {v.events.map((e) => (
+        <div key={e.id} className="card event-card" role="group" aria-label={e.title} data-testid="event">
+          <div className="row">
+            <Icon id={e.icon} size={48} />
+            <div className="grow col" style={{ gap: 2 }}>
+              <span className="tiny bold warn">出来事・{e.left > 0 ? `あと${e.left}日で決める` : '今日中に決める'}</span>
+              <span className="bold">{e.title}</span>
+            </div>
+          </div>
+          <p className="small dim" style={{ marginTop: 6 }}>
+            {e.body}
+          </p>
+          <div className="col" style={{ gap: 6, marginTop: 10 }}>
+            {e.choices.map((c) => (
+              <button
+                key={c.id}
+                className={`btn block choice${c.first ? ' soft' : ''}`}
+                disabled={c.cost > v.cash}
+                onClick={() => dispatch({ type: 'chooseEvent', eventId: e.id, choice: c.id })}
+                data-testid={`choice-${c.id}`}
+              >
+                <span className="col" style={{ gap: 1, alignItems: 'flex-start', textAlign: 'left' }}>
+                  <span>{c.label}</span>
+                  <span className="tiny" style={{ opacity: 0.85, fontWeight: 500 }}>
+                    {c.detail}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+          <p className="tiny muted" style={{ marginTop: 6 }}>
+            決めないと「{e.choices[0].label}」になります。
+          </p>
+        </div>
+      ))}
+    </>
+  );
+}
+
+/** offers waiting for an answer and orders in progress */
+function OrdersCard() {
+  const v = useGame(
+    (s) => {
+      const today = dayIndex(s.tick);
+      const active = s.orders.list.filter((o) => o.status === 'active');
+      return {
+        on: !!s.features.orders,
+        offers: s.orders.list.filter((o) => o.status === 'offer').length,
+        active: active.length,
+        soonest: active.length ? Math.min(...active.map((o) => o.until - today)) : null,
+        progress: active.length ? active.reduce((t, o) => t + o.delivered / o.qty, 0) / active.length : 0,
+      };
+    },
+    [],
+    2,
+  );
+  const push = useUI((s) => s.push);
+  if (!v.on || (!v.offers && !v.active)) return null;
+  return (
+    <button className="card tap row" style={{ border: 'none', textAlign: 'left' }} onClick={() => push({ screen: 'orders' })} data-testid="orders-card">
+      <Icon id="misc_delivery" size={44} />
+      <div className="grow col" style={{ gap: 2 }}>
+        <span className="bold">
+          {v.offers > 0 && `新しい引き合い ${v.offers}件`}
+          {v.offers > 0 && v.active > 0 && '・'}
+          {v.active > 0 && `受注中 ${v.active}件`}
+        </span>
+        {v.active > 0 ? (
+          <>
+            <Bar value={v.progress} label="納品の進み具合" />
+            <span className="tiny dim">いちばん近い納期まで {v.soonest}日</span>
+          </>
+        ) : (
+          <span className="tiny dim">相場より高く買ってくれます。受けるか決めてください</span>
+        )}
+      </div>
+      <span className="small dim">›</span>
+    </button>
+  );
+}
+
 export function Home() {
   const v = useGame((s) => ({
     paused: s.paused,
@@ -79,12 +201,15 @@ export function Home() {
         </div>
       )}
 
+      <Events />
+
       {v.goal && (
         <button className="card goal tap" style={{ border: 'none', textAlign: 'left' }} onClick={() => openLink(GOAL_LINK[v.goal!.id])} data-testid="goal">
           <Icon id="auto_target" size={44} />
           <div className="col" style={{ gap: 3 }}>
-            <span className="tiny bold" style={{ color: 'var(--accent-text)' }}>
-              次の目標
+            <span className="tiny bold spread" style={{ color: 'var(--accent-text)' }}>
+              <span>次の目標</span>
+              {v.goal.reward > 0 && <span className="pill reward">達成で補助金 {yen(v.goal.reward)}</span>}
             </span>
             <span className="bold">{v.goal.title}</span>
             <span className="small dim">{v.goal.hint}</span>
@@ -92,6 +217,8 @@ export function Home() {
           </div>
         </button>
       )}
+
+      <OrdersCard />
 
       <WorldSlot />
 

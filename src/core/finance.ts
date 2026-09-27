@@ -2,6 +2,7 @@ import { DATA } from '../data';
 import { dateOf, dayIndex } from './calendar';
 import { upkeepPerDay } from './facilities';
 import { mods } from './mods';
+import { contractDef } from './power';
 import type { DayRecord, GameState, Ledger } from './types';
 import { emptyLedger, pay } from './util';
 
@@ -57,6 +58,21 @@ export function dailyPayroll(s: GameState): number {
   let t = 0;
   for (const e of s.employees) t += e.salary;
   return t / 30;
+}
+
+/** what the company pays per day whether it sells anything or not: wages, upkeep, interest, the power basic fee */
+export function fixedCostPerDay(s: GameState): number {
+  const f = DATA.balance.finance;
+  const c = contractDef(s.power.contract);
+  return dailyPayroll(s) + dailyUpkeep(s) + (s.loan * f.loanRateYear) / 365 + (c.capacity * c.basicFee) / 30;
+}
+
+/** yen to borrow so that cash covers `days` of fixed costs after spending `spend` (0 if it already does) */
+export function borrowFor(s: GameState, spend: number, days: number, extraPerDay = 0): number {
+  const want = days * (fixedCostPerDay(s) + extraPerDay) - (s.cash - spend);
+  if (want <= 0) return 0;
+  const room = Math.max(0, loanLimit(s) - s.loan);
+  return Math.min(room, Math.ceil(want / 1e5) * 1e5);
 }
 
 /** wages, upkeep and interest for dt days */

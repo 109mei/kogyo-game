@@ -4,6 +4,7 @@ import { useUI, type Route } from '../../store/ui';
 const ITEMS: { route: Route; label: string; icon: string; sub?: (v: Summary) => string }[] = [
   { route: { screen: 'staff' }, label: '人材', icon: 'nav_staff', sub: (v) => `${v.employees}人・応募${v.candidates}` },
   { route: { screen: 'research' }, label: '研究', icon: 'nav_research', sub: (v) => (v.research ? '研究中' : v.canResearch ? '未設定' : '研究所なし') },
+  { route: { screen: 'orders' }, label: '受注', icon: 'misc_delivery', sub: (v) => (v.offers ? `引き合い${v.offers}` : v.active ? `受注中${v.active}` : '') },
   { route: { screen: 'logistics' }, label: '物流', icon: 'nav_logistics', sub: (v) => `${v.logistics}%` },
   { route: { screen: 'power' }, label: '電力', icon: 'nav_power', sub: (v) => v.power },
   { route: { screen: 'finance' }, label: '財務', icon: 'nav_finance' },
@@ -22,6 +23,8 @@ interface Summary {
   logistics: number;
   power: string;
   unread: number;
+  offers: number;
+  active: number;
 }
 
 export function More() {
@@ -34,6 +37,8 @@ export function More() {
       logistics: s.logistics.capacity > 0 ? Math.round((s.logistics.load / s.logistics.capacity) * 100) : 0,
       power: s.power.supply > 0 ? `${Math.round((s.power.demand / s.power.supply) * 100)}%` : '契約なし',
       unread: s.notices.filter((n) => !n.read && n.level !== 'info').length,
+      offers: s.orders.list.filter((o) => o.status === 'offer').length,
+      active: s.orders.list.filter((o) => o.status === 'active').length,
     }),
     [],
     2,

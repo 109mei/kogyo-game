@@ -4,6 +4,7 @@ import { affordable, executeBuy, executeSell, unitPrice } from './market';
 import { mods } from './mods';
 import { gridPrice, powerUse } from './power';
 import { capacityCached, managerBonus } from './production';
+import { divisionFor } from './org';
 import { employeesAt } from './staff';
 import type { Cond, FacilityState, GameState } from './types';
 import { hasFeature } from './util';
@@ -86,7 +87,7 @@ function hysteresis(prev: number, stock: number, low: number, high: number): num
 /** the output rate (0..1.5) automation asks for */
 export function automationRate(s: GameState, f: FacilityState): number {
   const a = f.auto;
-  const manager = f.managerId !== null && hasFeature(s, 'managers');
+  const manager = (f.managerId !== null && hasFeature(s, 'managers')) || divisionFor(s, f) !== null;
   if (!f.recipe) return 1;
   const out = f.recipe;
   const stock = s.inventory[out] ?? 0;
@@ -148,6 +149,6 @@ export function hourlyAutomation(s: GameState) {
     const def = defOf(f);
     if (def.category === 'infrastructure') continue;
     f.rate = automationRate(s, f);
-    if (f.managerId !== null && hasFeature(s, 'managers')) manage(s, f);
+    if ((f.managerId !== null && hasFeature(s, 'managers')) || divisionFor(s, f) !== null) manage(s, f);
   }
 }

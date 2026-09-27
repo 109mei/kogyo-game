@@ -84,6 +84,7 @@ export function Power() {
                 <button
                   className="btn small soft"
                   disabled={!c.ok}
+                  data-testid={`contract-${c.id}`}
                   onClick={() => {
                     const change = () => dispatch({ type: 'setPowerContract', contract: c.id });
                     // a smaller contract than the machines need stops the factory: ask first

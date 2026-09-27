@@ -1,7 +1,7 @@
 import { DATA, type GoalCondition } from '../data';
 import { companyValue } from './finance';
 import type { GameState } from './types';
-import { addHistory, milestone, notify, techDone } from './util';
+import { addHistory, earn, milestone, notify, techDone, yenText } from './util';
 
 export function goalMet(s: GameState, c: GoalCondition): boolean {
   switch (c.type) {
@@ -42,7 +42,9 @@ export function checkGoals(s: GameState): boolean {
     s.goals.done.push(g.id);
     for (const f of g.unlocks) s.features[f] = true;
     changed = true;
-    notify(s, 'good', 'auto_flag', `目標達成：${g.title}`, nextGoalText(s));
+    // a subsidy for reaching the goal: the next step always costs money
+    if (g.reward > 0) earn(s, 'grants', g.reward);
+    notify(s, 'good', 'auto_flag', `目標達成：${g.title}`, `${g.reward > 0 ? `補助金 ${yenText(g.reward)}を受け取りました。` : ''}${nextGoalText(s)}`);
   }
   if (changed) {
     const idx = DATA.goals.findIndex((g) => !s.goals.done.includes(g.id));

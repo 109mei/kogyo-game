@@ -1,6 +1,8 @@
 import { DATA } from '../data';
 import { capacity, defOf, type Capacity } from './facilities';
+import { isDown, strikeFactor } from './events';
 import { managementFactor } from './logistics';
+import { divisionBonus, inSubsidiary } from './org';
 import { mods } from './mods';
 import { gridPrice } from './power';
 import { skillMult } from './staff';
@@ -64,10 +66,11 @@ export function storedWeight(s: GameState): number {
 // ---- manager bonus -------------------------------------------------------------------------------
 
 export function managerBonus(s: GameState, f: FacilityState): number {
-  if (f.managerId === null) return 1;
+  const d = divisionBonus(s, f);
+  if (f.managerId === null) return d;
   const m = s.employees.find((e) => e.id === f.managerId);
-  if (!m) return 1;
-  return 1 + DATA.balance.staff.managerBonusPerStar * m.skill + mods(s).managerBonus;
+  if (!m) return d;
+  return (1 + DATA.balance.staff.managerBonusPerStar * m.skill + mods(s).managerBonus) * d;
 }
 
 // ---- the tick --------------------------------------------------------------------------------------
@@ -90,10 +93,16 @@ export function tickProduction(s: GameState, dt: number): TickTotals {
   const cap = storageCapacity(s);
   let stored = storedWeight(s);
   const totals: TickTotals = { powerDemand: 0, wantMoved: 0, outputValue: 0 };
+  const strike = s.effects.length ? strikeFactor(s) : 1;
 
   for (const f of productionOrder(s)) {
     if (f.building && f.building.kind === 'build') {
       f.blocked = 'building';
+      f.util = 0;
+      continue;
+    }
+    if (s.effects.length && isDown(s, f)) {
+      f.blocked = 'down';
       f.util = 0;
       continue;
     }
@@ -122,7 +131,7 @@ export function tickProduction(s: GameState, dt: number): TickTotals {
       f.util = 0;
       continue;
     }
-    const want = full * rate * mgmt * managerBonus(s, f);
+    const want = full * rate * mgmt * managerBonus(s, f) * (f.stage === 'auto' ? 1 : strike);
     let limit = want;
     let limiter: FacilityState['blocked'] = null;
     for (const inp in r.inputs) {
@@ -188,20 +197,26 @@ export function tapAmount(recipeId: string): number {
   return DATA.recipe[recipeId].tap ?? DATA.balance.time.tapDays;
 }
 
-/** real seconds at x1 one tap takes */
-export function tapSeconds(recipeId: string): number {
+/** game days one tap takes (the owner works faster than a hired hand) */
+export function tapDuration(recipeId: string): number {
   const r = DATA.recipe[recipeId];
-  return tapAmount(recipeId) * r.time * DATA.balance.time.realSecondsPerDay;
+  return (tapAmount(recipeId) * r.time) / DATA.balance.time.tapSpeed;
 }
 
-export function canTap(s: GameState, f: FacilityState): string | null {
+/** real seconds at x1 one tap takes */
+export function tapSeconds(recipeId: string): number {
+  return tapDuration(recipeId) * DATA.balance.time.realSecondsPerDay;
+}
+
+/** why the owner cannot work here right now, ignoring what they are already doing */
+function tapBlocked(s: GameState, f: FacilityState): string | null {
   const def = defOf(f);
   if (!def.manualWorkers) return 'この施設は手作業できません';
+  if (inSubsidiary(s, f)) return '子会社の施設です';
   if (f.stage !== 'manual') return '機械化した施設は手作業しません';
   if (f.building && f.building.kind === 'build') return '建設中です';
   if (!f.recipe) return 'レシピを選んでください';
   if (s.tick < f.switchUntil) return '段取り替え中です';
-  if (s.owner.job) return 'いま別の作業をしています';
   const r = DATA.recipe[f.recipe];
   const amt = tapAmount(r.id);
   for (const [inp, q] of Object.entries(r.inputs)) {
@@ -210,9 +225,15 @@ export function canTap(s: GameState, f: FacilityState): string | null {
   return null;
 }
 
-export function startTap(s: GameState, f: FacilityState): string | null {
-  const err = canTap(s, f);
+/** a tap starts now, or waits behind the job in progress while there is room */
+export function canTap(s: GameState, f: FacilityState): string | null {
+  const err = tapBlocked(s, f);
   if (err) return err;
+  if (s.owner.job && s.owner.queue.length >= DATA.balance.time.tapQueue) return '予約がいっぱいです';
+  return null;
+}
+
+function begin(s: GameState, f: FacilityState) {
   const r = DATA.recipe[f.recipe!];
   const amt = tapAmount(r.id);
   for (const [inp, q] of Object.entries(r.inputs)) {
@@ -221,14 +242,38 @@ export function startTap(s: GameState, f: FacilityState): string | null {
     s.itemToday[inp].consumed += used;
     f.stats.inValue += used * DATA.basePrice[inp] * s.market[inp].index;
   }
-  const ticks = Math.max(1, Math.round(amt * r.time * DATA.balance.time.ticksPerDay));
+  const ticks = Math.max(1, Math.round(tapDuration(r.id) * DATA.balance.time.ticksPerDay));
   s.owner.job = { facilityId: f.id, recipe: r.id, amount: amt, start: s.tick, until: s.tick + ticks };
+}
+
+export function startTap(s: GameState, f: FacilityState): string | null {
+  const err = canTap(s, f);
+  if (err) return err;
+  if (s.owner.job) s.owner.queue.push(f.id);
+  else begin(s, f);
   return null;
+}
+
+/** the next waiting tap, if it can still be done; the rest of the queue is dropped when not */
+function nextTap(s: GameState) {
+  while (s.owner.queue.length) {
+    const id = s.owner.queue.shift()!;
+    const f = s.facilities.find((x) => x.id === id);
+    if (f && !tapBlocked(s, f)) {
+      begin(s, f);
+      return;
+    }
+    s.owner.queue = [];
+  }
 }
 
 export function tickOwner(s: GameState) {
   const job = s.owner.job;
-  if (!job || s.tick < job.until) return;
+  if (!job) {
+    if (s.owner.queue.length) nextTap(s);
+    return;
+  }
+  if (s.tick < job.until) return;
   s.owner.job = null;
   s.owner.taps += 1;
   const r = DATA.recipe[job.recipe];
@@ -245,6 +290,7 @@ export function tickOwner(s: GameState) {
     notify(s, 'good', 'auto_manual', `${DATA.item[r.id].name}を手に入れました`, '市場で売れば資金になります');
   }
   checkGoals(s);
+  nextTap(s);
 }
 
 /** productivity of a manager-free facility for the bot and UI: batches/day at full rate */

@@ -1,77 +1,61 @@
 /**
  * Owns the live GameState and the clock. The engine advances in fixed ticks;
- * this file only decides how many ticks real time is worth, saves, and tells
- * the UI store that something changed (about 10 times a second).
+ * this file only decides how many ticks real time is worth and when a save
+ * is due. It runs inside the simulation worker (or on the page where workers
+ * are not available); the host decides where saves go and who is told.
  */
 import { DATA } from '../data';
-import { applyCommand, createInitialState, runTicks, type Command, type CommandResult, type GameState } from '../core';
+import { applyCommand, runTicks, type Command, type CommandResult, type GameState } from '../core';
 import { catchUp, type OfflineReport } from '../save/offline';
-import { SaveStore } from '../save/SaveStore';
 
-const UI_HZ = 10;
-const AUTOSAVE_MS = 10_000;
-/** at most this much simulation per frame so a slow phone stays responsive */
+const FRAME_MS = 100;
+/** at most this much simulation per frame so a slow device stays responsive */
 const MAX_TICKS_PER_FRAME = 2400;
 
-type Listener = () => void;
+export interface RunnerHost {
+  /** a save is due; important ones (after commands, catch-up, going to the background) should be written at once */
+  save(state: GameState, important: boolean): void;
+  /** the state moved on: after a frame of ticks, or right after a command */
+  changed(why: 'frame' | 'command'): void;
+}
 
 export class Runner {
   state: GameState;
-  readonly store: SaveStore;
+  private host: RunnerHost;
   private timer: ReturnType<typeof setInterval> | null = null;
   private last = 0;
   private acc = 0;
   private lastSave = 0;
-  private listeners = new Set<Listener>();
   hiddenAt: number | null = null;
-  /** identifies this tab's saves */
-  readonly tabId = Math.random().toString(36).slice(2, 10);
   /** another tab took over this game: this one neither runs nor saves */
   frozen = false;
 
-  constructor(state: GameState, store: SaveStore) {
+  constructor(state: GameState, host: RunnerHost, private autosaveMs = 10_000) {
     this.state = state;
-    this.store = store;
+    this.host = host;
   }
 
-  static boot(store = new SaveStore()): { runner: Runner | null; report: OfflineReport | null; error: string | null } {
-    try {
-      const loaded = store.load();
-      if (!loaded) return { runner: null, report: null, error: null };
-      const runner = new Runner(loaded.state, store);
-      const report = catchUp(runner.state, loaded.savedAt);
-      runner.save();
-      return { runner, report, error: null };
-    } catch (e) {
-      return { runner: null, report: null, error: e instanceof Error ? e.message : String(e) };
-    }
-  }
-
-  static newGame(companyName: string, store = new SaveStore(), seed?: number): Runner {
-    const r = new Runner(createInitialState({ companyName, seed }), store);
-    r.save();
-    return r;
-  }
-
-  subscribe(fn: Listener): () => void {
-    this.listeners.add(fn);
-    return () => this.listeners.delete(fn);
-  }
-
-  notify() {
-    for (const fn of this.listeners) fn();
+  /** the time the app was closed runs first (like reopening the app) */
+  catchUpFrom(savedAt: number, now = Date.now()): OfflineReport | null {
+    const report = catchUp(this.state, savedAt, now);
+    this.save(true);
+    return report;
   }
 
   start() {
     if (this.timer || this.frozen) return;
     this.last = performance.now();
     this.lastSave = Date.now();
-    this.timer = setInterval(() => this.frame(), 1000 / UI_HZ);
+    this.timer = setInterval(() => this.frame(), FRAME_MS);
   }
 
   stop() {
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
+  }
+
+  get running(): boolean {
+    return this.timer !== null;
   }
 
   /** ticks per real second at the current speed */
@@ -94,51 +78,57 @@ export class Runner {
         if (s.paused) this.acc = 0;
       }
     }
-    if (Date.now() - this.lastSave > AUTOSAVE_MS) this.save();
-    this.notify();
+    if (Date.now() - this.lastSave > this.autosaveMs) this.save(false);
+    this.host.changed('frame');
   }
 
   dispatch(cmd: Command): CommandResult {
     const res = applyCommand(this.state, cmd);
-    if (res.ok && cmd.type !== 'readNotices') this.save();
-    this.notify();
+    if (res.ok && cmd.type !== 'readNotices') this.save(true);
+    this.host.changed('command');
     return res;
   }
 
-  save() {
+  /** debugging and tests: run ticks now, exactly as the clock would */
+  advance(ticks: number): number {
+    const n = runTicks(this.state, ticks, false);
+    this.host.changed('command');
+    return n;
+  }
+
+  save(important: boolean) {
     if (this.frozen) return;
     this.lastSave = Date.now();
-    this.store.save(this.state, this.tabId);
+    this.host.save(this.state, important);
   }
 
   /** stop for good: the game is being played in another tab */
   freeze() {
     this.frozen = true;
     this.stop();
-    this.notify();
   }
 
   /** the tab went to the background: save and remember when */
-  suspend() {
-    this.save();
-    this.hiddenAt = Date.now();
+  suspend(now = Date.now()) {
+    this.save(true);
+    this.hiddenAt = now;
     this.stop();
   }
 
-  /** back to the foreground: run the time we missed (like reopening the app) */
-  resume(): OfflineReport | null {
+  /** back to the foreground: run the time we missed, at the speed the player chose (capped like offline time) */
+  resume(now = Date.now()): OfflineReport | null {
     if (this.frozen) return null;
     const since = this.hiddenAt;
     this.hiddenAt = null;
     let report: OfflineReport | null = null;
     if (since !== null) {
-      // time in the background runs at the speed the player chose, capped like offline time
-      const away = Date.now() - since;
+      const away = now - since;
       const scaled = since + away * Math.max(1, this.state.speed);
       report = catchUp(this.state, since, scaled);
+      this.save(true);
     }
     this.start();
-    this.notify();
+    this.host.changed('command');
     return report;
   }
 }
