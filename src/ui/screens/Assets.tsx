@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { DATA } from '../../data';
 import { storageCapacity, storedWeight } from '../../core/production';
 import { dispatch, useGame } from '../../store/game';
@@ -85,7 +85,14 @@ function tone(r: InvRow): 'good' | 'warn' | 'bad' | '' {
   return r.net > 0 ? 'good' : '';
 }
 
-function InvCard({ r }: { r: InvRow }) {
+const s3 = (x: number) => Number(x.toPrecision(3));
+/** what a row shows, rounded as shown: rows only redraw when this changes */
+const rowSig = (r: InvRow) => [r.item, s3(r.stock), s3(r.value), s3(r.produced), s3(r.consumed), s3(r.net), r.daysLeft === null ? '' : s3(r.daysLeft), r.stockHist.length, s3(r.stockHist[r.stockHist.length - 1] ?? 0)].join('|');
+
+const InvCard = memo(InvCardInner, (a, b) => rowSig(a.r) === rowSig(b.r));
+const CompactRow = memo(CompactRowInner, (a, b) => rowSig(a.r) === rowSig(b.r));
+
+function InvCardInner({ r }: { r: InvRow }) {
   const push = useUI((s) => s.push);
   const it = DATA.item[r.item];
   const t = tone(r);
@@ -123,7 +130,7 @@ function InvCard({ r }: { r: InvRow }) {
   );
 }
 
-function CompactRow({ r }: { r: InvRow }) {
+function CompactRowInner({ r }: { r: InvRow }) {
   const push = useUI((s) => s.push);
   const t = tone(r);
   return (

@@ -6,6 +6,8 @@ import type { GameState } from '../core';
 import { migrate, SAVE_VERSION } from './migrations';
 
 export const SAVE_KEY = 'kogyo-game/save';
+/** written with every save: when and by which tab (so other open tabs can step aside) */
+export const STAMP_KEY = 'kogyo-game/stamp';
 const EXPORT_PREFIX = 'KOGYO1:';
 
 export interface SaveEnvelope {
@@ -49,10 +51,12 @@ export function deserialize(text: string): Loaded {
 export class SaveStore {
   constructor(private storage: Storage | null = typeof localStorage !== 'undefined' ? localStorage : null) {}
 
-  save(state: GameState): boolean {
+  save(state: GameState, owner = ''): boolean {
     if (!this.storage) return false;
     try {
-      this.storage.setItem(SAVE_KEY, serialize(state));
+      const at = Date.now();
+      this.storage.setItem(SAVE_KEY, serialize(state, at));
+      this.storage.setItem(STAMP_KEY, JSON.stringify({ at, owner }));
       return true;
     } catch {
       return false;
@@ -82,6 +86,7 @@ export class SaveStore {
   clear() {
     try {
       this.storage?.removeItem(SAVE_KEY);
+      this.storage?.removeItem(STAMP_KEY);
     } catch {
       /* ignore */
     }

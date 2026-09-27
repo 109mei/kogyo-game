@@ -1527,3 +1527,17 @@ textarea.input {
 .world.tall {
   height: min(58vh, 520px);
 }
+
+/* ---- grouped production list ------------------------------------------------------------ */
+.group-card {
+  width: 100%;
+  text-align: left;
+  border: none;
+  color: var(--text);
+  font: inherit;
+}
+.group-members {
+  padding-left: 12px;
+  border-left: 2px solid var(--hairline);
+  margin-left: 8px;
+}

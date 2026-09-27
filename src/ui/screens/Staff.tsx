@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { DATA, type RoleId } from '../../data';
 import { dateOf, dayIndex } from '../../core/calendar';
 import { facilityById } from '../../core/facilities';
-import { candidatesPerWeek, SPECIALTY_NAME } from '../../core/staff';
+import { candidatesPerWeek, employeesAt, rolesFor, SPECIALTY_NAME, staffCapacity } from '../../core/staff';
+import type { GameState } from '../../core';
 import { hasFeature } from '../../core/util';
 import { dispatch, useGame } from '../../store/game';
 import { useUI } from '../../store/ui';
@@ -10,6 +11,28 @@ import { Icon, Tabs } from '../components';
 import { stars, yen, yenShort } from '../format';
 
 const ROLE_ICON: Record<RoleId, string> = { worker: 'ppl_worker', engineer: 'ppl_engineer', researcher: 'ppl_researcher', manager: 'ppl_foreman' };
+
+/** places a new hire of each role could go to right now (idle people of that role take them first) */
+function openings(s: GameState): Record<RoleId, number> {
+  const out: Record<RoleId, number> = { worker: 0, engineer: 0, researcher: 0, manager: 0 };
+  for (const f of s.facilities) {
+    if (f.building && f.building.kind === 'build') continue;
+    const room = Math.max(0, staffCapacity(s, f) - employeesAt(s, f.id).length);
+    if (!room) continue;
+    const roles = rolesFor(f);
+    if (roles.includes('researcher')) out.researcher += room;
+    else if (roles.includes('worker')) out.worker += room;
+  }
+  if (s.features.managers) for (const f of s.facilities) if (f.managerId === null && f.recipe && !(f.building && f.building.kind === 'build')) out.manager++;
+  for (const e of s.employees) {
+    if (e.assignedTo !== null) continue;
+    if (e.role === 'researcher') out.researcher--;
+    else if (e.role === 'manager') out.manager--;
+    else out.worker--;
+  }
+  out.engineer = out.worker;
+  return out;
+}
 
 export function Staff() {
   const [tab, setTab] = useState<'people' | 'candidates'>('people');
@@ -41,6 +64,7 @@ export function Staff() {
         bulk: hasFeature(s, 'bulkHire'),
         perWeek: candidatesPerWeek(s),
         nextMonday: (1 - dateOf(d).weekday + 7) % 7 || 7,
+        open: openings(s),
         cash: s.cash,
       };
     },
@@ -131,6 +155,12 @@ export function Staff() {
               📣 採用キャンペーン：作業員{DATA.balance.staff.bulkHire.size}人（{yen(DATA.balance.staff.bulkHire.size * DATA.balance.staff.bulkHire.costPerHead)}）
             </button>
           )}
+          <div className="row wrap small">
+            <span className="dim">いまの空き：</span>
+            <span className={`pill ${v.open.worker > 0 ? '' : 'muted'}`}>作業員 {Math.max(0, v.open.worker)}</span>
+            <span className={`pill ${v.open.researcher > 0 ? '' : 'muted'}`}>研究員 {Math.max(0, v.open.researcher)}</span>
+            {v.open.manager > 0 && <span className="pill">工場長 {v.open.manager}</span>}
+          </div>
           {v.candidates.length === 0 && <div className="card empty">いまは応募者がいません</div>}
           {v.candidates.map((c) => (
             <div className="card" key={c.id} data-testid="candidate">
@@ -144,8 +174,13 @@ export function Staff() {
                   <span className="tiny dim">
                     得意 {SPECIALTY_NAME[c.specialty]}・{yen(c.salary)}/月・あと{Math.max(0, c.left)}日
                   </span>
+                  {v.open[c.role] <= 0 && (
+                    <span className="tiny warn" data-testid="no-opening">
+                      ⚠ {c.role === 'researcher' ? '研究所に空きがありません' : c.role === 'manager' ? '任せる施設がありません' : '空いている持ち場がありません'}。雇うと待機になり、給料だけかかります
+                    </span>
+                  )}
                 </div>
-                <button className="btn small" disabled={!v.canHire || v.cash < DATA.balance.staff.hireFee} onClick={() => dispatch({ type: 'hire', candidateId: c.id })} data-testid="hire">
+                <button className={`btn small${v.open[c.role] <= 0 ? ' soft' : ''}`} disabled={!v.canHire || v.cash < DATA.balance.staff.hireFee} onClick={() => dispatch({ type: 'hire', candidateId: c.id })} data-testid="hire">
                   採用
                 </button>
               </div>

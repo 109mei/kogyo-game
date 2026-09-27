@@ -21,6 +21,8 @@ export function randomName(s: GameState): string {
 
 function roleUnlocked(s: GameState, role: RoleId): boolean {
   const u = DATA.balance.staff.roles[role].unlock;
+  // researchers only apply once there is a lab to work in (built or being built)
+  if (u === 'lab') return s.facilities.some((f) => f.type === 'research_lab');
   return u === 'start' || hasFeature(s, u);
 }
 

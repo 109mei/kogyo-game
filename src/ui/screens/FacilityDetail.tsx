@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DATA } from '../../data';
 import type { AutomationSettings, Cond, CondVar, GameState, Policy, Rule } from '../../core';
 import { dayIndex } from '../../core/calendar';
@@ -707,6 +707,34 @@ function AutoTab({ id }: { id: number }) {
   );
 }
 
+/** a number box that lets you type "18." on the way to "18.5" (the text is only turned into a number when it is one) */
+function NumField({ value, onChange, label }: { value: number; onChange: (v: number) => void; label: string }) {
+  const [text, setText] = useState(String(value));
+  const [editing, setEditing] = useState(false);
+  useEffect(() => {
+    if (!editing) setText(String(value));
+  }, [value, editing]);
+  return (
+    <input
+      className="input"
+      inputMode="decimal"
+      aria-label={label}
+      value={text}
+      onFocus={() => setEditing(true)}
+      onChange={(e) => {
+        const t = e.target.value;
+        setText(t);
+        const v = Number(t);
+        if (t.trim() !== '' && Number.isFinite(v)) onChange(v);
+      }}
+      onBlur={() => {
+        setEditing(false);
+        setText(String(value));
+      }}
+    />
+  );
+}
+
 function RulesEditor({ rules, onChange }: { rules: Rule[]; onChange: (r: Rule[]) => void }) {
   const upd = (i: number, r: Rule) => onChange(rules.map((x, j) => (j === i ? r : x)));
   const blankCond: Cond = { v: 'stock', op: '<', value: 1000 };
@@ -728,7 +756,7 @@ function RulesEditor({ rules, onChange }: { rules: Rule[]; onChange: (r: Rule[])
                 <option value="<">&lt;</option>
                 <option value=">">&gt;</option>
               </select>
-              <input className="input" inputMode="decimal" aria-label="値" value={c.value} onChange={(e) => upd(i, { ...r, conds: r.conds.map((x, j) => (j === k ? { ...x, value: Number(e.target.value) || 0 } : x)) })} />
+              <NumField label="値" value={c.value} onChange={(value) => upd(i, { ...r, conds: r.conds.map((x, j) => (j === k ? { ...x, value } : x)) })} />
               <button className="link" aria-label="条件を消す" onClick={() => upd(i, { ...r, conds: r.conds.filter((_, j) => j !== k) })}>
                 ✕
               </button>

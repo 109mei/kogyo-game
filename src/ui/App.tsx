@@ -82,6 +82,7 @@ function Game() {
       )}
       <SheetHost />
       <OfflineReport />
+      <Elsewhere />
       <Toasts />
     </div>
   );
@@ -305,3 +306,27 @@ function OfflineReport() {
   );
 }
 
+
+/** the same game was opened (or deleted) in another tab: this one has stopped so neither overwrites the other */
+function Elsewhere() {
+  const why = useGameStore((s) => s.elsewhere);
+  if (!why) return null;
+  return (
+    <div className="scrim" style={{ alignItems: 'center' }}>
+      <div className="sheet" role="alertdialog" aria-modal="true" aria-label="別のタブで開かれています" style={{ margin: 16, borderRadius: 'var(--radius)' }}>
+        <div className="col" style={{ gap: 12 }}>
+          <h2>{why === 'saved' ? '別のタブで遊んでいます' : '別のタブで会社が消されました'}</h2>
+          <p className="small dim">
+            {why === 'saved'
+              ? 'このゲームが別のタブ（またはウィンドウ）で進んでいます。セーブを上書きしないよう、ここでは時間を止めました。'
+              : '別のタブで会社を消したため、ここでは止めました。'}
+          </p>
+          <button className="btn block" onClick={() => useGameStore.getState().takeOver()} data-testid="take-over">
+            {why === 'saved' ? 'こちらで続ける' : '最初の画面へ'}
+          </button>
+          <p className="tiny muted">「こちらで続ける」を押すと、最新のセーブを読み込み、もう一方のタブが止まります。</p>
+        </div>
+      </div>
+    </div>
+  );
+}

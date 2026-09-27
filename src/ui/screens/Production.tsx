@@ -1,22 +1,73 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { DATA } from '../../data';
+import type { FacilityState } from '../../core';
 import { dispatch, useGame } from '../../store/game';
 import { useUI } from '../../store/ui';
-import { Bar, Chips, StagePill } from '../components';
+import { Bar, Chips, Icon, StagePill } from '../components';
 import { perDay, yen } from '../format';
-import { facilityView, type FacilityView } from '../selectors';
+import { facilityStatus, facilityView, type FacilityView } from '../selectors';
 
 type Filter = 'all' | 'extraction' | 'processing' | 'manufacturing' | 'infrastructure';
 
+/** from this many facilities on, the list is grouped by kind (a long flat list is slow and hard to read) */
+const GROUP_AT = 25;
+
+interface Group {
+  type: string;
+  count: number;
+  util: number;
+  profit: number;
+  red: number;
+  running: number;
+  stopped: number;
+  views: FacilityView[] | null;
+}
+
+const last = (xs: number[]) => (xs.length ? xs[xs.length - 1] : null);
+
 export function Production() {
   const [filter, setFilter] = useState<Filter>('all');
+  const [open, setOpen] = useState<Record<string, boolean>>({});
   const v = useGame(
-    (s) => ({
-      list: s.facilities.filter((f) => filter === 'all' || DATA.facility[f.type].category === filter).map((f) => facilityView(s, f)),
-      canBuild: !!s.features.build,
-      total: s.facilities.length,
-    }),
-    [filter],
+    (s) => {
+      const fs = s.facilities.filter((f) => filter === 'all' || DATA.facility[f.type].category === filter);
+      const grouped = fs.length >= GROUP_AT;
+      let groups: Group[] = [];
+      if (grouped) {
+        const byType = new Map<string, FacilityState[]>();
+        for (const f of fs) {
+          const g = byType.get(f.type);
+          if (g) g.push(f);
+          else byType.set(f.type, [f]);
+        }
+        groups = [...byType.entries()]
+          .map(([type, members]) => {
+            const statuses = members.map((f) => facilityStatus(s, f));
+            const red = statuses.filter((x) => x.tone === 'red').length;
+            const running = members.filter((f, i) => statuses[i].tone !== 'red' && (last(f.stats.utilHist) ?? f.util) > 0.02).length;
+            return {
+              type,
+              count: members.length,
+              util: members.reduce((t, f) => t + (last(f.stats.utilHist) ?? f.util), 0) / members.length,
+              profit: members.reduce((t, f) => t + (last(f.stats.profitHist) ?? 0), 0),
+              red,
+              running,
+              stopped: members.length - red - running,
+              views: open[type] ? members.map((f) => facilityView(s, f)) : null,
+            };
+          })
+          .sort((a, b) => DATA.facility[a.type].no - DATA.facility[b.type].no);
+      }
+      return {
+        grouped,
+        list: grouped ? [] : fs.map((f) => facilityView(s, f)),
+        groups,
+        canBuild: !!s.features.build,
+        total: s.facilities.length,
+      };
+    },
+    [filter, open],
+    4,
   );
   const push = useUI((s) => s.push);
   return (
@@ -43,16 +94,91 @@ export function Production() {
         ]}
       />
       <div className="list">
-        {v.list.length === 0 && <div className="card empty">この種類の施設はまだありません</div>}
+        {v.list.length === 0 && v.groups.length === 0 && <div className="card empty">この種類の施設はまだありません</div>}
         {v.list.map((f) => (
           <FacilityCard key={f.id} f={f} />
+        ))}
+        {v.groups.map((g) => (
+          <GroupCard key={g.type} g={g} open={!!open[g.type]} onToggle={() => setOpen({ ...open, [g.type]: !open[g.type] })} />
         ))}
       </div>
     </>
   );
 }
 
-export function FacilityCard({ f }: { f: FacilityView }) {
+function GroupCard({ g, open, onToggle }: { g: Group; open: boolean; onToggle: () => void }) {
+  const def = DATA.facility[g.type];
+  const production = def.category !== 'infrastructure';
+  return (
+    <>
+      <button className="card tap group-card" onClick={onToggle} aria-expanded={open} data-testid={`group-${g.type}`}>
+        <div className="fac">
+          <Icon id={g.type} size={64} className="fac-img" />
+          <div className="col" style={{ gap: 4, minWidth: 0 }}>
+            <div className="row" style={{ gap: 6 }}>
+              <span className="fac-name ellipsis grow">
+                {def.name} <span className="muted">×{g.count}</span>
+              </span>
+              <span className="small dim">{open ? '▲' : '▼'}</span>
+            </div>
+            {production && (
+              <div className="row" style={{ gap: 8 }}>
+                <span className="tiny dim" style={{ width: 44 }}>
+                  平均
+                </span>
+                <div className="grow">
+                  <Bar value={g.util} tone={g.util > 0.85 ? 'good' : g.util > 0.3 ? 'warn' : 'bad'} label="平均稼働率" />
+                </div>
+                <span className="tiny num" style={{ width: 34, textAlign: 'right' }}>
+                  {Math.round(g.util * 100)}%
+                </span>
+              </div>
+            )}
+            <div className="spread small">
+              <span className="dim ellipsis">
+                {g.red ? `🔴 問題 ${g.red}・` : ''}稼働 {g.running}・停止 {g.stopped}
+              </span>
+              {production && <span className={`num ${g.profit >= 0 ? 'good' : 'bad'}`}>{yen(g.profit, { sign: true })}/日</span>}
+            </div>
+          </div>
+        </div>
+      </button>
+      {open && g.views && (
+        <div className="list group-members">
+          {g.views.map((f) => (
+            <FacilityCard key={f.id} f={f} />
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
+const sig3 = (x: number) => Number(x.toPrecision(3));
+/** what a card shows, rounded as it is shown: the card only redraws when this changes */
+function cardSig(f: FacilityView): string {
+  return [
+    f.name,
+    f.level,
+    f.stage,
+    f.machines,
+    f.recipe,
+    Math.round(f.util * 100),
+    sig3(f.outPerDay),
+    f.profit === null ? '' : sig3(f.profit),
+    f.status.text,
+    f.managed,
+    f.auto,
+    f.building ? Math.round(f.building.progress * 100) : '',
+    f.tap.can,
+    f.tap.why,
+    f.tap.progress === null ? '' : Math.round(f.tap.progress * 100),
+  ].join('|');
+}
+
+export const FacilityCard = memo(FacilityCardInner, (a, b) => cardSig(a.f) === cardSig(b.f));
+
+function FacilityCardInner({ f }: { f: FacilityView }) {
   const push = useUI((s) => s.push);
   const def = DATA.facility[f.type];
   const production = def.category !== 'infrastructure';

@@ -116,6 +116,7 @@ function run(s: GameState, cmd: Command): CommandResult {
       const def = DATA.facility[cmd.facility];
       if (!def || def.id === 'headquarters') return fail('建設できない施設です');
       if (!unlocked(s, def.unlock)) return fail('研究でまだ解放されていません');
+      if (cmd.recipe !== undefined && !def.recipes.includes(cmd.recipe)) return fail('この施設では作れません');
       let recipe = cmd.recipe ?? def.recipes.find((r) => unlocked(s, DATA.recipe[r].unlock)) ?? null;
       if (recipe && !unlocked(s, DATA.recipe[recipe].unlock)) recipe = null;
       if (s.cash < def.buildCost) return fail(`資金が足りません（必要 ${yen(def.buildCost)}）`);

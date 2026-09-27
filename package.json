@@ -14,7 +14,8 @@
     "e2e": "playwright test",
     "balance": "tsx tools/balance-sim.ts",
     "econ": "tsx tools/econ-report.ts",
-    "make-save": "tsx tools/make-save.ts"
+    "make-save": "tsx tools/make-save.ts",
+    "fuzz": "tsx tools/fuzz.ts"
   },
   "dependencies": {
     "react": "^19.3.0",

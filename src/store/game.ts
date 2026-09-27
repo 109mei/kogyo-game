@@ -8,7 +8,7 @@ import { useMemo, useRef, useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { runTicks, type Command, type CommandResult, type GameState } from '../core';
 import type { OfflineReport } from '../save/offline';
-import { SaveStore } from '../save/SaveStore';
+import { SAVE_KEY, SaveStore, STAMP_KEY } from '../save/SaveStore';
 import { Runner } from './runner';
 import { toast } from './ui';
 
@@ -18,7 +18,11 @@ interface GameStore {
   report: OfflineReport | null;
   bootError: string | null;
   booted: boolean;
+  /** the game was saved (or deleted) by another tab; this one stepped aside */
+  elsewhere: 'saved' | 'deleted' | null;
   boot(): void;
+  /** continue here with the latest save, making the other tab step aside */
+  takeOver(): void;
   newGame(name: string, seed?: number): void;
   loadText(text: string): string | null;
   dismissReport(): void;
@@ -37,7 +41,7 @@ function attach(r: Runner) {
     visibilityBound = true;
     document.addEventListener('visibilitychange', () => {
       const cur = useGameStore.getState().runner;
-      if (!cur) return;
+      if (!cur || cur.frozen) return;
       if (document.visibilityState === 'hidden') cur.suspend();
       else {
         const report = cur.resume();
@@ -45,6 +49,22 @@ function attach(r: Runner) {
       }
     });
     window.addEventListener('pagehide', () => useGameStore.getState().runner?.save());
+    // two tabs of the same game would overwrite each other's progress: the last one to save wins, the other steps aside
+    window.addEventListener('storage', (e) => {
+      if (e.key !== STAMP_KEY && e.key !== SAVE_KEY && e.key !== null) return;
+      const cur = useGameStore.getState().runner;
+      if (!cur || cur.frozen) return;
+      if (e.key === SAVE_KEY && e.newValue !== null) return; // the stamp that follows says who wrote it
+      let owner: string | null = null;
+      try {
+        owner = e.newValue ? (JSON.parse(e.newValue) as { owner?: string }).owner ?? null : null;
+      } catch {
+        owner = null;
+      }
+      if (owner === cur.tabId) return;
+      cur.freeze();
+      useGameStore.setState({ elsewhere: e.newValue ? 'saved' : 'deleted' });
+    });
   }
 }
 
@@ -54,6 +74,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
   report: null,
   bootError: null,
   booted: false,
+  elsewhere: null,
+  takeOver() {
+    get().runner?.stop();
+    const { runner, report, error } = Runner.boot(saveStore);
+    if (runner) attach(runner);
+    set({ runner, report: report && report.days >= 1 ? report : null, bootError: error, elsewhere: null, booted: true });
+  },
   boot() {
     if (get().booted) return;
     const { runner, report, error } = Runner.boot(saveStore);
@@ -64,7 +91,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     get().runner?.stop();
     const runner = Runner.newGame(name, saveStore, seed);
     attach(runner);
-    set({ runner, report: null, bootError: null, booted: true });
+    set({ runner, report: null, bootError: null, booted: true, elsewhere: null });
   },
   loadText(text) {
     try {
@@ -73,7 +100,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const runner = new Runner(loaded.state, saveStore);
       runner.save();
       attach(runner);
-      set({ runner, report: null, bootError: null });
+      set({ runner, report: null, bootError: null, elsewhere: null });
       return null;
     } catch (e) {
       return e instanceof Error ? e.message : String(e);
@@ -86,7 +113,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     get().runner?.stop();
     unsub?.();
     saveStore.clear();
-    set({ runner: null, report: null, rev: 0 });
+    set({ runner: null, report: null, rev: 0, elsewhere: null });
   },
 }));
 

@@ -115,7 +115,7 @@ export function dailyMarket(s: GameState, visible: Set<string>) {
       if (visible.has(it.id)) {
         notify(
           s,
-          up ? 'warn' : 'info',
+          'info',
           up ? 'ev_price_surge' : 'ev_recession',
           up ? `🔥 ${it.name} 供給不足` : `📉 ${it.name} 供給過剰`,
           up ? '市場価格が上がりそうです' : '市場価格が下がりそうです',

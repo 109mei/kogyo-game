@@ -16,6 +16,7 @@ declare global {
         employees: { assignedTo: number | null }[];
         features: Record<string, boolean>;
         owner: { taps: number; job: unknown };
+        facilities: { id: number; auto: { rules: { conds: { value: number }[] }[] } }[];
       } | null;
       dispatch: (cmd: unknown) => { ok: boolean };
       advance: (ticks: number) => number;
@@ -204,4 +205,52 @@ test('screenshots of the main screens', async ({ page }, info) => {
     await page.waitForTimeout(300);
     await page.screenshot({ path: info.outputPath(`${name}.png`), fullPage: true });
   }
+});
+
+test('a second tab takes over and the first one steps aside', async ({ context }) => {
+  const a = await context.newPage();
+  await a.goto('./');
+  await a.evaluate(() => localStorage.clear());
+  await a.reload();
+  await a.getByTestId('start').click();
+  await expect(a.locator('.header .company')).toBeVisible();
+  const b = await context.newPage();
+  await b.goto('./');
+  await expect(b.locator('.header .company')).toBeVisible();
+  // the older tab stops so it cannot overwrite what the newer one does
+  await expect(a.getByTestId('take-over')).toBeVisible();
+  await b.evaluate(() => {
+    const k = window.__kogyo;
+    k.dispatch({ type: 'gather', facilityId: k.state()!.facilities[0].id });
+    k.advance(60);
+    k.dispatch({ type: 'setSpeed', speed: 1 });
+  });
+  const saved = () => a.evaluate(() => JSON.parse(localStorage.getItem('kogyo-game/save')!).state.owner.taps as number);
+  await a.waitForTimeout(11_000); // longer than the autosave interval
+  expect(await saved()).toBe(1);
+  // continuing in the first tab loads the latest save and stops the second
+  await a.getByTestId('take-over').click();
+  await expect(b.getByTestId('take-over')).toBeVisible();
+  expect(await a.evaluate(() => window.__kogyo.state()!.owner.taps)).toBe(1);
+});
+
+test('a rule condition takes decimals', async ({ page }) => {
+  await newGame(page);
+  // open the advanced rules directly on the first workyard
+  await page.evaluate(() => {
+    const s = window.__kogyo.state()!;
+    for (const f of ['rules', 'advancedRules', 'machine']) s.features[f] = true;
+  });
+  await page.getByTestId('nav-production').click();
+  await page.locator('[data-testid^=facility-]').first().click();
+  await page.getByRole('tab', { name: '自動化' }).click();
+  await page.getByRole('tab', { name: '上級' }).click();
+  await page.getByRole('button', { name: /ルールを追加/ }).click();
+  const box = page.getByLabel('値').first();
+  await box.fill('');
+  await box.pressSequentially('18.5');
+  await expect(box).toHaveValue('18.5');
+  await page.getByTestId('save-automation').click();
+  const v = await page.evaluate(() => window.__kogyo.state()!.facilities[0].auto.rules[0].conds[0].value);
+  expect(v).toBe(18.5);
 });

@@ -24,6 +24,10 @@ export class Runner {
   private lastSave = 0;
   private listeners = new Set<Listener>();
   hiddenAt: number | null = null;
+  /** identifies this tab's saves */
+  readonly tabId = Math.random().toString(36).slice(2, 10);
+  /** another tab took over this game: this one neither runs nor saves */
+  frozen = false;
 
   constructor(state: GameState, store: SaveStore) {
     this.state = state;
@@ -59,7 +63,7 @@ export class Runner {
   }
 
   start() {
-    if (this.timer) return;
+    if (this.timer || this.frozen) return;
     this.last = performance.now();
     this.lastSave = Date.now();
     this.timer = setInterval(() => this.frame(), 1000 / UI_HZ);
@@ -102,8 +106,16 @@ export class Runner {
   }
 
   save() {
+    if (this.frozen) return;
     this.lastSave = Date.now();
-    this.store.save(this.state);
+    this.store.save(this.state, this.tabId);
+  }
+
+  /** stop for good: the game is being played in another tab */
+  freeze() {
+    this.frozen = true;
+    this.stop();
+    this.notify();
   }
 
   /** the tab went to the background: save and remember when */
@@ -115,6 +127,7 @@ export class Runner {
 
   /** back to the foreground: run the time we missed (like reopening the app) */
   resume(): OfflineReport | null {
+    if (this.frozen) return null;
     const since = this.hiddenAt;
     this.hiddenAt = null;
     let report: OfflineReport | null = null;
