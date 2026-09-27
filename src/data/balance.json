@@ -1,0 +1,279 @@
+{
+  "time": {
+    "realSecondsPerDay": 60,
+    "ticksPerDay": 240,
+    "speeds": [
+      0,
+      1,
+      4,
+      12,
+      48
+    ],
+    "startDate": "2027-04-01",
+    "offlineMaxDays": 30,
+    "tapDays": 0.16666666666666666,
+    "hourTicks": 10
+  },
+  "start": {
+    "cash": 3000000,
+    "companyName": "NAGANO INDUSTRIES",
+    "workyards": [
+      {
+        "facility": "forestry",
+        "recipe": "log",
+        "place": "裏山"
+      },
+      {
+        "facility": "quarry",
+        "recipe": "stone",
+        "place": "河原"
+      },
+      {
+        "facility": "water_intake",
+        "recipe": "water",
+        "place": "井戸端"
+      }
+    ],
+    "workyardWorkers": 2
+  },
+  "economy": {
+    "valueScale": 1.5
+  },
+  "staff": {
+    "roles": {
+      "worker": {
+        "name": "作業員",
+        "salary": 280000,
+        "weight": 70,
+        "unlock": "start"
+      },
+      "engineer": {
+        "name": "技術者",
+        "salary": 380000,
+        "weight": 12,
+        "unlock": "machine"
+      },
+      "researcher": {
+        "name": "研究員",
+        "salary": 420000,
+        "weight": 18,
+        "unlock": "start"
+      },
+      "manager": {
+        "name": "工場長",
+        "salary": 650000,
+        "weight": 6,
+        "unlock": "managers"
+      }
+    },
+    "hireFee": 100000,
+    "severanceMonths": 1,
+    "skillMult": [
+      0.85,
+      1,
+      1.12,
+      1.25,
+      1.4
+    ],
+    "skillSalaryStep": 0.08,
+    "specialtyBonus": 0.12,
+    "expDaysPerStar": 120,
+    "operatorSkillEffect": 0.25,
+    "managerBonusPerStar": 0.03,
+    "candidateSkillWeights": [
+      40,
+      34,
+      18,
+      6,
+      2
+    ],
+    "candidateLifeDays": 14,
+    "bulkHire": {
+      "size": 10,
+      "costPerHead": 300000
+    }
+  },
+  "power": {
+    "contracts": [
+      {
+        "id": "none",
+        "name": "契約なし",
+        "capacity": 0,
+        "basicFee": 0,
+        "energyPrice": 0,
+        "unlock": "start"
+      },
+      {
+        "id": "low",
+        "name": "低圧",
+        "capacity": 100,
+        "basicFee": 1200,
+        "energyPrice": 30,
+        "unlock": "p_mech"
+      },
+      {
+        "id": "high",
+        "name": "高圧",
+        "capacity": 1000,
+        "basicFee": 1500,
+        "energyPrice": 24,
+        "unlock": "pw_grid"
+      },
+      {
+        "id": "extra",
+        "name": "特別高圧",
+        "capacity": 10000,
+        "basicFee": 1800,
+        "energyPrice": 20,
+        "unlock": "pw_ehv"
+      },
+      {
+        "id": "ultra",
+        "name": "大口特約",
+        "capacity": 100000,
+        "basicFee": 2000,
+        "energyPrice": 18,
+        "unlock": "pw_grid3"
+      }
+    ],
+    "plantUpkeepPerUnit": 150000
+  },
+  "logistics": {
+    "truckCapacity": 50,
+    "costPerTon": 400,
+    "truckUpkeep": 3000,
+    "railCapacity": 20000,
+    "railCostPerTon": 150,
+    "railMonthlyFee": 30000000,
+    "outsourcePremium": 2.5,
+    "delaySlope": 0.1,
+    "maxDelayPenalty": 0.1
+  },
+  "market": {
+    "buySpread": 0.06,
+    "sellSpread": 0.04,
+    "elasticity": 0.8,
+    "emaDays": 7,
+    "immediateImpact": 0.5,
+    "maxImpact": 0.6,
+    "reversion": 0.3,
+    "shockReversion": 0.04,
+    "priceFloor": 0.15,
+    "priceCeil": 3,
+    "historyDays": 365,
+    "contractPremium": 0.02,
+    "contractDays": [
+      7,
+      30,
+      90
+    ]
+  },
+  "finance": {
+    "loanRateYear": 0.03,
+    "overdraftRateYear": 0.1,
+    "loanBase": 10000000,
+    "loanEquityMul": 1,
+    "valueProfitYears": 5,
+    "ledgerDays": 120
+  },
+  "management": {
+    "perFacility": 1,
+    "perFacilityWithManager": 0.3,
+    "employeesPerPoint": 20,
+    "penaltySlope": 0.5,
+    "maxPenalty": 0.3
+  },
+  "hq": [
+    {
+      "level": 1,
+      "name": "自宅兼事務所",
+      "cost": 0,
+      "days": 0,
+      "management": 8,
+      "candidates": 3,
+      "storage": 400,
+      "logistics": 100,
+      "upkeep": 0
+    },
+    {
+      "level": 2,
+      "name": "小さな事務所",
+      "cost": 8000000,
+      "days": 5,
+      "management": 16,
+      "candidates": 4,
+      "storage": 1000,
+      "logistics": 250,
+      "upkeep": 3000
+    },
+    {
+      "level": 3,
+      "name": "本社ビル",
+      "cost": 50000000,
+      "days": 10,
+      "management": 32,
+      "candidates": 6,
+      "storage": 2500,
+      "logistics": 600,
+      "upkeep": 15000
+    },
+    {
+      "level": 4,
+      "name": "本社タワー",
+      "cost": 300000000,
+      "days": 20,
+      "management": 64,
+      "candidates": 8,
+      "storage": 6000,
+      "logistics": 1500,
+      "upkeep": 60000
+    },
+    {
+      "level": 5,
+      "name": "本社キャンパス",
+      "cost": 2000000000,
+      "days": 30,
+      "management": 128,
+      "candidates": 12,
+      "storage": 12000,
+      "logistics": 4000,
+      "upkeep": 200000
+    },
+    {
+      "level": 6,
+      "name": "グローバル本社",
+      "cost": 15000000000,
+      "days": 45,
+      "management": 256,
+      "candidates": 16,
+      "storage": 25000,
+      "logistics": 10000,
+      "upkeep": 800000
+    }
+  ],
+  "production": {
+    "overdriveMax": 1.5,
+    "overdrivePowerMul": 2,
+    "recipeSwitchDays": 0.5,
+    "levelUpkeepMul": 1.6,
+    "automationWeight": {
+      "manual": 0,
+      "machine": 0.5,
+      "auto": 1
+    },
+    "machineUpkeepRate": 0.0004,
+    "autoUpkeepRate": 0.0004
+  },
+  "problems": {
+    "stockRedDays": 3,
+    "stockYellowDays": 10,
+    "powerYellow": 0.9,
+    "storageYellow": 0.9,
+    "logisticsYellow": 0.9,
+    "cashRunwayYellowDays": 30,
+    "lossDays": 7
+  },
+  "research": {
+    "rpPerResearcher": 1
+  }
+}

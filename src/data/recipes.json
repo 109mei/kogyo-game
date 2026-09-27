@@ -1,0 +1,727 @@
+[
+  {
+    "id": "log",
+    "facility": "forestry",
+    "inputs": {},
+    "output": 6,
+    "valueAdded": 18000,
+    "unlock": "start"
+  },
+  {
+    "id": "stone",
+    "facility": "quarry",
+    "inputs": {},
+    "output": 6,
+    "valueAdded": 18000,
+    "unlock": "start"
+  },
+  {
+    "id": "water",
+    "facility": "water_intake",
+    "inputs": {},
+    "output": 60,
+    "valueAdded": 18000,
+    "unlock": "start"
+  },
+  {
+    "id": "sand",
+    "facility": "sand_pit",
+    "inputs": {},
+    "output": 6,
+    "valueAdded": 18000,
+    "unlock": "m_ceramics"
+  },
+  {
+    "id": "clay",
+    "facility": "clay_pit",
+    "inputs": {},
+    "output": 4,
+    "valueAdded": 18000,
+    "unlock": "m_ceramics"
+  },
+  {
+    "id": "limestone",
+    "facility": "limestone_mine",
+    "inputs": {},
+    "output": 6,
+    "valueAdded": 18000,
+    "unlock": "m_ceramics"
+  },
+  {
+    "id": "coal",
+    "facility": "coal_mine",
+    "inputs": {},
+    "output": 1.5,
+    "valueAdded": 18000,
+    "unlock": "m_steel"
+  },
+  {
+    "id": "iron_ore",
+    "facility": "iron_mine",
+    "inputs": {},
+    "output": 2,
+    "valueAdded": 18000,
+    "unlock": "m_steel"
+  },
+  {
+    "id": "copper_ore",
+    "facility": "copper_mine",
+    "inputs": {},
+    "output": 0.6,
+    "valueAdded": 18000,
+    "unlock": "m_nonferrous"
+  },
+  {
+    "id": "bauxite",
+    "facility": "bauxite_mine",
+    "inputs": {},
+    "output": 1.5,
+    "valueAdded": 18000,
+    "unlock": "m_nonferrous"
+  },
+  {
+    "id": "crude_oil",
+    "facility": "oil_field",
+    "inputs": {},
+    "output": 1.2,
+    "valueAdded": 96000,
+    "unlock": "m_petro"
+  },
+  {
+    "id": "natural_gas",
+    "facility": "gas_field",
+    "inputs": {},
+    "output": 1.6,
+    "valueAdded": 96000,
+    "unlock": "m_petro"
+  },
+  {
+    "id": "natural_rubber",
+    "facility": "rubber_plantation",
+    "inputs": {},
+    "output": 0.08,
+    "valueAdded": 18000,
+    "unlock": "m_rubber"
+  },
+  {
+    "id": "lithium_ore",
+    "facility": "lithium_mine",
+    "inputs": {},
+    "output": 0.6,
+    "valueAdded": 24000,
+    "unlock": "e_battery"
+  },
+  {
+    "id": "silica",
+    "facility": "silica_mine",
+    "inputs": {},
+    "output": 3,
+    "valueAdded": 18000,
+    "unlock": "e_semi"
+  },
+  {
+    "id": "lumber",
+    "facility": "sawmill",
+    "inputs": {
+      "log": 6
+    },
+    "output": 36,
+    "valueAdded": 18000,
+    "unlock": "start"
+  },
+  {
+    "id": "wood_panel",
+    "facility": "sawmill",
+    "inputs": {
+      "lumber": 30
+    },
+    "output": 12,
+    "valueAdded": 18000,
+    "unlock": "m_building"
+  },
+  {
+    "id": "paper",
+    "facility": "paper_mill",
+    "inputs": {
+      "log": 2,
+      "water": 4
+    },
+    "output": 0.2,
+    "valueAdded": 18000,
+    "unlock": "m_paper"
+  },
+  {
+    "id": "cardboard",
+    "facility": "paper_mill",
+    "inputs": {
+      "paper": 0.2
+    },
+    "output": 0.2,
+    "valueAdded": 20000,
+    "unlock": "m_paper"
+  },
+  {
+    "id": "brick",
+    "facility": "ceramics_plant",
+    "inputs": {
+      "clay": 2,
+      "sand": 0.5,
+      "coal": 0.2
+    },
+    "output": 2,
+    "valueAdded": 20000,
+    "unlock": "m_ceramics"
+  },
+  {
+    "id": "cement",
+    "facility": "cement_plant",
+    "inputs": {
+      "limestone": 1.5,
+      "clay": 0.3,
+      "coal": 0.15
+    },
+    "output": 1,
+    "valueAdded": 20000,
+    "unlock": "m_ceramics"
+  },
+  {
+    "id": "concrete",
+    "facility": "cement_plant",
+    "inputs": {
+      "cement": 0.3,
+      "sand": 0.7,
+      "stone": 1,
+      "water": 0.2
+    },
+    "output": 2.2,
+    "valueAdded": 18000,
+    "unlock": "m_ceramics"
+  },
+  {
+    "id": "glass",
+    "facility": "glass_plant",
+    "inputs": {
+      "sand": 1.2,
+      "limestone": 0.2,
+      "coal": 0.2
+    },
+    "output": 1,
+    "valueAdded": 30000,
+    "unlock": "m_ceramics"
+  },
+  {
+    "id": "iron",
+    "facility": "steel_mill",
+    "inputs": {
+      "iron_ore": 1.6,
+      "coal": 0.5,
+      "water": 2
+    },
+    "output": 1,
+    "valueAdded": 39000,
+    "unlock": "m_steel"
+  },
+  {
+    "id": "steel",
+    "facility": "steel_mill",
+    "inputs": {
+      "iron": 1.05,
+      "limestone": 0.1
+    },
+    "output": 1,
+    "valueAdded": 54700,
+    "unlock": "m_steel"
+  },
+  {
+    "id": "steel_plate",
+    "facility": "steel_mill",
+    "inputs": {
+      "steel": 1.02
+    },
+    "output": 1,
+    "valueAdded": 48000,
+    "unlock": "m_steel"
+  },
+  {
+    "id": "copper",
+    "facility": "nonferrous_smelter",
+    "inputs": {
+      "copper_ore": 0.8,
+      "coal": 0.06
+    },
+    "output": 0.2,
+    "valueAdded": 35000,
+    "unlock": "m_nonferrous"
+  },
+  {
+    "id": "copper_wire",
+    "facility": "nonferrous_smelter",
+    "inputs": {
+      "copper": 0.204
+    },
+    "output": 0.2,
+    "valueAdded": 35000,
+    "unlock": "m_nonferrous"
+  },
+  {
+    "id": "aluminum",
+    "facility": "nonferrous_smelter",
+    "inputs": {
+      "bauxite": 0.8,
+      "coal": 0.08
+    },
+    "output": 0.2,
+    "valueAdded": 40000,
+    "powerMul": 2.5,
+    "unlock": "m_nonferrous"
+  },
+  {
+    "id": "plastic",
+    "facility": "petrochem_plant",
+    "inputs": {
+      "crude_oil": 1.2
+    },
+    "output": 1,
+    "valueAdded": 60000,
+    "unlock": "m_petro"
+  },
+  {
+    "id": "synthetic_rubber",
+    "facility": "petrochem_plant",
+    "inputs": {
+      "crude_oil": 1,
+      "natural_gas": 0.5
+    },
+    "output": 1,
+    "valueAdded": 60000,
+    "unlock": "m_rubber"
+  },
+  {
+    "id": "fuel",
+    "facility": "petrochem_plant",
+    "inputs": {
+      "crude_oil": 1.1
+    },
+    "output": 1,
+    "valueAdded": 30000,
+    "time": 0.5,
+    "unlock": "m_petro"
+  },
+  {
+    "id": "chemicals",
+    "facility": "petrochem_plant",
+    "inputs": {
+      "natural_gas": 1,
+      "water": 2
+    },
+    "output": 1,
+    "valueAdded": 60000,
+    "unlock": "m_petro"
+  },
+  {
+    "id": "silicon",
+    "facility": "silicon_refinery",
+    "inputs": {
+      "silica": 3,
+      "coal": 1
+    },
+    "output": 1,
+    "valueAdded": 120000,
+    "unlock": "e_semi"
+  },
+  {
+    "id": "lithium",
+    "facility": "lithium_refinery",
+    "inputs": {
+      "lithium_ore": 6,
+      "chemicals": 0.5
+    },
+    "output": 1,
+    "valueAdded": 200000,
+    "time": 2,
+    "unlock": "e_battery"
+  },
+  {
+    "id": "bolts",
+    "facility": "machine_parts_factory",
+    "inputs": {
+      "steel": 0.1
+    },
+    "output": 20,
+    "valueAdded": 28000,
+    "unlock": "m_parts"
+  },
+  {
+    "id": "gear",
+    "facility": "machine_parts_factory",
+    "inputs": {
+      "steel": 0.2
+    },
+    "output": 30,
+    "valueAdded": 30000,
+    "unlock": "m_parts"
+  },
+  {
+    "id": "bearing",
+    "facility": "machine_parts_factory",
+    "inputs": {
+      "steel": 0.05
+    },
+    "output": 20,
+    "valueAdded": 30000,
+    "unlock": "m_parts"
+  },
+  {
+    "id": "steel_pipe",
+    "facility": "machine_parts_factory",
+    "inputs": {
+      "steel_plate": 0.21
+    },
+    "output": 0.2,
+    "valueAdded": 30000,
+    "unlock": "m_parts"
+  },
+  {
+    "id": "metal_frame",
+    "facility": "machine_parts_factory",
+    "inputs": {
+      "steel_pipe": 0.03,
+      "bolts": 0.5
+    },
+    "output": 2,
+    "valueAdded": 28000,
+    "unlock": "m_parts"
+  },
+  {
+    "id": "pump",
+    "facility": "machine_parts_factory",
+    "inputs": {
+      "steel": 0.04,
+      "bearing": 4,
+      "bolts": 1
+    },
+    "output": 2,
+    "valueAdded": 30000,
+    "unlock": "m_parts"
+  },
+  {
+    "id": "tire",
+    "facility": "machine_parts_factory",
+    "inputs": {
+      "synthetic_rubber": 0.06,
+      "natural_rubber": 0.03,
+      "steel": 0.01
+    },
+    "output": 10,
+    "valueAdded": 30000,
+    "unlock": "m_rubber"
+  },
+  {
+    "id": "small_engine",
+    "facility": "machine_parts_factory",
+    "inputs": {
+      "steel": 0.04,
+      "aluminum": 0.02,
+      "gear": 12,
+      "bearing": 8,
+      "bolts": 0.8
+    },
+    "output": 2,
+    "valueAdded": 40000,
+    "unlock": "m_engine"
+  },
+  {
+    "id": "motor",
+    "facility": "electrical_parts_factory",
+    "inputs": {
+      "steel_plate": 0.02,
+      "copper_wire": 0.008,
+      "bearing": 4
+    },
+    "output": 2,
+    "valueAdded": 30000,
+    "unlock": "el_motor"
+  },
+  {
+    "id": "cable",
+    "facility": "electrical_parts_factory",
+    "inputs": {
+      "copper_wire": 0.05,
+      "plastic": 0.02
+    },
+    "output": 7,
+    "valueAdded": 30000,
+    "unlock": "el_motor"
+  },
+  {
+    "id": "circuit_board",
+    "facility": "electronics_factory",
+    "inputs": {
+      "copper": 0.02,
+      "plastic": 0.02,
+      "chemicals": 0.01
+    },
+    "output": 40,
+    "valueAdded": 80000,
+    "unlock": "e_circuit"
+  },
+  {
+    "id": "semiconductor",
+    "facility": "electronics_factory",
+    "inputs": {
+      "silicon": 0.01,
+      "chemicals": 0.01,
+      "water": 2
+    },
+    "output": 100,
+    "valueAdded": 200000,
+    "time": 2,
+    "powerMul": 2,
+    "unlock": "e_semi"
+  },
+  {
+    "id": "battery",
+    "facility": "electronics_factory",
+    "inputs": {
+      "lithium": 0.04,
+      "copper": 0.02,
+      "plastic": 0.04,
+      "chemicals": 0.02
+    },
+    "output": 20,
+    "valueAdded": 80000,
+    "unlock": "e_battery"
+  },
+  {
+    "id": "sensor",
+    "facility": "electronics_factory",
+    "inputs": {
+      "semiconductor": 20,
+      "circuit_board": 10,
+      "plastic": 0.005
+    },
+    "output": 10,
+    "valueAdded": 80000,
+    "unlock": "e_semi"
+  },
+  {
+    "id": "display",
+    "facility": "electronics_factory",
+    "inputs": {
+      "glass": 0.01,
+      "semiconductor": 40,
+      "circuit_board": 10
+    },
+    "output": 10,
+    "valueAdded": 100000,
+    "unlock": "e_display"
+  },
+  {
+    "id": "furniture",
+    "facility": "assembly_plant",
+    "inputs": {
+      "lumber": 24
+    },
+    "output": 2,
+    "valueAdded": 30000,
+    "tap": 0.5,
+    "unlock": "start"
+  },
+  {
+    "id": "tool_set",
+    "facility": "assembly_plant",
+    "inputs": {
+      "steel": 0.05,
+      "lumber": 6
+    },
+    "output": 2,
+    "valueAdded": 24000,
+    "tap": 0.5,
+    "unlock": "m_steel"
+  },
+  {
+    "id": "building_kit",
+    "facility": "assembly_plant",
+    "inputs": {
+      "lumber": 20,
+      "wood_panel": 4,
+      "brick": 0.5,
+      "cement": 0.3,
+      "glass": 0.05
+    },
+    "output": 1,
+    "valueAdded": 30000,
+    "unlock": "m_building"
+  },
+  {
+    "id": "packaging",
+    "facility": "assembly_plant",
+    "inputs": {
+      "cardboard": 0.05
+    },
+    "output": 100,
+    "valueAdded": 22000,
+    "unlock": "m_paper"
+  },
+  {
+    "id": "fan",
+    "facility": "assembly_plant",
+    "inputs": {
+      "motor": 2,
+      "plastic": 0.006,
+      "cable": 0.4,
+      "bolts": 0.1
+    },
+    "output": 2,
+    "valueAdded": 24000,
+    "unlock": "el_motor"
+  },
+  {
+    "id": "electric_pump",
+    "facility": "assembly_plant",
+    "inputs": {
+      "pump": 1,
+      "motor": 1,
+      "cable": 0.3
+    },
+    "output": 1,
+    "valueAdded": 24000,
+    "unlock": "el_motor"
+  },
+  {
+    "id": "generator",
+    "facility": "assembly_plant",
+    "inputs": {
+      "small_engine": 1,
+      "motor": 1,
+      "steel_plate": 0.02,
+      "cable": 0.5
+    },
+    "output": 1,
+    "valueAdded": 30000,
+    "unlock": "m_engine"
+  },
+  {
+    "id": "refrigerator",
+    "facility": "assembly_plant",
+    "inputs": {
+      "steel_plate": 0.03,
+      "plastic": 0.01,
+      "motor": 1,
+      "circuit_board": 2,
+      "sensor": 1,
+      "packaging": 1
+    },
+    "output": 1,
+    "valueAdded": 30000,
+    "unlock": "el_appliance"
+  },
+  {
+    "id": "washing_machine",
+    "facility": "assembly_plant",
+    "inputs": {
+      "steel_plate": 0.03,
+      "plastic": 0.012,
+      "motor": 1,
+      "pump": 1,
+      "circuit_board": 2,
+      "packaging": 1
+    },
+    "output": 1,
+    "valueAdded": 30000,
+    "unlock": "el_appliance"
+  },
+  {
+    "id": "smartphone",
+    "facility": "electronics_factory",
+    "inputs": {
+      "display": 4,
+      "semiconductor": 24,
+      "circuit_board": 4,
+      "battery": 4,
+      "aluminum": 0.001,
+      "glass": 0.001
+    },
+    "output": 4,
+    "valueAdded": 160000,
+    "time": 2,
+    "unlock": "e_mobile"
+  },
+  {
+    "id": "laptop",
+    "facility": "electronics_factory",
+    "inputs": {
+      "display": 2,
+      "semiconductor": 20,
+      "circuit_board": 4,
+      "battery": 4,
+      "aluminum": 0.004,
+      "plastic": 0.004
+    },
+    "output": 2,
+    "valueAdded": 160000,
+    "time": 2,
+    "unlock": "e_mobile"
+  },
+  {
+    "id": "power_bank",
+    "facility": "electronics_factory",
+    "inputs": {
+      "battery": 20,
+      "circuit_board": 10,
+      "plastic": 0.003
+    },
+    "output": 10,
+    "valueAdded": 80000,
+    "unlock": "e_battery"
+  },
+  {
+    "id": "bicycle",
+    "facility": "vehicle_plant",
+    "inputs": {
+      "metal_frame": 1,
+      "tire": 2,
+      "gear": 4,
+      "bearing": 4,
+      "bolts": 0.1
+    },
+    "output": 1,
+    "valueAdded": 40000,
+    "unlock": "v_bicycle"
+  },
+  {
+    "id": "e_bike",
+    "facility": "vehicle_plant",
+    "inputs": {
+      "metal_frame": 1,
+      "tire": 2,
+      "gear": 4,
+      "bearing": 4,
+      "motor": 1,
+      "battery": 2,
+      "circuit_board": 1,
+      "sensor": 1
+    },
+    "output": 1,
+    "valueAdded": 40000,
+    "unlock": "v_ebike"
+  },
+  {
+    "id": "small_truck",
+    "facility": "vehicle_plant",
+    "inputs": {
+      "metal_frame": 4,
+      "steel_plate": 0.4,
+      "tire": 4,
+      "small_engine": 1,
+      "cable": 2,
+      "sensor": 2,
+      "circuit_board": 2,
+      "glass": 0.03
+    },
+    "output": 1,
+    "valueAdded": 400000,
+    "time": 8,
+    "unlock": "v_truck"
+  }
+]

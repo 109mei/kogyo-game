@@ -1,0 +1,1026 @@
+[
+  {
+    "id": "forestry",
+    "no": 66,
+    "name": "林業拠点",
+    "short": "林業",
+    "category": "extraction",
+    "unlock": "start",
+    "buildCost": 800000,
+    "buildDays": 2,
+    "upkeep": 1000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "log"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 14000000,
+      "power": 60,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 21000000,
+      "power": 100
+    },
+    "desc": "山から原木を切り出す。最初は斧とのこぎり、やがて伐採機、自動伐採へ。"
+  },
+  {
+    "id": "quarry",
+    "no": 67,
+    "name": "採石場",
+    "short": "採石",
+    "category": "extraction",
+    "unlock": "start",
+    "buildCost": 800000,
+    "buildDays": 2,
+    "upkeep": 1000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "stone"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 13000000,
+      "power": 55,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 20000000,
+      "power": 95
+    },
+    "desc": "岩を割って石材を採る。"
+  },
+  {
+    "id": "sand_pit",
+    "no": 68,
+    "name": "砂採取場",
+    "short": "砂",
+    "category": "extraction",
+    "unlock": "m_ceramics",
+    "buildCost": 3000000,
+    "buildDays": 3,
+    "upkeep": 2000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "sand"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 16000000,
+      "power": 55,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 24000000,
+      "power": 95
+    },
+    "desc": "川砂や山砂をすくい、ふるい分ける。"
+  },
+  {
+    "id": "clay_pit",
+    "no": 69,
+    "name": "粘土採掘場",
+    "short": "粘土",
+    "category": "extraction",
+    "unlock": "m_ceramics",
+    "buildCost": 3000000,
+    "buildDays": 3,
+    "upkeep": 2000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "clay"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 17000000,
+      "power": 60,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 26000000,
+      "power": 100
+    },
+    "desc": "赤土の斜面から粘土を掘る。"
+  },
+  {
+    "id": "limestone_mine",
+    "no": 70,
+    "name": "石灰石鉱山",
+    "short": "石灰石",
+    "category": "extraction",
+    "unlock": "m_ceramics",
+    "buildCost": 5000000,
+    "buildDays": 4,
+    "upkeep": 3000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "limestone"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 16000000,
+      "power": 55,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 24000000,
+      "power": 95
+    },
+    "desc": "白い山を削り、石灰石を砕いて運ぶ。"
+  },
+  {
+    "id": "water_intake",
+    "no": 71,
+    "name": "取水場",
+    "short": "取水",
+    "category": "extraction",
+    "unlock": "start",
+    "buildCost": 600000,
+    "buildDays": 2,
+    "upkeep": 800,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "water"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 14000000,
+      "power": 65,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 21000000,
+      "power": 110
+    },
+    "desc": "川から工業用水を取り込む。最初は桶、やがてポンプ。"
+  },
+  {
+    "id": "coal_mine",
+    "no": 72,
+    "name": "炭鉱",
+    "short": "炭鉱",
+    "category": "extraction",
+    "unlock": "m_steel",
+    "buildCost": 8000000,
+    "buildDays": 4,
+    "upkeep": 4000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "coal"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 18000000,
+      "power": 60,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 27000000,
+      "power": 100
+    },
+    "desc": "坑道からトロッコで石炭を運び出す。"
+  },
+  {
+    "id": "iron_mine",
+    "no": 73,
+    "name": "鉄鉱山",
+    "short": "鉄鉱山",
+    "category": "extraction",
+    "unlock": "m_steel",
+    "buildCost": 8000000,
+    "buildDays": 4,
+    "upkeep": 4000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "iron_ore"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 18000000,
+      "power": 60,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 27000000,
+      "power": 100
+    },
+    "desc": "露天掘りで鉄鉱石を掘り、ベルトコンベアで運ぶ。"
+  },
+  {
+    "id": "copper_mine",
+    "no": 74,
+    "name": "銅鉱山",
+    "short": "銅鉱山",
+    "category": "extraction",
+    "unlock": "m_nonferrous",
+    "buildCost": 12000000,
+    "buildDays": 5,
+    "upkeep": 5000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "copper_ore"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 21000000,
+      "power": 60,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 32000000,
+      "power": 100
+    },
+    "desc": "緑がかった岩から銅鉱石を採る。"
+  },
+  {
+    "id": "bauxite_mine",
+    "no": 75,
+    "name": "ボーキサイト鉱山",
+    "short": "ボーキ",
+    "category": "extraction",
+    "unlock": "m_nonferrous",
+    "buildCost": 12000000,
+    "buildDays": 5,
+    "upkeep": 5000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "bauxite"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 20000000,
+      "power": 60,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 30000000,
+      "power": 100
+    },
+    "desc": "赤い大地からアルミの原料を掘る。"
+  },
+  {
+    "id": "oil_field",
+    "no": 76,
+    "name": "油田",
+    "short": "油田",
+    "category": "extraction",
+    "unlock": "m_petro",
+    "buildCost": 100000000,
+    "buildDays": 10,
+    "upkeep": 30000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "crude_oil"
+    ],
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 130000000,
+      "power": 335,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 200000000,
+      "power": 570
+    },
+    "desc": "ポンプジャックが原油をくみ上げる。人の手では掘れない。"
+  },
+  {
+    "id": "gas_field",
+    "no": 77,
+    "name": "ガス田",
+    "short": "ガス田",
+    "category": "extraction",
+    "unlock": "m_petro",
+    "buildCost": 100000000,
+    "buildDays": 10,
+    "upkeep": 30000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "natural_gas"
+    ],
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 130000000,
+      "power": 335,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 200000000,
+      "power": 570
+    },
+    "desc": "地下の天然ガスを球形タンクへ集める。"
+  },
+  {
+    "id": "rubber_plantation",
+    "no": 78,
+    "name": "ゴム農園",
+    "short": "ゴム",
+    "category": "extraction",
+    "unlock": "m_rubber",
+    "buildCost": 6000000,
+    "buildDays": 5,
+    "upkeep": 3000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "natural_rubber"
+    ],
+    "manualWorkers": 4,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 21000000,
+      "power": 65,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 32000000,
+      "power": 110
+    },
+    "desc": "ゴムの木に傷をつけ、白い樹液を集める。"
+  },
+  {
+    "id": "lithium_mine",
+    "no": 79,
+    "name": "リチウム鉱山",
+    "short": "Li鉱山",
+    "category": "extraction",
+    "unlock": "e_battery",
+    "buildCost": 30000000,
+    "buildDays": 6,
+    "upkeep": 10000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "lithium_ore"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 31000000,
+      "power": 85,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 46000000,
+      "power": 145
+    },
+    "desc": "白い鉱石からリチウムを採る。"
+  },
+  {
+    "id": "silica_mine",
+    "no": 80,
+    "name": "珪石鉱山",
+    "short": "珪石",
+    "category": "extraction",
+    "unlock": "e_semi",
+    "buildCost": 20000000,
+    "buildDays": 5,
+    "upkeep": 8000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "silica"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 22000000,
+      "power": 60,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 33000000,
+      "power": 100
+    },
+    "desc": "透き通る石英の山を砕く。"
+  },
+  {
+    "id": "sawmill",
+    "no": 81,
+    "name": "製材所",
+    "short": "製材",
+    "category": "processing",
+    "unlock": "start",
+    "buildCost": 1500000,
+    "buildDays": 3,
+    "upkeep": 2000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "lumber",
+      "wood_panel"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 13000000,
+      "power": 60,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 20000000,
+      "power": 100
+    },
+    "desc": "丸太を板に挽く。"
+  },
+  {
+    "id": "paper_mill",
+    "no": 82,
+    "name": "製紙工場",
+    "short": "製紙",
+    "category": "processing",
+    "unlock": "m_paper",
+    "buildCost": 20000000,
+    "buildDays": 6,
+    "upkeep": 8000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "paper",
+      "cardboard"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 18000000,
+      "power": 90,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 27000000,
+      "power": 155
+    },
+    "desc": "木と水から紙を漉き、段ボールに仕立てる。"
+  },
+  {
+    "id": "ceramics_plant",
+    "no": 83,
+    "name": "窯業工場",
+    "short": "窯業",
+    "category": "processing",
+    "unlock": "m_ceramics",
+    "buildCost": 15000000,
+    "buildDays": 5,
+    "upkeep": 6000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "brick"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 18000000,
+      "power": 115,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 27000000,
+      "power": 195
+    },
+    "desc": "粘土を窯で焼いてレンガにする。"
+  },
+  {
+    "id": "cement_plant",
+    "no": 84,
+    "name": "セメント工場",
+    "short": "セメント",
+    "category": "processing",
+    "unlock": "m_ceramics",
+    "buildCost": 25000000,
+    "buildDays": 6,
+    "upkeep": 10000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "cement",
+      "concrete"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 19000000,
+      "power": 115,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 28000000,
+      "power": 195
+    },
+    "desc": "石灰石を焼いてセメントに、練ってコンクリートに。"
+  },
+  {
+    "id": "glass_plant",
+    "no": 85,
+    "name": "ガラス工場",
+    "short": "ガラス",
+    "category": "processing",
+    "unlock": "m_ceramics",
+    "buildCost": 30000000,
+    "buildDays": 6,
+    "upkeep": 10000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "glass"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 30000000,
+      "power": 205,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 45000000,
+      "power": 350
+    },
+    "desc": "砂を溶かして板ガラスを作る。"
+  },
+  {
+    "id": "steel_mill",
+    "no": 86,
+    "name": "製鉄所",
+    "short": "製鉄",
+    "category": "processing",
+    "unlock": "m_steel",
+    "buildCost": 30000000,
+    "buildDays": 8,
+    "upkeep": 15000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "iron",
+      "steel",
+      "steel_plate"
+    ],
+    "manualWorkers": 4,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 40000000,
+      "power": 305,
+      "operators": 2
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 60000000,
+      "power": 520
+    },
+    "desc": "最初はたたら製鉄。高炉、転炉、圧延機へと育つ。"
+  },
+  {
+    "id": "nonferrous_smelter",
+    "no": 87,
+    "name": "非鉄金属精錬所",
+    "short": "非鉄",
+    "category": "processing",
+    "unlock": "m_nonferrous",
+    "buildCost": 40000000,
+    "buildDays": 8,
+    "upkeep": 15000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "copper",
+      "copper_wire",
+      "aluminum"
+    ],
+    "manualWorkers": 3,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 32000000,
+      "power": 205,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 48000000,
+      "power": 350
+    },
+    "desc": "銅とアルミニウムを精錬する。アルミは電気の塊。"
+  },
+  {
+    "id": "petrochem_plant",
+    "no": 88,
+    "name": "石油化学工場",
+    "short": "石化",
+    "category": "processing",
+    "unlock": "m_petro",
+    "buildCost": 300000000,
+    "buildDays": 20,
+    "upkeep": 100000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "plastic",
+      "synthetic_rubber",
+      "fuel",
+      "chemicals"
+    ],
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 68000000,
+      "power": 335,
+      "operators": 2
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 102000000,
+      "power": 570
+    },
+    "desc": "原油とガスを分けて、樹脂、ゴム、燃料、薬品にする。"
+  },
+  {
+    "id": "silicon_refinery",
+    "no": 89,
+    "name": "シリコン精製所",
+    "short": "Si精製",
+    "category": "processing",
+    "unlock": "e_semi",
+    "buildCost": 500000000,
+    "buildDays": 20,
+    "upkeep": 150000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "silicon"
+    ],
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 150000000,
+      "power": 1300,
+      "operators": 2
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 220000000,
+      "power": 2210
+    },
+    "desc": "電気炉で珪石をシリコンにする。"
+  },
+  {
+    "id": "lithium_refinery",
+    "no": 90,
+    "name": "リチウム精製所",
+    "short": "Li精製",
+    "category": "processing",
+    "unlock": "e_battery",
+    "buildCost": 500000000,
+    "buildDays": 20,
+    "upkeep": 150000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "lithium"
+    ],
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 140000000,
+      "power": 560,
+      "operators": 2
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 210000000,
+      "power": 950
+    },
+    "desc": "鉱石を薬品で溶かし、炭酸リチウムを取り出す。"
+  },
+  {
+    "id": "machine_parts_factory",
+    "no": 91,
+    "name": "機械部品工場",
+    "short": "機械部品",
+    "category": "manufacturing",
+    "unlock": "m_parts",
+    "buildCost": 40000000,
+    "buildDays": 8,
+    "upkeep": 15000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "bolts",
+      "gear",
+      "bearing",
+      "steel_pipe",
+      "metal_frame",
+      "pump",
+      "tire",
+      "small_engine"
+    ],
+    "manualWorkers": 4,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 34000000,
+      "power": 100,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 51000000,
+      "power": 170
+    },
+    "desc": "ボルト、ギア、ベアリングからエンジンまで。"
+  },
+  {
+    "id": "electrical_parts_factory",
+    "no": 92,
+    "name": "電機部品工場",
+    "short": "電機",
+    "category": "manufacturing",
+    "unlock": "el_motor",
+    "buildCost": 50000000,
+    "buildDays": 8,
+    "upkeep": 15000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "motor",
+      "cable"
+    ],
+    "manualWorkers": 4,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 37000000,
+      "power": 105,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 56000000,
+      "power": 180
+    },
+    "desc": "銅線を巻いてモーターを作り、電線を被覆する。"
+  },
+  {
+    "id": "electronics_factory",
+    "no": 93,
+    "name": "電子部品工場",
+    "short": "電子",
+    "category": "manufacturing",
+    "unlock": "e_circuit",
+    "buildCost": 400000000,
+    "buildDays": 20,
+    "upkeep": 120000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "circuit_board",
+      "semiconductor",
+      "battery",
+      "sensor",
+      "display",
+      "smartphone",
+      "laptop",
+      "power_bank"
+    ],
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 120000000,
+      "power": 395,
+      "operators": 2
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 180000000,
+      "power": 670
+    },
+    "desc": "クリーンルームで基板、半導体、電池、スマホを作る。"
+  },
+  {
+    "id": "assembly_plant",
+    "no": 94,
+    "name": "一般組立工場",
+    "short": "組立",
+    "category": "manufacturing",
+    "unlock": "start",
+    "buildCost": 2500000,
+    "buildDays": 3,
+    "upkeep": 3000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "furniture",
+      "tool_set",
+      "building_kit",
+      "packaging",
+      "fan",
+      "electric_pump",
+      "generator",
+      "refrigerator",
+      "washing_machine"
+    ],
+    "manualWorkers": 4,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 23000000,
+      "power": 95,
+      "operators": 1
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 34000000,
+      "power": 160
+    },
+    "desc": "家具から家電まで、部品を組み上げて完成品にする。"
+  },
+  {
+    "id": "vehicle_plant",
+    "no": 95,
+    "name": "車両工場",
+    "short": "車両",
+    "category": "manufacturing",
+    "unlock": "v_bicycle",
+    "buildCost": 150000000,
+    "buildDays": 15,
+    "upkeep": 50000,
+    "maxLevel": 6,
+    "levelCostMul": 2.5,
+    "recipes": [
+      "bicycle",
+      "e_bike",
+      "small_truck"
+    ],
+    "manualWorkers": 6,
+    "machinesPerLevel": 2,
+    "machine": {
+      "rate": 20,
+      "cost": 51000000,
+      "power": 125,
+      "operators": 2
+    },
+    "auto": {
+      "rate": 22,
+      "cost": 76000000,
+      "power": 210
+    },
+    "desc": "自転車、電動自転車、小型トラックを組み立てる。"
+  },
+  {
+    "id": "warehouse",
+    "no": 96,
+    "name": "倉庫",
+    "short": "倉庫",
+    "category": "infrastructure",
+    "unlock": "start",
+    "buildCost": 5000000,
+    "buildDays": 4,
+    "upkeep": 3000,
+    "maxLevel": 8,
+    "levelCostMul": 2,
+    "recipes": [],
+    "machinesPerLevel": 0,
+    "storage": 3000,
+    "desc": "在庫を置く場所。レベルごとに容量が増える。"
+  },
+  {
+    "id": "logistics_center",
+    "no": 97,
+    "name": "物流センター",
+    "short": "物流",
+    "category": "infrastructure",
+    "unlock": "l_center",
+    "buildCost": 80000000,
+    "buildDays": 10,
+    "upkeep": 30000,
+    "maxLevel": 5,
+    "levelCostMul": 2,
+    "recipes": [],
+    "machinesPerLevel": 0,
+    "logistics": 3000,
+    "logisticsCostCut": 0.2,
+    "desc": "トラックの配車をまとめ、運べる量を増やし運賃を下げる。"
+  },
+  {
+    "id": "power_plant",
+    "no": 98,
+    "name": "発電所",
+    "short": "発電",
+    "category": "infrastructure",
+    "unlock": "pw_plant",
+    "buildCost": 500000000,
+    "buildDays": 20,
+    "upkeep": 100000,
+    "maxLevel": 5,
+    "levelCostMul": 2,
+    "recipes": [],
+    "machinesPerLevel": 1,
+    "generator": {
+      "capacity": 50000,
+      "fuels": {
+        "coal": 0.00035,
+        "natural_gas": 0.00022,
+        "fuel": 0.00025
+      },
+      "unitCost": 300000000,
+      "operators": 3,
+      "autoCost": 300000000
+    },
+    "desc": "燃料を燃やして自社の電気をまかなう。規模が大きいほど系統より安い。"
+  },
+  {
+    "id": "research_lab",
+    "no": 99,
+    "name": "研究所",
+    "short": "研究",
+    "category": "infrastructure",
+    "unlock": "start",
+    "buildCost": 5000000,
+    "buildDays": 5,
+    "upkeep": 5000,
+    "maxLevel": 5,
+    "levelCostMul": 2.5,
+    "recipes": [],
+    "machinesPerLevel": 0,
+    "researchers": 4,
+    "desc": "研究員が新しい産業と改善を生む。"
+  },
+  {
+    "id": "headquarters",
+    "no": 100,
+    "name": "本社・オフィス",
+    "short": "本社",
+    "category": "infrastructure",
+    "unlock": "start",
+    "buildCost": 1,
+    "buildDays": 1,
+    "upkeep": 0,
+    "maxLevel": 6,
+    "levelCostMul": 1,
+    "recipes": [],
+    "machinesPerLevel": 0,
+    "desc": "会社の頭脳。規模で管理できる施設と社員の数、応募者の数が決まる。"
+  }
+]

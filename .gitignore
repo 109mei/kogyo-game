@@ -1,3 +1,22 @@
 # Windowsが自動で作るファイル
 Thumbs.db
 desktop.ini
+
+# Node / build
+node_modules/
+dist/
+coverage/
+*.log
+
+# Playwright
+test-results/
+playwright-report/
+e2e/__screenshots__/
+
+# 素材パイプラインの作業ファイル
+art_pipeline/review/
+art_pipeline/.mask_cache/
+__pycache__/
+
+# 調整ツールの出力
+tools/out/

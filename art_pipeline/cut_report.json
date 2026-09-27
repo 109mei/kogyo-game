@@ -1,0 +1,3522 @@
+[
+ {
+  "id": "log",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   571,
+   284
+  ],
+  "size": [
+   447,
+   246
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "stone",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   571,
+   0,
+   1122,
+   272
+  ],
+  "size": [
+   447,
+   243
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "sand",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   284,
+   571,
+   530
+  ],
+  "size": [
+   485,
+   235
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "clay",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   571,
+   272,
+   1122,
+   529
+  ],
+  "size": [
+   479,
+   248
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "limestone",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   530,
+   571,
+   790
+  ],
+  "size": [
+   502,
+   245
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "water",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   571,
+   529,
+   1122,
+   792
+  ],
+  "size": [
+   179,
+   250
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "coal",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   790,
+   571,
+   1059
+  ],
+  "size": [
+   496,
+   245
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "iron_ore",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   571,
+   792,
+   1122,
+   1059
+  ],
+  "size": [
+   478,
+   247
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "copper_ore",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   1059,
+   571,
+   1402
+  ],
+  "size": [
+   483,
+   258
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "bauxite",
+  "sheet": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+  "method": "u2net",
+  "box": [
+   571,
+   1059,
+   1122,
+   1402
+  ],
+  "size": [
+   485,
+   260
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "crude_oil",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   554,
+   303
+  ],
+  "size": [
+   440,
+   271
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "natural_gas",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "u2net",
+  "box": [
+   554,
+   0,
+   1122,
+   301
+  ],
+  "size": [
+   446,
+   270
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "natural_rubber",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "u2net",
+  "box": [
+   0,
+   303,
+   554,
+   578
+  ],
+  "size": [
+   496,
+   249
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "lithium_ore",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "u2net",
+  "box": [
+   554,
+   301,
+   1122,
+   571
+  ],
+  "size": [
+   524,
+   256
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "silica",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "u2net",
+  "box": [
+   0,
+   578,
+   554,
+   824
+  ],
+  "size": [
+   504,
+   233
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "lumber",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "u2net",
+  "box": [
+   554,
+   571,
+   1122,
+   841
+  ],
+  "size": [
+   460,
+   256
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "wood_panel",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "u2net",
+  "box": [
+   0,
+   824,
+   554,
+   1082
+  ],
+  "size": [
+   465,
+   247
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "paper",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "flood_noshadow",
+  "box": [
+   554,
+   841,
+   1122,
+   1081
+  ],
+  "size": [
+   447,
+   254
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "cardboard",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "u2net",
+  "box": [
+   0,
+   1082,
+   554,
+   1402
+  ],
+  "size": [
+   435,
+   274
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "brick",
+  "sheet": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+  "method": "u2net",
+  "box": [
+   554,
+   1081,
+   1122,
+   1402
+  ],
+  "size": [
+   423,
+   280
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "cement",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   556,
+   299
+  ],
+  "size": [
+   427,
+   284
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "concrete",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   556,
+   0,
+   1122,
+   301
+  ],
+  "size": [
+   442,
+   276
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "glass",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   0,
+   299,
+   556,
+   574
+  ],
+  "size": [
+   463,
+   270
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "iron",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   556,
+   301,
+   1122,
+   564
+  ],
+  "size": [
+   474,
+   261
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "steel",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   0,
+   574,
+   556,
+   815
+  ],
+  "size": [
+   481,
+   251
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "steel_plate",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   556,
+   564,
+   1122,
+   819
+  ],
+  "size": [
+   478,
+   259
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "copper",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   0,
+   815,
+   556,
+   1072
+  ],
+  "size": [
+   474,
+   255
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "copper_wire",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   556,
+   819,
+   1122,
+   1078
+  ],
+  "size": [
+   473,
+   247
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "aluminum",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   0,
+   1072,
+   556,
+   1402
+  ],
+  "size": [
+   485,
+   258
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "plastic",
+  "sheet": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+  "method": "u2net",
+  "box": [
+   556,
+   1078,
+   1122,
+   1402
+  ],
+  "size": [
+   513,
+   281
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "synthetic_rubber",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   561,
+   313
+  ],
+  "size": [
+   439,
+   277
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fuel",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   561,
+   0,
+   1122,
+   312
+  ],
+  "size": [
+   391,
+   273
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "chemicals",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   313,
+   561,
+   583
+  ],
+  "size": [
+   469,
+   252
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "silicon",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   561,
+   312,
+   1122,
+   584
+  ],
+  "size": [
+   512,
+   255
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "lithium",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   583,
+   561,
+   830
+  ],
+  "size": [
+   521,
+   249
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "bolts",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   561,
+   584,
+   1122,
+   836
+  ],
+  "size": [
+   476,
+   231
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "gear",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   830,
+   561,
+   1090
+  ],
+  "size": [
+   494,
+   249
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "bearing",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   561,
+   836,
+   1122,
+   1091
+  ],
+  "size": [
+   501,
+   236
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "steel_pipe",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   0,
+   1090,
+   561,
+   1402
+  ],
+  "size": [
+   449,
+   273
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "motor",
+  "sheet": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+  "method": "u2net",
+  "box": [
+   561,
+   1091,
+   1122,
+   1402
+  ],
+  "size": [
+   419,
+   267
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "cable",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   563,
+   290
+  ],
+  "size": [
+   419,
+   221
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "circuit_board",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   563,
+   0,
+   1122,
+   281
+  ],
+  "size": [
+   492,
+   252
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "semiconductor",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   0,
+   290,
+   563,
+   545
+  ],
+  "size": [
+   460,
+   235
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "battery",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   563,
+   281,
+   1122,
+   556
+  ],
+  "size": [
+   373,
+   283
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "tire",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   0,
+   545,
+   563,
+   839
+  ],
+  "size": [
+   428,
+   265
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "pump",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   563,
+   556,
+   1122,
+   835
+  ],
+  "size": [
+   430,
+   271
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "sensor",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   0,
+   839,
+   563,
+   1080
+  ],
+  "size": [
+   357,
+   246
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "display",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   563,
+   835,
+   1122,
+   1086
+  ],
+  "size": [
+   402,
+   239
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "metal_frame",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   0,
+   1080,
+   563,
+   1402
+  ],
+  "size": [
+   398,
+   267
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "small_engine",
+  "sheet": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+  "method": "u2net",
+  "box": [
+   563,
+   1086,
+   1122,
+   1402
+  ],
+  "size": [
+   326,
+   260
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "furniture",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   589,
+   287
+  ],
+  "size": [
+   479,
+   259
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "tool_set",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   589,
+   0,
+   1122,
+   295
+  ],
+  "size": [
+   450,
+   267
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "building_kit",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   0,
+   287,
+   589,
+   571
+  ],
+  "size": [
+   534,
+   270
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "packaging",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   589,
+   295,
+   1122,
+   585
+  ],
+  "size": [
+   440,
+   281
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fan",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   0,
+   571,
+   589,
+   848
+  ],
+  "size": [
+   216,
+   272
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "electric_pump",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   589,
+   585,
+   1122,
+   847
+  ],
+  "size": [
+   396,
+   259
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "generator",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   0,
+   848,
+   589,
+   1113
+  ],
+  "size": [
+   332,
+   250
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "refrigerator",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   589,
+   847,
+   1122,
+   1119
+  ],
+  "size": [
+   192,
+   259
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "washing_machine",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   0,
+   1113,
+   589,
+   1402
+  ],
+  "size": [
+   225,
+   249
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "smartphone",
+  "sheet": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+  "method": "u2net",
+  "box": [
+   589,
+   1119,
+   1122,
+   1402
+  ],
+  "size": [
+   210,
+   236
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "laptop",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   551,
+   292
+  ],
+  "size": [
+   370,
+   254
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "power_bank",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "u2net",
+  "box": [
+   551,
+   0,
+   1122,
+   296
+  ],
+  "size": [
+   389,
+   227
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "bicycle",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "u2net",
+  "box": [
+   0,
+   292,
+   551,
+   576
+  ],
+  "size": [
+   371,
+   265
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "e_bike",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "u2net",
+  "box": [
+   551,
+   296,
+   1122,
+   579
+  ],
+  "size": [
+   416,
+   273
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "small_truck",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "u2net",
+  "box": [
+   0,
+   576,
+   551,
+   849
+  ],
+  "size": [
+   439,
+   253
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "forestry",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "flood",
+  "box": [
+   551,
+   579,
+   1122,
+   855
+  ],
+  "size": [
+   584,
+   281
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "quarry",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "flood",
+  "box": [
+   0,
+   849,
+   551,
+   1110
+  ],
+  "size": [
+   545,
+   273
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "sand_pit",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "flood",
+  "box": [
+   551,
+   855,
+   1122,
+   1108
+  ],
+  "size": [
+   565,
+   243
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "clay_pit",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "flood",
+  "box": [
+   0,
+   1110,
+   551,
+   1402
+  ],
+  "size": [
+   549,
+   254
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "limestone_mine",
+  "sheet": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+  "method": "flood",
+  "box": [
+   551,
+   1108,
+   1122,
+   1402
+  ],
+  "size": [
+   562,
+   253
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "water_intake",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   0,
+   0,
+   562,
+   295
+  ],
+  "size": [
+   567,
+   265
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "coal_mine",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   562,
+   0,
+   1122,
+   294
+  ],
+  "size": [
+   533,
+   265
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "iron_mine",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   0,
+   295,
+   562,
+   565
+  ],
+  "size": [
+   549,
+   257
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "copper_mine",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   562,
+   294,
+   1122,
+   580
+  ],
+  "size": [
+   552,
+   263
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "bauxite_mine",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   0,
+   565,
+   562,
+   829
+  ],
+  "size": [
+   549,
+   261
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "oil_field",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   562,
+   580,
+   1122,
+   841
+  ],
+  "size": [
+   549,
+   263
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "gas_field",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   0,
+   829,
+   562,
+   1118
+  ],
+  "size": [
+   547,
+   292
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rubber_plantation",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   562,
+   841,
+   1122,
+   1119
+  ],
+  "size": [
+   540,
+   289
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "lithium_mine",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   0,
+   1118,
+   562,
+   1402
+  ],
+  "size": [
+   545,
+   242
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "silica_mine",
+  "sheet": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+  "method": "flood",
+  "box": [
+   562,
+   1119,
+   1122,
+   1402
+  ],
+  "size": [
+   545,
+   255
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "sawmill",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   0,
+   0,
+   557,
+   305
+  ],
+  "size": [
+   548,
+   270
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "paper_mill",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   557,
+   0,
+   1122,
+   302
+  ],
+  "size": [
+   549,
+   264
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ceramics_plant",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   0,
+   305,
+   557,
+   586
+  ],
+  "size": [
+   553,
+   267
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "cement_plant",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   557,
+   302,
+   1122,
+   582
+  ],
+  "size": [
+   557,
+   262
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "glass_plant",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   0,
+   586,
+   557,
+   857
+  ],
+  "size": [
+   539,
+   262
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "steel_mill",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   557,
+   582,
+   1122,
+   864
+  ],
+  "size": [
+   549,
+   265
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nonferrous_smelter",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   0,
+   857,
+   557,
+   1121
+  ],
+  "size": [
+   546,
+   256
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "petrochem_plant",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   557,
+   864,
+   1122,
+   1119
+  ],
+  "size": [
+   557,
+   239
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "silicon_refinery",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   0,
+   1121,
+   557,
+   1402
+  ],
+  "size": [
+   549,
+   246
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "lithium_refinery",
+  "sheet": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+  "method": "flood",
+  "box": [
+   557,
+   1119,
+   1122,
+   1402
+  ],
+  "size": [
+   556,
+   246
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "machine_parts_factory",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   0,
+   0,
+   559,
+   310
+  ],
+  "size": [
+   520,
+   251
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "electrical_parts_factory",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   559,
+   0,
+   1122,
+   313
+  ],
+  "size": [
+   528,
+   251
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "electronics_factory",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   0,
+   310,
+   559,
+   587
+  ],
+  "size": [
+   537,
+   260
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "assembly_plant",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   559,
+   313,
+   1122,
+   586
+  ],
+  "size": [
+   539,
+   253
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vehicle_plant",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   0,
+   587,
+   559,
+   863
+  ],
+  "size": [
+   557,
+   254
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "warehouse",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   559,
+   586,
+   1122,
+   854
+  ],
+  "size": [
+   549,
+   258
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "logistics_center",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   0,
+   863,
+   559,
+   1118
+  ],
+  "size": [
+   546,
+   229
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "power_plant",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   559,
+   854,
+   1122,
+   1116
+  ],
+  "size": [
+   542,
+   262
+  ],
+  "touchesCellEdge": true
+ },
+ {
+  "id": "research_lab",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   0,
+   1118,
+   559,
+   1402
+  ],
+  "size": [
+   546,
+   242
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "headquarters",
+  "sheet": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+  "method": "flood",
+  "box": [
+   559,
+   1116,
+   1122,
+   1402
+  ],
+  "size": [
+   549,
+   248
+  ],
+  "touchesCellEdge": true
+ },
+ {
+  "id": "nav_home",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   322,
+   535
+  ],
+  "size": [
+   312,
+   284
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nav_production",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   322,
+   0,
+   626,
+   535
+  ],
+  "size": [
+   291,
+   297
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nav_assets",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   626,
+   0,
+   912,
+   535
+  ],
+  "size": [
+   268,
+   249
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nav_market",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   912,
+   0,
+   1200,
+   535
+  ],
+  "size": [
+   278,
+   268
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nav_company",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   1200,
+   0,
+   1491,
+   535
+  ],
+  "size": [
+   272,
+   370
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nav_staff",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   0,
+   535,
+   304,
+   1055
+  ],
+  "size": [
+   255,
+   246
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nav_research",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   304,
+   535,
+   601,
+   1055
+  ],
+  "size": [
+   284,
+   279
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nav_logistics",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   601,
+   535,
+   896,
+   1055
+  ],
+  "size": [
+   276,
+   233
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nav_power",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   896,
+   535,
+   1183,
+   1055
+  ],
+  "size": [
+   275,
+   354
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "nav_finance",
+  "sheet": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+  "method": "u2net",
+  "box": [
+   1183,
+   535,
+   1491,
+   1055
+  ],
+  "size": [
+   286,
+   245
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_ok",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   298,
+   538
+  ],
+  "size": [
+   253,
+   257
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_warning",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   298,
+   0,
+   609,
+   538
+  ],
+  "size": [
+   274,
+   254
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_alert",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   609,
+   0,
+   891,
+   538
+  ],
+  "size": [
+   245,
+   267
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_stock_low",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   891,
+   0,
+   1198,
+   538
+  ],
+  "size": [
+   268,
+   291
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_power_low",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   1198,
+   0,
+   1491,
+   538
+  ],
+  "size": [
+   235,
+   256
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_staff_short",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   0,
+   538,
+   296,
+   1055
+  ],
+  "size": [
+   260,
+   236
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_logistics_blocked",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   296,
+   538,
+   611,
+   1055
+  ],
+  "size": [
+   280,
+   284
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_breakdown",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   611,
+   538,
+   898,
+   1055
+  ],
+  "size": [
+   267,
+   296
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_trend_up",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   898,
+   538,
+   1186,
+   1055
+  ],
+  "size": [
+   243,
+   282
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "st_trend_down",
+  "sheet": "35e170b3-025f-440a-af59-744b1231f630.png",
+  "method": "u2net",
+  "box": [
+   1186,
+   538,
+   1491,
+   1055
+  ],
+  "size": [
+   259,
+   274
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_truck",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   272,
+   503
+  ],
+  "size": [
+   242,
+   204
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_trailer",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   272,
+   0,
+   602,
+   503
+  ],
+  "size": [
+   315,
+   244
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_train",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   602,
+   0,
+   896,
+   503
+  ],
+  "size": [
+   349,
+   254
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_ship",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   896,
+   0,
+   1174,
+   503
+  ],
+  "size": [
+   266,
+   301
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_plane",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   1174,
+   0,
+   1491,
+   503
+  ],
+  "size": [
+   296,
+   264
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_container",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   0,
+   503,
+   282,
+   1055
+  ],
+  "size": [
+   257,
+   226
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_freight_station",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   282,
+   503,
+   661,
+   1055
+  ],
+  "size": [
+   403,
+   209
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_gantry_crane",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   661,
+   503,
+   924,
+   1055
+  ],
+  "size": [
+   220,
+   277
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_pallet",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   924,
+   503,
+   1202,
+   1055
+  ],
+  "size": [
+   269,
+   233
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "vh_forklift",
+  "sheet": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+  "method": "u2net",
+  "box": [
+   1202,
+   503,
+   1491,
+   1055
+  ],
+  "size": [
+   288,
+   250
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_cash",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   319,
+   531
+  ],
+  "size": [
+   287,
+   256
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_up",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   319,
+   0,
+   612,
+   531
+  ],
+  "size": [
+   258,
+   277
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_down",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   612,
+   0,
+   896,
+   531
+  ],
+  "size": [
+   247,
+   274
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_bank",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   896,
+   0,
+   1204,
+   531
+  ],
+  "size": [
+   273,
+   281
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_contract",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   1204,
+   0,
+   1491,
+   531
+  ],
+  "size": [
+   244,
+   270
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_stock",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   0,
+   531,
+   317,
+   1055
+  ],
+  "size": [
+   284,
+   289
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_merger",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   317,
+   531,
+   616,
+   1055
+  ],
+  "size": [
+   277,
+   291
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_exchange",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   616,
+   531,
+   910,
+   1055
+  ],
+  "size": [
+   267,
+   288
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_buy",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   910,
+   531,
+   1220,
+   1055
+  ],
+  "size": [
+   281,
+   309
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "fin_price",
+  "sheet": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+  "method": "u2net",
+  "box": [
+   1220,
+   531,
+   1491,
+   1055
+  ],
+  "size": [
+   223,
+   304
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_delivery",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   319,
+   538
+  ],
+  "size": [
+   276,
+   313
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_power_meter",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   319,
+   0,
+   611,
+   538
+  ],
+  "size": [
+   248,
+   277
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_profit",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   611,
+   0,
+   914,
+   538
+  ],
+  "size": [
+   253,
+   307
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_demand_up",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   914,
+   0,
+   1222,
+   538
+  ],
+  "size": [
+   276,
+   331
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_time",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   1222,
+   0,
+   1491,
+   538
+  ],
+  "size": [
+   186,
+   322
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_choice",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   0,
+   538,
+   291,
+   1055
+  ],
+  "size": [
+   295,
+   343
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_ranking",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   291,
+   538,
+   625,
+   1055
+  ],
+  "size": [
+   308,
+   277
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_branch",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   625,
+   538,
+   900,
+   1055
+  ],
+  "size": [
+   268,
+   256
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_merge",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   900,
+   538,
+   1182,
+   1055
+  ],
+  "size": [
+   255,
+   290
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "misc_gate",
+  "sheet": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+  "method": "u2net",
+  "box": [
+   1182,
+   538,
+   1491,
+   1055
+  ],
+  "size": [
+   284,
+   271
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_worker",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   312,
+   512
+  ],
+  "size": [
+   183,
+   428
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_miner",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   312,
+   0,
+   587,
+   512
+  ],
+  "size": [
+   189,
+   428
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_operator",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   587,
+   0,
+   915,
+   512
+  ],
+  "size": [
+   255,
+   409
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_engineer",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   915,
+   0,
+   1185,
+   512
+  ],
+  "size": [
+   207,
+   437
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_electrician",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   1185,
+   0,
+   1491,
+   512
+  ],
+  "size": [
+   206,
+   433
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_logistics",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   0,
+   512,
+   347,
+   1055
+  ],
+  "size": [
+   289,
+   444
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_researcher",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   347,
+   512,
+   623,
+   1055
+  ],
+  "size": [
+   169,
+   419
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_manager",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   623,
+   512,
+   930,
+   1055
+  ],
+  "size": [
+   213,
+   427
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_accountant",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   930,
+   512,
+   1182,
+   1055
+  ],
+  "size": [
+   162,
+   423
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ppl_foreman",
+  "sheet": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+  "method": "u2net",
+  "box": [
+   1182,
+   512,
+   1491,
+   1055
+  ],
+  "size": [
+   222,
+   439
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_search",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   324,
+   523
+  ],
+  "size": [
+   273,
+   277
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_filter",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   324,
+   0,
+   606,
+   523
+  ],
+  "size": [
+   259,
+   269
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_bell",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   606,
+   0,
+   887,
+   523
+  ],
+  "size": [
+   247,
+   278
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_settings",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   887,
+   0,
+   1203,
+   523
+  ],
+  "size": [
+   281,
+   279
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_back",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   1203,
+   0,
+   1491,
+   523
+  ],
+  "size": [
+   232,
+   215
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_details",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   0,
+   523,
+   332,
+   1055
+  ],
+  "size": [
+   261,
+   298
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_edit",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   332,
+   523,
+   609,
+   1055
+  ],
+  "size": [
+   232,
+   299
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_delete",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   609,
+   523,
+   881,
+   1055
+  ],
+  "size": [
+   224,
+   293
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_play",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   881,
+   523,
+   1184,
+   1055
+  ],
+  "size": [
+   263,
+   262
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_pause",
+  "sheet": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+  "method": "u2net",
+  "box": [
+   1184,
+   523,
+   1491,
+   1055
+  ],
+  "size": [
+   258,
+   270
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_manual",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   326,
+   525
+  ],
+  "size": [
+   250,
+   278
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_worker",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   326,
+   0,
+   546,
+   525
+  ],
+  "size": [
+   135,
+   333
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_machine",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   546,
+   0,
+   873,
+   525
+  ],
+  "size": [
+   283,
+   317
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_robot",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   873,
+   0,
+   1164,
+   525
+  ],
+  "size": [
+   250,
+   312
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_ai",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   1164,
+   0,
+   1491,
+   525
+  ],
+  "size": [
+   266,
+   288
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_target",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   0,
+   525,
+   314,
+   1055
+  ],
+  "size": [
+   267,
+   294
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_flag",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   314,
+   525,
+   589,
+   1055
+  ],
+  "size": [
+   244,
+   338
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_cycle",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   589,
+   525,
+   870,
+   1055
+  ],
+  "size": [
+   235,
+   244
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_start",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   870,
+   525,
+   1181,
+   1055
+  ],
+  "size": [
+   264,
+   241
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "auto_stop",
+  "sheet": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+  "method": "u2net",
+  "box": [
+   1181,
+   525,
+   1491,
+   1055
+  ],
+  "size": [
+   261,
+   252
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_news",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   334,
+   531
+  ],
+  "size": [
+   304,
+   249
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_alarm",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   334,
+   0,
+   597,
+   531
+  ],
+  "size": [
+   215,
+   260
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_price_surge",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   597,
+   0,
+   892,
+   531
+  ],
+  "size": [
+   271,
+   304
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_recession",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   892,
+   0,
+   1173,
+   531
+  ],
+  "size": [
+   268,
+   280
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_power_failure",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   1173,
+   0,
+   1491,
+   531
+  ],
+  "size": [
+   284,
+   326
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_supply_break",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   0,
+   531,
+   330,
+   1055
+  ],
+  "size": [
+   304,
+   243
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_tech",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   330,
+   531,
+   615,
+   1055
+  ],
+  "size": [
+   273,
+   200
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_strike",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   615,
+   531,
+   905,
+   1055
+  ],
+  "size": [
+   297,
+   300
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_disaster",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   905,
+   531,
+   1195,
+   1055
+  ],
+  "size": [
+   286,
+   245
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ev_trophy",
+  "sheet": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+  "method": "u2net",
+  "box": [
+   1195,
+   531,
+   1491,
+   1055
+  ],
+  "size": [
+   273,
+   291
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_automation",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   308,
+   526
+  ],
+  "size": [
+   281,
+   315
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_materials",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   308,
+   0,
+   613,
+   526
+  ],
+  "size": [
+   283,
+   270
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_production",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   613,
+   0,
+   877,
+   526
+  ],
+  "size": [
+   243,
+   279
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_electronics",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   877,
+   0,
+   1187,
+   526
+  ],
+  "size": [
+   291,
+   294
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_logistics",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   1187,
+   0,
+   1491,
+   526
+  ],
+  "size": [
+   274,
+   291
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_energy",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   0,
+   526,
+   304,
+   1055
+  ],
+  "size": [
+   288,
+   375
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_management",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   304,
+   526,
+   610,
+   1055
+  ],
+  "size": [
+   294,
+   296
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_ai",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   610,
+   526,
+   880,
+   1055
+  ],
+  "size": [
+   246,
+   302
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_design",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   880,
+   526,
+   1188,
+   1055
+  ],
+  "size": [
+   300,
+   279
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "rs_quality",
+  "sheet": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+  "method": "u2net",
+  "box": [
+   1188,
+   526,
+   1491,
+   1055
+  ],
+  "size": [
+   289,
+   359
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_world",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   331,
+   476
+  ],
+  "size": [
+   264,
+   334
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_book",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   331,
+   0,
+   739,
+   476
+  ],
+  "size": [
+   390,
+   277
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_gear",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   739,
+   0,
+   1031,
+   476
+  ],
+  "size": [
+   254,
+   294
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_bell_alert",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   1031,
+   0,
+   1320,
+   476
+  ],
+  "size": [
+   244,
+   282
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_star",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   1320,
+   0,
+   1672,
+   476
+  ],
+  "size": [
+   293,
+   296
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_lock",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   0,
+   476,
+   346,
+   941
+  ],
+  "size": [
+   253,
+   330
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_done",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   346,
+   476,
+   672,
+   941
+  ],
+  "size": [
+   290,
+   293
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_construction",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   672,
+   476,
+   1012,
+   941
+  ],
+  "size": [
+   226,
+   172
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_pause_alt",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   1012,
+   476,
+   1318,
+   941
+  ],
+  "size": [
+   272,
+   274
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ui_broken",
+  "sheet": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+  "method": "u2net",
+  "box": [
+   1318,
+   476,
+   1672,
+   941
+  ],
+  "size": [
+   284,
+   307
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_auto",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   0,
+   0,
+   330,
+   511
+  ],
+  "size": [
+   272,
+   329
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_manual",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   330,
+   0,
+   685,
+   511
+  ],
+  "size": [
+   285,
+   318
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_speed1",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   685,
+   0,
+   965,
+   511
+  ],
+  "size": [
+   182,
+   230
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_speed2",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   965,
+   0,
+   1304,
+   511
+  ],
+  "size": [
+   263,
+   223
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_speed3",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   1304,
+   0,
+   1672,
+   511
+  ],
+  "size": [
+   304,
+   211
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_import",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   0,
+   511,
+   341,
+   941
+  ],
+  "size": [
+   260,
+   263
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_export",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   341,
+   511,
+   672,
+   941
+  ],
+  "size": [
+   250,
+   268
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_sort",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   672,
+   511,
+   993,
+   941
+  ],
+  "size": [
+   247,
+   254
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_plus",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   993,
+   511,
+   1324,
+   941
+  ],
+  "size": [
+   249,
+   249
+  ],
+  "touchesCellEdge": false
+ },
+ {
+  "id": "ctl_minus",
+  "sheet": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+  "method": "u2net",
+  "box": [
+   1324,
+   511,
+   1672,
+   941
+  ],
+  "size": [
+   253,
+   252
+  ],
+  "touchesCellEdge": false
+ }
+]
