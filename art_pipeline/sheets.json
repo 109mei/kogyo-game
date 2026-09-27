@@ -1,0 +1,421 @@
+{
+  "_comment": "Sprite sheets in 素材置き場/ -> icon ids. Cells are read left to right, then top to bottom.",
+  "sheets": [
+    {
+      "file": "540e2bc5-8b49-4ee1-9d7b-7f3e271efd8d.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "item",
+      "ids": [
+        "log",
+        "stone",
+        "sand",
+        "clay",
+        "limestone",
+        "water",
+        "coal",
+        "iron_ore",
+        "copper_ore",
+        "bauxite"
+      ]
+    },
+    {
+      "file": "9b99ae74-c906-4bb5-949e-571bea47c846.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "item",
+      "ids": [
+        "crude_oil",
+        "natural_gas",
+        "natural_rubber",
+        "lithium_ore",
+        "silica",
+        "lumber",
+        "wood_panel",
+        "paper",
+        "cardboard",
+        "brick"
+      ]
+    },
+    {
+      "file": "8ad20080-805f-4c3e-8a8c-cc45f1141b6b.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "item",
+      "ids": [
+        "cement",
+        "concrete",
+        "glass",
+        "iron",
+        "steel",
+        "steel_plate",
+        "copper",
+        "copper_wire",
+        "aluminum",
+        "plastic"
+      ]
+    },
+    {
+      "file": "6306d5b5-efc8-48af-94c9-b75c9de5256d.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "item",
+      "ids": [
+        "synthetic_rubber",
+        "fuel",
+        "chemicals",
+        "silicon",
+        "lithium",
+        "bolts",
+        "gear",
+        "bearing",
+        "steel_pipe",
+        "motor"
+      ]
+    },
+    {
+      "file": "03ec95e8-f288-49dc-a211-2282dda454cb.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "item",
+      "ids": [
+        "cable",
+        "circuit_board",
+        "semiconductor",
+        "battery",
+        "tire",
+        "pump",
+        "sensor",
+        "display",
+        "metal_frame",
+        "small_engine"
+      ]
+    },
+    {
+      "file": "a2e72008-e627-4c95-a8f8-9bdfc4792049.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "item",
+      "ids": [
+        "furniture",
+        "tool_set",
+        "building_kit",
+        "packaging",
+        "fan",
+        "electric_pump",
+        "generator",
+        "refrigerator",
+        "washing_machine",
+        "smartphone"
+      ]
+    },
+    {
+      "file": "8874e85f-7a32-4710-8fce-7e1da1829b5b.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "mixed",
+      "ids": [
+        "laptop",
+        "power_bank",
+        "bicycle",
+        "e_bike",
+        "small_truck",
+        "forestry",
+        "quarry",
+        "sand_pit",
+        "clay_pit",
+        "limestone_mine"
+      ]
+    },
+    {
+      "file": "31a82b23-5ac2-4586-9226-1156f3cbbc6b.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "facility",
+      "ids": [
+        "water_intake",
+        "coal_mine",
+        "iron_mine",
+        "copper_mine",
+        "bauxite_mine",
+        "oil_field",
+        "gas_field",
+        "rubber_plantation",
+        "lithium_mine",
+        "silica_mine"
+      ]
+    },
+    {
+      "file": "a264c896-095b-4124-bf34-58c2f92cbaf1.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "facility",
+      "ids": [
+        "sawmill",
+        "paper_mill",
+        "ceramics_plant",
+        "cement_plant",
+        "glass_plant",
+        "steel_mill",
+        "nonferrous_smelter",
+        "petrochem_plant",
+        "silicon_refinery",
+        "lithium_refinery"
+      ]
+    },
+    {
+      "file": "1c66fc4b-bf9e-45c3-a55d-da56b7bbfbef.png",
+      "cols": 2,
+      "rows": 5,
+      "group": "facility",
+      "ids": [
+        "machine_parts_factory",
+        "electrical_parts_factory",
+        "electronics_factory",
+        "assembly_plant",
+        "vehicle_plant",
+        "warehouse",
+        "logistics_center",
+        "power_plant",
+        "research_lab",
+        "headquarters"
+      ]
+    },
+    {
+      "file": "d2fb222f-45e8-44c8-8e41-a280062a5553.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "nav_home",
+        "nav_production",
+        "nav_assets",
+        "nav_market",
+        "nav_company",
+        "nav_staff",
+        "nav_research",
+        "nav_logistics",
+        "nav_power",
+        "nav_finance"
+      ]
+    },
+    {
+      "file": "35e170b3-025f-440a-af59-744b1231f630.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "st_ok",
+        "st_warning",
+        "st_alert",
+        "st_stock_low",
+        "st_power_low",
+        "st_staff_short",
+        "st_logistics_blocked",
+        "st_breakdown",
+        "st_trend_up",
+        "st_trend_down"
+      ]
+    },
+    {
+      "file": "e4dcae79-58b8-4712-9aab-60b179e76e5a.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "vh_truck",
+        "vh_trailer",
+        "vh_train",
+        "vh_ship",
+        "vh_plane",
+        "vh_container",
+        "vh_freight_station",
+        "vh_gantry_crane",
+        "vh_pallet",
+        "vh_forklift"
+      ]
+    },
+    {
+      "file": "50d6437e-4d70-4bc2-9a77-9b8ccc982c14.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "fin_cash",
+        "fin_up",
+        "fin_down",
+        "fin_bank",
+        "fin_contract",
+        "fin_stock",
+        "fin_merger",
+        "fin_exchange",
+        "fin_buy",
+        "fin_price"
+      ]
+    },
+    {
+      "file": "5b30570e-d93c-45df-a0f4-1fb56fa78763.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "misc_delivery",
+        "misc_power_meter",
+        "misc_profit",
+        "misc_demand_up",
+        "misc_time",
+        "misc_choice",
+        "misc_ranking",
+        "misc_branch",
+        "misc_merge",
+        "misc_gate"
+      ]
+    },
+    {
+      "file": "8fe50310-55e4-47fa-ab13-d798eecb9c0a.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "ppl_worker",
+        "ppl_miner",
+        "ppl_operator",
+        "ppl_engineer",
+        "ppl_electrician",
+        "ppl_logistics",
+        "ppl_researcher",
+        "ppl_manager",
+        "ppl_accountant",
+        "ppl_foreman"
+      ]
+    },
+    {
+      "file": "00b482b5-0a16-4301-85a1-3f3bc5e3a089.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "ui_search",
+        "ui_filter",
+        "ui_bell",
+        "ui_settings",
+        "ui_back",
+        "ui_details",
+        "ui_edit",
+        "ui_delete",
+        "ui_play",
+        "ui_pause"
+      ]
+    },
+    {
+      "file": "90ef61e0-e0c0-4444-a2bd-5614495f64ce.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "auto_manual",
+        "auto_worker",
+        "auto_machine",
+        "auto_robot",
+        "auto_ai",
+        "auto_target",
+        "auto_flag",
+        "auto_cycle",
+        "auto_start",
+        "auto_stop"
+      ]
+    },
+    {
+      "file": "a499fc6a-89f5-4c8a-89b7-e7e9b2016da9.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "ev_news",
+        "ev_alarm",
+        "ev_price_surge",
+        "ev_recession",
+        "ev_power_failure",
+        "ev_supply_break",
+        "ev_tech",
+        "ev_strike",
+        "ev_disaster",
+        "ev_trophy"
+      ]
+    },
+    {
+      "file": "3ece715d-a8da-4a6b-a9bb-376825d09313.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "rs_automation",
+        "rs_materials",
+        "rs_production",
+        "rs_electronics",
+        "rs_logistics",
+        "rs_energy",
+        "rs_management",
+        "rs_ai",
+        "rs_design",
+        "rs_quality"
+      ]
+    },
+    {
+      "file": "a0d9cea9-51ea-4c39-9836-48728cc36d35.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "ui_world",
+        "ui_book",
+        "ui_gear",
+        "ui_bell_alert",
+        "ui_star",
+        "ui_lock",
+        "ui_done",
+        "ui_construction",
+        "ui_pause_alt",
+        "ui_broken"
+      ]
+    },
+    {
+      "file": "60291582-df3b-4a1c-8582-c60fc3d3dbda.png",
+      "cols": 5,
+      "rows": 2,
+      "group": "ui",
+      "ids": [
+        "ctl_auto",
+        "ctl_manual",
+        "ctl_speed1",
+        "ctl_speed2",
+        "ctl_speed3",
+        "ctl_import",
+        "ctl_export",
+        "ctl_sort",
+        "ctl_plus",
+        "ctl_minus"
+      ]
+    }
+  ],
+  "methods": {
+    "_comment": "Matte per icon. u2net = rembg u2net + white-background refinement (default). flood = classical flood fill with translucent ground shadow, used for pale dioramas. flood_noshadow = flood without the baked shadow.",
+    "default": "u2net",
+    "byGroup": {
+      "facility": "flood"
+    },
+    "byId": {
+      "paper": "flood_noshadow",
+      "forestry": "flood",
+      "quarry": "flood",
+      "sand_pit": "flood",
+      "clay_pit": "flood",
+      "limestone_mine": "flood"
+    }
+  },
+  "margins": {
+    "_comment": "Crop margin around a cell as a fraction of its size (default 0.12). 0 where two objects nearly touch across the cut line.",
+    "power_plant": 0.0,
+    "headquarters": 0.0
+  }
+}
