@@ -11,6 +11,7 @@ import type { OfflineReport } from '../save/offline';
 import { SAVE_KEY, SaveStore, STAMP_KEY } from '../save/SaveStore';
 import { startEngine, type Engine, type Started } from './engine';
 import type { DevPatch, Init } from './protocol';
+import { play, soundForCommand, soundMarks, soundsBetween, type SoundMarks } from '../ui/sound';
 import { toast } from './ui';
 
 interface GameStore {
@@ -48,9 +49,28 @@ function crashed(message: string) {
   toast('計算中にエラーが起きました。セーブは残っています', 'bad');
 }
 
+/** what the last update looked like, to hear what changed since */
+let heard: SoundMarks | null = null;
+/** when the last command came back; news caused by it is not sounded twice */
+let lastCommandAt = -1e9;
+
+function listen(e: Engine) {
+  const v = e.view;
+  if (!v || e.frozen) return;
+  if (heard) {
+    const id = soundsBetween(heard, v, performance.now() - lastCommandAt < 500);
+    if (id) play(id);
+  }
+  heard = soundMarks(v);
+}
+
 function attach(e: Engine) {
   unsub?.();
-  unsub = e.subscribe(() => useGameStore.setState((s) => ({ rev: s.rev + 1 })));
+  heard = e.view ? soundMarks(e.view) : null;
+  unsub = e.subscribe(() => {
+    useGameStore.setState((s) => ({ rev: s.rev + 1 }));
+    listen(e);
+  });
   bindPageEvents();
 }
 
@@ -173,6 +193,11 @@ export function dispatch(cmd: Command, opts: { quiet?: boolean } = {}): Promise<
   if (!r) return Promise.resolve({ ok: false, message: 'ゲームが始まっていません' });
   return r.dispatch(cmd).then((res) => {
     commandSeq++;
+    if (!opts.quiet) {
+      lastCommandAt = performance.now();
+      const id = soundForCommand(cmd, res.ok);
+      if (id) play(id);
+    }
     useGameStore.setState((s) => ({ rev: s.rev + 1 }));
     if (!opts.quiet) {
       if (!res.ok && res.message) toast(res.message, 'bad');
