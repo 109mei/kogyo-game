@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useSyncExternalStore } from 'react';
 import type { Settings as GameSettings } from '../../core';
 import { dispatch, exportSave, useGame, useGameStore } from '../../store/game';
 import { toast, useUI } from '../../store/ui';
 import { Chips, Icon, Switch } from '../components';
+import { play, setSoundPrefs, soundPrefs, subscribePrefs, unlockAudio } from '../sound';
 
 function set<K extends keyof GameSettings>(key: K, value: GameSettings[K]) {
   dispatch({ type: 'setSetting', key, value });
@@ -14,6 +15,7 @@ export function Settings() {
   const [exported, setExported] = useState('');
   const [importText, setImportText] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
+  const sound = useSyncExternalStore(subscribePrefs, soundPrefs);
 
   const doImport = async (text: string) => {
     const err = await useGameStore.getState().loadText(text.trim());
@@ -62,6 +64,44 @@ export function Settings() {
           />
           <span className="tiny dim">ゲーム内の日数（×1で1日＝1分）。自動停止する問題が起きたらそこで止まります。</span>
         </div>
+      </div>
+
+      <div className="section-title">音</div>
+      <div className="card col" style={{ gap: 12 }}>
+        <div className="spread">
+          <div className="col" style={{ gap: 0 }}>
+            <span className="bold small">効果音</span>
+            <span className="tiny dim">建設・売買・目標達成などで鳴ります。この端末だけの設定です</span>
+          </div>
+          <Switch
+            on={sound.on}
+            onChange={(on) => {
+              setSoundPrefs({ on });
+              if (on) {
+                unlockAudio();
+                play('ok');
+              }
+            }}
+            label="効果音"
+          />
+        </div>
+        {sound.on && (
+          <div className="col" style={{ gap: 6 }}>
+            <span className="bold small">音量</span>
+            <Chips
+              value={String(sound.volume)}
+              onChange={(x) => {
+                setSoundPrefs({ volume: Number(x) });
+                play('coin');
+              }}
+              options={[
+                ['0.3', '小'],
+                ['0.6', '中'],
+                ['1', '大'],
+              ]}
+            />
+          </div>
+        )}
       </div>
 
       <div className="section-title">表示</div>
